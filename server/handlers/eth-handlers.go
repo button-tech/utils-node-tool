@@ -1,4 +1,4 @@
-package eth
+package handlers
 
 import (
 	"context"
@@ -10,7 +10,8 @@ import (
 	"os"
 	"strconv"
 
-	"./abi"
+	"../../eth/abi"
+	"./responseModels"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -19,11 +20,9 @@ import (
 	"github.com/onrik/ethrpc"
 )
 
-
-
 var (
-	ethURL =  os.Getenv("ETH_NODE")
-	etcURL =  os.Getenv("ETC_NODE")
+	ethURL = os.Getenv("ETH_NODE")
+	etcURL = os.Getenv("ETC_NODE")
 )
 
 var (
@@ -48,6 +47,15 @@ var (
 	}
 )
 
+
+// @Summary ETH/ETC balance of account
+// @Description return balance of account in ETH for specific node
+// @Produce  application/json
+// @Param   eth     path    string     true        "type of node"
+// @Param   address        path    string     true        "address"
+// @Success 200 {array} responses.BalanceResponse
+// @Router /balance/{eth}/{address} [get]
+// GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
 	client := ClientRpc(c.Param("eth"))
@@ -60,7 +68,10 @@ func GetBalance(c *gin.Context) {
 
 	ethBalance := floatBalance / math.Pow(10, 18)
 
-	c.JSON(http.StatusOK, gin.H{"balance": ethBalance})
+	bp := new(responses.BalanceResponse)
+	bp.Balance = ethBalance
+
+	c.JSON(http.StatusOK, bp)
 
 	return
 }
@@ -78,8 +89,6 @@ func GetTxFee(c *gin.Context) {
 	fee := float64(gasPrice.Int64()*21000) / math.Pow(10, 18)
 
 	c.JSON(http.StatusOK, gin.H{"fee": fee})
-
-	return
 }
 
 func GetGasPrice(c *gin.Context) {
@@ -91,7 +100,7 @@ func GetGasPrice(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{"gas_price": gasPrice.Int64()})
 }
 
@@ -118,7 +127,6 @@ func GetTokenBalance(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"balance": balance})
-	return
 }
 
 // Send Tx
@@ -152,7 +160,6 @@ func SendTX(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"response": tx.Hash().Hex()})
 }
 
-
 // get client
 func ClientRpc(param string) *ethrpc.EthRPC {
 	if param == "etc" {
@@ -161,8 +168,8 @@ func ClientRpc(param string) *ethrpc.EthRPC {
 	return ethClient
 }
 
-func ClientDial(param string) *ethclient.Client{
-	if param == "etc"{
+func ClientDial(param string) *ethclient.Client {
+	if param == "etc" {
 		client, err := ethclient.Dial(etcURL)
 		if err != nil {
 			log.Println(err)
@@ -171,7 +178,7 @@ func ClientDial(param string) *ethclient.Client{
 	}
 
 	client, err := ethclient.Dial(ethURL)
-	if err!= nil{
+	if err != nil {
 		log.Println(err)
 	}
 	return client

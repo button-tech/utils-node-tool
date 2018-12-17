@@ -1,0 +1,35 @@
+definitions:
+  responses.BalanceResponse:
+    properties:
+      balance:
+        example: 0
+        type: number
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /balance/{eth}/{address}:
+    get:
+      description: return balance of account in ETH for specific node
+      parameters:
+      - description: type of node
+        in: path
+        name: eth
+        required: true
+        type: string
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalanceResponse'
+            type: array
+      summary: ETH/ETC balance of account
