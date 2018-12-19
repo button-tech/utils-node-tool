@@ -5,9 +5,8 @@ ADD . /app/
 
 WORKDIR /app/
 
-ENV GO111MODULE=on
 ENV GIN_MODE=release
-
+ENV
 
 RUN go build -o main ./server/main
 

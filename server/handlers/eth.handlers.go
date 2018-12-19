@@ -10,8 +10,8 @@ import (
 	"os"
 	"strconv"
 
-	"../../eth/abi"
-	"./responseModels"
+	"github.com/button-tech/utils-node-tool/eth/abi"
+	"github.com/button-tech/utils-node-tool/server/handlers/responseModels"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
