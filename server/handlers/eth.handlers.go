@@ -47,18 +47,17 @@ var (
 	}
 )
 
-
 // @Summary ETH/ETC balance of account
 // @Description return balance of account in ETH for specific node
 // @Produce  application/json
-// @Param   eth     path    string     true        "type of node"
+// @Param   nodeType     path    string     true        "type of node"
 // @Param   address        path    string     true        "address"
 // @Success 200 {array} responses.BalanceResponse
-// @Router /balance/{eth}/{address} [get]
+// @Router /balance/{nodeType}/{address} [get]
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
-	client := ClientRpc(c.Param("eth"))
+	client := ClientRpc(c.Param("nodeType"))
 
 	balance, err := client.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
@@ -68,17 +67,24 @@ func GetBalance(c *gin.Context) {
 
 	ethBalance := floatBalance / math.Pow(10, 18)
 
-	bp := new(responses.BalanceResponse)
-	bp.Balance = ethBalance
+	response := new(responses.BalanceResponse)
+	response.Balance = ethBalance
 
-	c.JSON(http.StatusOK, bp)
+	c.JSON(http.StatusOK, response)
 
 	return
 }
 
+// @Summary return Amount of ETH that you need to send a transaction
+// @Description return Amount of ETH that you need to send a transaction
+// @Produce  application/json
+// @Param   nodeType     path    string     true        "type of node"
+// @Success 200 {array} responses.TransactionFeeResponse
+// @Router /transactionFee/{nodeType} [get]
+// GetBalance return balance of account in ETH for specific node
 func GetTxFee(c *gin.Context) {
 
-	client := ClientRpc(c.Param("eth"))
+	client := ClientRpc(c.Param("nodeType"))
 
 	gasPrice, err := client.EthGasPrice()
 
@@ -88,12 +94,15 @@ func GetTxFee(c *gin.Context) {
 
 	fee := float64(gasPrice.Int64()*21000) / math.Pow(10, 18)
 
-	c.JSON(http.StatusOK, gin.H{"fee": fee})
+	response := new(responses.TransactionFeeResponse)
+	response.Fee = fee
+
+	c.JSON(http.StatusOK, response)
 }
 
 func GetGasPrice(c *gin.Context) {
 
-	client := ClientRpc(c.Param("eth"))
+	client := ClientRpc(c.Param("nodeType"))
 
 	gasPrice, err := client.EthGasPrice()
 
@@ -132,7 +141,7 @@ func GetTokenBalance(c *gin.Context) {
 // Send Tx
 func SendTX(c *gin.Context) {
 
-	client := ClientDial(c.Param("eth"))
+	client := ClientDial(c.Param("nodeType"))
 
 	type DataToSend struct {
 		Raw_tx string `json:"raw_tx"`

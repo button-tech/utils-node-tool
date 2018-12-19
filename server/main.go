@@ -32,15 +32,15 @@ func main() {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/balance/:eth/:address", handlers.GetBalance)
+	r.GET("/balance/:nodeType/:address", handlers.GetBalance)
 
-	r.GET("/fee/:eth", handlers.GetTxFee)
+	r.GET("/transactionFee/:nodeType", handlers.GetTxFee)
 
-	r.GET("/gasPrice/:eth", handlers.GetGasPrice)
+	r.GET("/gasPrice/:nodeType", handlers.GetGasPrice)
 
 	r.GET("/tokenBalance/:token/:address", handlers.GetTokenBalance)
 
-	r.POST("/sendTx/:eth", handlers.SendTX)
+	r.POST("/sendTx/:nodeType", handlers.SendTX)
 
 	r.Run(":8080")
 }
