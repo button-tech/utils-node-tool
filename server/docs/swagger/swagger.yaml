@@ -1,4 +1,4 @@
-basePath: /v2
+basePath: /
 definitions:
   responses.BalanceResponse:
     properties:

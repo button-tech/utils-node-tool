@@ -14,7 +14,7 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/v2",
+    "basePath": "/",
     "paths": {
         "/balance/{nodeType}/{address}": {
             "get": {

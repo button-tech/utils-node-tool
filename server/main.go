@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "../docs"
+	_ "./docs"
 	"github.com/button-tech/utils-node-tool/server/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ func main() {
 	// @license.url https://opensource.org/licenses/MIT
 
 	// @host localhost:8080
-	// @BasePath /v2
+	// @BasePath /
 
 	r := gin.New()
 	r.Use(gin.Recovery())
