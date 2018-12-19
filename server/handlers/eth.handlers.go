@@ -117,12 +117,19 @@ func GetGasPrice(c *gin.Context) {
 		log.Println(err)
 	}
 
-	response := responses.GasPriceResponse
-	response.GasPrice =  gasPrice.Int64()
+	response := new(responses.GasPriceResponse)
+	response.GasPrice = gasPrice.Int64()
 
 	c.JSON(http.StatusOK, response)
 }
 
+// @Summary return balance of specific token in ETH node
+// @Description return balance of specific token in ETH node
+// @Produce  application/json
+// @Param   nodeType     path    string     true        "type of node"
+// @Success 200 {array} responses.GasPriceResponse
+// @Router /gasPrice/{nodeType} [get]
+// GetBalance return gas price of specific node
 func GetTokenBalance(c *gin.Context) {
 
 	address := c.Param("address")
@@ -139,16 +146,20 @@ func GetTokenBalance(c *gin.Context) {
 		log.Println(err)
 	}
 
-	balance, err := instance.BalanceOf(nil, common.HexToAddress(address))
-
+	localBalance, err := instance.BalanceOf(nil, common.HexToAddress(address))
 	if err != nil {
 		log.Println(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"balance": balance})
+	tokenBalance := float64(localBalance.Uint64()) / math.Pow(10, 18)
+
+	response := new(responses.TokenBalanceResponse)
+	response.TokenBalance = tokenBalance
+
+	c.JSON(http.StatusOK, response)
 }
 
-// Send Tx
+//not Working yet on production
 func SendTX(c *gin.Context) {
 
 	client := ClientDial(c.Param("nodeType"))
@@ -179,7 +190,7 @@ func SendTX(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"response": tx.Hash().Hex()})
 }
 
-// get client
+// node connection
 func ClientRpc(param string) *ethrpc.EthRPC {
 	if param == "etc" {
 		return etcClient
