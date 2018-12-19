@@ -6,6 +6,12 @@ definitions:
         example: 0
         type: number
     type: object
+  responses.GasPriceResponse:
+    properties:
+      gasPrice:
+        example: 0
+        type: integer
+    type: object
   responses.TransactionFeeResponse:
     properties:
       fee:
@@ -50,7 +56,7 @@ paths:
       summary: ETH/ETC balance of account
   /gasPrice/{nodeType}:
     get:
-      description: return Amount of ETH that you need to send a transaction
+      description: return balance of specific token in ETH node
       parameters:
       - description: type of node
         in: path
@@ -64,9 +70,9 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.TransactionFeeResponse'
+              $ref: '#/definitions/responses.GasPriceResponse'
             type: array
-      summary: return gas price of specific node
+      summary: return balance of specific token in ETH node
   /transactionFee/{nodeType}:
     get:
       description: return Amount of ETH that you need to send a transaction

@@ -1,12 +1,12 @@
 package main
 
 import (
+	_ "../docs"
 	"github.com/button-tech/utils-node-tool/server/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	_ "../docs"
 )
 
 func main() {

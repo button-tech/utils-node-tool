@@ -54,11 +54,11 @@
         },
         "/gasPrice/{nodeType}": {
             "get": {
-                "description": "return Amount of ETH that you need to send a transaction",
+                "description": "return balance of specific token in ETH node",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "return gas price of specific node",
+                "summary": "return balance of specific token in ETH node",
                 "parameters": [
                     {
                         "type": "string",
@@ -74,7 +74,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                                "$ref": "#/definitions/responses.GasPriceResponse"
                             }
                         }
                     }
@@ -117,6 +117,15 @@
             "properties": {
                 "balance": {
                     "type": "number",
+                    "example": 0
+                }
+            }
+        },
+        "responses.GasPriceResponse": {
+            "type": "object",
+            "properties": {
+                "gasPrice": {
+                    "type": "integer",
                     "example": 0
                 }
             }
