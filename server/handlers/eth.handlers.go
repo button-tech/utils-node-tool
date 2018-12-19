@@ -81,7 +81,7 @@ func GetBalance(c *gin.Context) {
 // @Param   nodeType     path    string     true        "type of node"
 // @Success 200 {array} responses.TransactionFeeResponse
 // @Router /transactionFee/{nodeType} [get]
-// GetBalance return balance of account in ETH for specific node
+// GetBalance return Amount of ETH that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
 	client := ClientRpc(c.Param("nodeType"))
@@ -100,6 +100,13 @@ func GetTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// @Summary return gas price of specific node
+// @Description return Amount of ETH that you need to send a transaction
+// @Produce  application/json
+// @Param   nodeType     path    string     true        "type of node"
+// @Success 200 {array} responses.GasPriceResponse
+// @Router /gasPrice/{nodeType} [get]
+// GetBalance return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
 	client := ClientRpc(c.Param("nodeType"))
@@ -110,7 +117,10 @@ func GetGasPrice(c *gin.Context) {
 		log.Println(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"gas_price": gasPrice.Int64()})
+	response := responses.GasPriceResponse
+	response.GasPrice =  gasPrice.Int64()
+
+	c.JSON(http.StatusOK, response)
 }
 
 func GetTokenBalance(c *gin.Context) {

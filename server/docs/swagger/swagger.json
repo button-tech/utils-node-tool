@@ -1,0 +1,134 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is BUTTON Node API responseModels documentation",
+        "title": "Swagger BUTTON Node API",
+        "contact": {
+            "name": "API Support",
+            "email": "nk"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/v2",
+    "paths": {
+        "/balance/{nodeType}/{address}": {
+            "get": {
+                "description": "return balance of account in ETH for specific node",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "ETH/ETC balance of account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "type of node",
+                        "name": "nodeType",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.BalanceResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gasPrice/{nodeType}": {
+            "get": {
+                "description": "return Amount of ETH that you need to send a transaction",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "return gas price of specific node",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "type of node",
+                        "name": "nodeType",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/transactionFee/{nodeType}": {
+            "get": {
+                "description": "return Amount of ETH that you need to send a transaction",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "return Amount of ETH that you need to send a transaction",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "type of node",
+                        "name": "nodeType",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "responses.BalanceResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number",
+                    "example": 0
+                }
+            }
+        },
+        "responses.TransactionFeeResponse": {
+            "type": "object",
+            "properties": {
+                "fee": {
+                    "type": "number",
+                    "example": 0
+                }
+            }
+        }
+    }
+}
