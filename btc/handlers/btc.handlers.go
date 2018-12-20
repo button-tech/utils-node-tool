@@ -6,6 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
+	"os"
+)
+
+var (
+	btcURL = os.Getenv("BTC_NODE")
 )
 
 // @Summary BTC balance of account
@@ -18,7 +23,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	utxos, err := req.Get("https://insight.bitpay.com/api/addr/" + address + "/utxo")
+	utxos, err := req.Get(btcURL + "/api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
 	}
