@@ -16,7 +16,7 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/balance/{nodeType}/{address}": {
+        "/eth/balance/{address}": {
             "get": {
                 "description": "return balance of account in ETH for specific node",
                 "produces": [
@@ -24,13 +24,6 @@
                 ],
                 "summary": "ETH/ETC balance of account",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "type of node",
-                        "name": "nodeType",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "address",
@@ -52,22 +45,13 @@
                 }
             }
         },
-        "/gasPrice/{nodeType}": {
+        "/eth/gasPrice": {
             "get": {
-                "description": "return balance of specific token in ETH node",
+                "description": "return Amount of ETH that you need to send a transaction",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "return balance of specific token in ETH node",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "type of node",
-                        "name": "nodeType",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "return gas price of specific node",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -81,22 +65,49 @@
                 }
             }
         },
-        "/transactionFee/{nodeType}": {
+        "/eth/tokenBalance/{token}/{address}": {
+            "get": {
+                "description": "return balance of specific token in ETH node",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "return balance of specific token in ETH node",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TokenBalanceResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/eth/transactionFee": {
             "get": {
                 "description": "return Amount of ETH that you need to send a transaction",
                 "produces": [
                     "application/json"
                 ],
                 "summary": "return Amount of ETH that you need to send a transaction",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "type of node",
-                        "name": "nodeType",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -126,6 +137,15 @@
             "properties": {
                 "gasPrice": {
                     "type": "integer",
+                    "example": 0
+                }
+            }
+        },
+        "responses.TokenBalanceResponse": {
+            "type": "object",
+            "properties": {
+                "tokenBalance": {
+                    "type": "number",
                     "example": 0
                 }
             }

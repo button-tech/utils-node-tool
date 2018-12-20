@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"context"
-	"encoding/hex"
-	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -11,26 +9,21 @@ import (
 	"strconv"
 
 	"github.com/button-tech/utils-node-tool/eth/abi"
-	"github.com/button-tech/utils-node-tool/server/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/eth/handlers/responseModels"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
 )
 
 var (
 	ethURL = os.Getenv("ETH_NODE")
-	etcURL = os.Getenv("ETC_NODE")
 )
 
 var (
 	ctx = context.Background()
 
 	ethClient = ethrpc.New(ethURL)
-
-	etcClient = ethrpc.New(etcURL)
 
 	tokensAddresses = map[string]string{
 
@@ -47,19 +40,16 @@ var (
 	}
 )
 
-// @Summary ETH/ETC balance of account
+// @Summary ETH balance of account
 // @Description return balance of account in ETH for specific node
 // @Produce  application/json
-// @Param   nodeType     path    string     true        "type of node"
 // @Param   address        path    string     true        "address"
 // @Success 200 {array} responses.BalanceResponse
-// @Router /balance/{nodeType}/{address} [get]
+// @Router /eth/balance/{address} [get]
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
-	client := ClientRpc(c.Param("nodeType"))
-
-	balance, err := client.EthGetBalance(c.Param("address"), "latest")
+	balance, err := ethClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
 		log.Println(err)
 	}
@@ -71,22 +61,17 @@ func GetBalance(c *gin.Context) {
 	response.Balance = ethBalance
 
 	c.JSON(http.StatusOK, response)
-
-	return
 }
 
 // @Summary return Amount of ETH that you need to send a transaction
 // @Description return Amount of ETH that you need to send a transaction
 // @Produce  application/json
-// @Param   nodeType     path    string     true        "type of node"
 // @Success 200 {array} responses.TransactionFeeResponse
-// @Router /transactionFee/{nodeType} [get]
+// @Router /eth/transactionFee [get]
 // GetBalance return Amount of ETH that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
-	client := ClientRpc(c.Param("nodeType"))
-
-	gasPrice, err := client.EthGasPrice()
+	gasPrice, err := ethClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
@@ -103,15 +88,12 @@ func GetTxFee(c *gin.Context) {
 // @Summary return gas price of specific node
 // @Description return Amount of ETH that you need to send a transaction
 // @Produce  application/json
-// @Param   nodeType     path    string     true        "type of node"
 // @Success 200 {array} responses.GasPriceResponse
-// @Router /gasPrice/{nodeType} [get]
+// @Router /eth/gasPrice [get]
 // GetBalance return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
-	client := ClientRpc(c.Param("nodeType"))
-
-	gasPrice, err := client.EthGasPrice()
+	gasPrice, err := ethClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
@@ -126,10 +108,11 @@ func GetGasPrice(c *gin.Context) {
 // @Summary return balance of specific token in ETH node
 // @Description return balance of specific token in ETH node
 // @Produce  application/json
-// @Param   nodeType     path    string     true        "type of node"
-// @Success 200 {array} responses.GasPriceResponse
-// @Router /gasPrice/{nodeType} [get]
-// GetBalance return gas price of specific node
+// @Param   address        path    string     true        "address"
+// @Param   token        path    string     true        "token"
+// @Success 200 {array} responses.TokenBalanceResponse
+// @Router /eth/tokenBalance/{token}/{address} [get]
+// GetBalance return Amount of ETH ERC20 token
 func GetTokenBalance(c *gin.Context) {
 
 	address := c.Param("address")
@@ -151,7 +134,9 @@ func GetTokenBalance(c *gin.Context) {
 		log.Println(err)
 	}
 
-	tokenBalance := float64(localBalance.Uint64()) / math.Pow(10, 18)
+	floatTokenBalance, _ := strconv.ParseFloat(localBalance.String(), 64)
+
+	tokenBalance := floatTokenBalance / math.Pow(10, 18)
 
 	response := new(responses.TokenBalanceResponse)
 	response.TokenBalance = tokenBalance
@@ -160,56 +145,35 @@ func GetTokenBalance(c *gin.Context) {
 }
 
 //not Working yet on production
-func SendTX(c *gin.Context) {
+// func SendTX(c *gin.Context) {
 
-	client := ClientDial(c.Param("nodeType"))
+// 	ethClient, err := ethclient.Dial(ethURL)
+// 	if err != nil {
+// 		log.Println(err)
+// 	}
 
-	type DataToSend struct {
-		Raw_tx string `json:"raw_tx"`
-	}
-	var data DataToSend
+// 	type DataToSend struct {
+// 		RawTx string `json:"RawTx"`
+// 	}
+// 	var data DataToSend
 
-	c.BindJSON(&data)
+// 	c.BindJSON(&data)
 
-	fmt.Println("RawTx: " + data.Raw_tx)
+// 	fmt.Println("RawTx: " + data.RawTx)
 
-	rawTxBytes, err := hex.DecodeString(data.Raw_tx)
-	if err != nil {
-		fmt.Println(err)
-	}
+// 	rawTxBytes, err := hex.DecodeString(data.RawTx)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	tx := new(types.Transaction)
-	rlp.DecodeBytes(rawTxBytes, &tx)
+// 	tx := new(types.Transaction)
+// 	rlp.DecodeBytes(rawTxBytes, &tx)
 
-	err = client.SendTransaction(context.Background(), tx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("tx sent: %s", tx.Hash().Hex())
+// 	err = ethClient.SendTransaction(context.Background(), tx)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	fmt.Printf("tx sent: %s", tx.Hash().Hex())
 
-	c.JSON(http.StatusOK, gin.H{"response": tx.Hash().Hex()})
-}
-
-// node connection
-func ClientRpc(param string) *ethrpc.EthRPC {
-	if param == "etc" {
-		return etcClient
-	}
-	return ethClient
-}
-
-func ClientDial(param string) *ethclient.Client {
-	if param == "etc" {
-		client, err := ethclient.Dial(etcURL)
-		if err != nil {
-			log.Println(err)
-		}
-		return client
-	}
-
-	client, err := ethclient.Dial(ethURL)
-	if err != nil {
-		log.Println(err)
-	}
-	return client
-}
+// 	c.JSON(http.StatusOK, gin.H{"response": tx.Hash().Hex()})
+// }

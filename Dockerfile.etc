@@ -1,0 +1,16 @@
+FROM golang
+
+RUN mkdir /app
+ADD etc /app/
+WORKDIR /app/etc
+
+RUN go get github.com/gin-gonic/gin
+RUN go get github.com/ethereum/go-ethereum/common
+RUN go get github.com/ethereum/go-ethereum/ethclient
+RUN go get github.com/onrik/ethrpc
+
+RUN go build -o main .
+
+EXPOSE 8545
+
+CMD ["/app/etc/main"]

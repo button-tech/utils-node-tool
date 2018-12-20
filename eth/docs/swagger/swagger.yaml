@@ -12,6 +12,12 @@ definitions:
         example: 0
         type: integer
     type: object
+  responses.TokenBalanceResponse:
+    properties:
+      tokenBalance:
+        example: 0
+        type: number
+    type: object
   responses.TransactionFeeResponse:
     properties:
       fee:
@@ -30,15 +36,10 @@ info:
   title: Swagger BUTTON Node API
   version: "1.0"
 paths:
-  /balance/{nodeType}/{address}:
+  /eth/balance/{address}:
     get:
       description: return balance of account in ETH for specific node
       parameters:
-      - description: type of node
-        in: path
-        name: nodeType
-        required: true
-        type: string
       - description: address
         in: path
         name: address
@@ -54,15 +55,9 @@ paths:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: ETH/ETC balance of account
-  /gasPrice/{nodeType}:
+  /eth/gasPrice:
     get:
-      description: return balance of specific token in ETH node
-      parameters:
-      - description: type of node
-        in: path
-        name: nodeType
-        required: true
-        type: string
+      description: return Amount of ETH that you need to send a transaction
       produces:
       - application/json
       responses:
@@ -72,16 +67,34 @@ paths:
             items:
               $ref: '#/definitions/responses.GasPriceResponse'
             type: array
-      summary: return balance of specific token in ETH node
-  /transactionFee/{nodeType}:
+      summary: return gas price of specific node
+  /eth/tokenBalance/{token}/{address}:
     get:
-      description: return Amount of ETH that you need to send a transaction
+      description: return balance of specific token in ETH node
       parameters:
-      - description: type of node
+      - description: address
         in: path
-        name: nodeType
+        name: address
         required: true
         type: string
+      - description: token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.TokenBalanceResponse'
+            type: array
+      summary: return balance of specific token in ETH node
+  /eth/transactionFee:
+    get:
+      description: return Amount of ETH that you need to send a transaction
       produces:
       - application/json
       responses:

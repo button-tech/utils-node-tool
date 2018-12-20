@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "./docs"
-	"github.com/button-tech/utils-node-tool/server/handlers"
+	"github.com/button-tech/utils-node-tool/eth/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
@@ -32,15 +32,15 @@ func main() {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/balance/:nodeType/:address", handlers.GetBalance)
+	r.GET("/eth/balance/:address", handlers.GetBalance)
 
-	r.GET("/transactionFee/:nodeType", handlers.GetTxFee)
+	r.GET("/eth/transactionFee", handlers.GetTxFee)
 
-	r.GET("/gasPrice/:nodeType", handlers.GetGasPrice)
+	r.GET("/eth/gasPrice/", handlers.GetGasPrice)
 
-	r.GET("/tokenBalance/:token/:address", handlers.GetTokenBalance)
+	r.GET("/eth/tokenBalance/:token/:address", handlers.GetTokenBalance)
 
-	r.POST("/sendTx/:nodeType", handlers.SendTX)
+	// r.POST("/eth/sendTx/", handlers.SendTX)
 
 	r.Run(":8080")
 }

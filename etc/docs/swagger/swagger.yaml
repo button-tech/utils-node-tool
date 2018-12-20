@@ -1,0 +1,78 @@
+basePath: /
+definitions:
+  responses.BalanceResponse:
+    properties:
+      balance:
+        example: 0
+        type: number
+    type: object
+  responses.GasPriceResponse:
+    properties:
+      gasPrice:
+        example: 0
+        type: integer
+    type: object
+  responses.TransactionFeeResponse:
+    properties:
+      fee:
+        example: 0
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: nk
+    name: API Support
+  description: This is BUTTON Node API responseModels documentation
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Swagger BUTTON Node API
+  version: "1.0"
+paths:
+  /etc/balance/{address}:
+    get:
+      description: return balance of account in ETC for specific node
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalanceResponse'
+            type: array
+      summary: ETC balance of account
+  /etc/gasPrice:
+    get:
+      description: return Amount of ETC that you need to send a transaction
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.GasPriceResponse'
+            type: array
+      summary: return gas price of specific node
+  /etc/transactionFee:
+    get:
+      description: return Amount of ETC that you need to send a transaction
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.TransactionFeeResponse'
+            type: array
+      summary: return Amount of ETC that you need to send a transaction
+swagger: "2.0"
