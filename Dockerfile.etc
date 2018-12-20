@@ -1,16 +1,21 @@
 FROM golang
 
 RUN mkdir /app
-ADD etc /app/
-WORKDIR /app/etc
+ADD etc /app
+WORKDIR /app
 
 RUN go get github.com/gin-gonic/gin
 RUN go get github.com/ethereum/go-ethereum/common
 RUN go get github.com/ethereum/go-ethereum/ethclient
 RUN go get github.com/onrik/ethrpc
+RUN go get github.com/button-tech/utils-node-tool/etc/handlers
+RUN go get github.com/gin-gonic/contrib/cors
+RUN go get github.com/swaggo/gin-swagger
+RUN go get github.com/swaggo/gin-swagger/swaggerFiles
+RUN go get github.com/swaggo/swag
 
 RUN go build -o main .
 
 EXPOSE 8545
 
-CMD ["/app/etc/main"]
+CMD ["/app/main"]
