@@ -1,0 +1,38 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is BUTTON Node API responseModels documentation",
+        "title": "Swagger BUTTON Node API",
+        "contact": {
+            "name": "API Support",
+            "email": "nk"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/btc/balance/{address}": {
+            "get": {
+                "description": "return balance of account in BTC for specific node",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "BTC balance of account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ]
+            }
+        }
+    }
+}
