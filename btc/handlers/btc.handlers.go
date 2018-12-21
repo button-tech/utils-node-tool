@@ -7,6 +7,7 @@ import (
 	"github.com/imroc/req"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 var (
@@ -17,41 +18,53 @@ var (
 // @Description return balance of account in BTC for specific node
 // @Produce  application/json
 // @Param   address        path    string     true        "address"
+// @Success 200 {array} responses.BalanceResponse
 // @Router /btc/balance/{address} [get]
 // GetBalance return balance of account in BTC for specific node
 func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
+	balance, err := req.Get(btcURL + "/api/addr/" + address + "/balance")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	balanceFloat, _ := strconv.ParseFloat(balance.String(),64)
+
+	balanceFloat *= 0.00000001
+
+	response := new(responses.BalanceResponse)
+
+	response.Balance = balanceFloat
+
+	c.JSON(http.StatusOK, response)
+
+}
+
+
+// @Summary BTC UTXO of account
+// @Description return UTXO of account
+// @Produce  application/json
+// @Param   address        path    string     true        "address"
+// @Success 200 {array} responses.UTXOResponse
+// @Router /btc/utxo/{address} [get]
+// GetUTXO return UTXO of account
+func GetUTXO(c *gin.Context){
+
+	address := c.Param("address")
 	utxos, err := req.Get(btcURL + "/api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	type UTXO struct {
-		Address string `json:"address"`
-		Txid string `json:txid"`
-		Vout int `json:"vout"`
-		ScriptPubKey string `json:"scriptPubKey"`
-		Amount float64 `json:"amount"`
-		Satoshis int `json:"satoshis"`
-		Height int `json:"height"`
-		Confirmations int `json:"confirmations"`
-	}
+	var respArr []responses.UTXO
 
-	var respArr []UTXO
 	utxos.ToJSON(&respArr)
 
-	var balance float64
+	response := new(responses.UTXOResponse)
 
-	for _, j := range respArr {
-		balance += j.Amount
-	}
-
-	response := new(responses.BalanceResponse)
-
-	response.Balance = balance
+	response.Utxo = respArr
 
 	c.JSON(http.StatusOK, response)
-
 }

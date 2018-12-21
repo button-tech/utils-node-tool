@@ -1,4 +1,37 @@
 basePath: /
+definitions:
+  responses.BalanceResponse:
+    properties:
+      balance:
+        example: 0
+        type: number
+    type: object
+  responses.UTXO:
+    properties:
+      address:
+        type: string
+      amount:
+        type: number
+      confirmations:
+        type: integer
+      height:
+        type: integer
+      satoshis:
+        type: integer
+      scriptPubKey:
+        type: string
+      txid:
+        type: string
+      vout:
+        type: integer
+    type: object
+  responses.UTXOResponse:
+    properties:
+      utxo:
+        items:
+          $ref: '#/definitions/responses.UTXO'
+        type: array
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -22,5 +55,31 @@ paths:
         type: string
       produces:
       - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalanceResponse'
+            type: array
       summary: BTC balance of account
+  /btc/utxo/{address}:
+    get:
+      description: return UTXO of account
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.UTXOResponse'
+            type: array
+      summary: BTC UTXO of account
 swagger: "2.0"

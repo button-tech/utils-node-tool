@@ -34,5 +34,7 @@ func main() {
 
 	r.GET("/btc/balance/:address", handlers.GetBalance)
 
+	r.GET("/btc/utxo/:address", handlers.GetUTXO)
+
 	r.Run(":8080")
 }
