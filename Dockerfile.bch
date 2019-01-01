@@ -14,6 +14,5 @@ RUN go get github.com/imroc/req
 
 RUN go build -o main .
 
-EXPOSE 8545
 
 CMD ["/app/main"]

@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/button-tech/utils-node-tool/btc/handlers/responseModels"
-	"github.com/gin-gonic/gin"
-	"github.com/imroc/req"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/button-tech/utils-node-tool/btc/handlers/responseModels"
+	"github.com/gin-gonic/gin"
+	"github.com/imroc/req"
 )
 
 var (
@@ -25,12 +26,12 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(btcURL + "/api/addr/" + address + "/balance")
+	balance, err := req.Get(btcURL + "/insight-api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	balanceFloat, _ := strconv.ParseFloat(balance.String(),64)
+	balanceFloat, _ := strconv.ParseFloat(balance.String(), 64)
 
 	balanceFloat *= 0.00000001
 
@@ -42,7 +43,6 @@ func GetBalance(c *gin.Context) {
 
 }
 
-
 // @Summary BTC UTXO of account
 // @Description return UTXO of account
 // @Produce  application/json
@@ -50,10 +50,10 @@ func GetBalance(c *gin.Context) {
 // @Success 200 {array} responses.UTXOResponse
 // @Router /btc/utxo/{address} [get]
 // GetUTXO return UTXO of account
-func GetUTXO(c *gin.Context){
+func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
-	utxos, err := req.Get(btcURL + "/api/addr/" + address + "/utxo")
+	utxos, err := req.Get(btcURL + "/insight-api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
 	}
