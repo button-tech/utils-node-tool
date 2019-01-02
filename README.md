@@ -16,22 +16,12 @@
 
 
 
-### ETH on localhost:
+### Run on localhost:
 ```
 # ETH_NODE=ADDRESS_OF_NODE go run eth/main.go
 ```
-### ETH in docker container
+### Run in Docker container
 ```
 # docker build -f Dockerfile.eth -t name .
 # docker run -p 8080:8080 -e ETH_NODE=ADDRESS_OF_NODE name
-```
-
-### ETC on localhost:
-```
-# ETC_NODE=ADDRESS_OF_NODE go run etc/main.go
-```
-### ETH in docker container
-```
-# docker build -f Dockerfile.etc -t name .
-# docker run -p 8080:8080 -e ETC_NODE=ADDRESS_OF_NODE name
 ```

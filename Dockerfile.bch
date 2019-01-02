@@ -14,5 +14,4 @@ RUN go get github.com/imroc/req
 
 RUN go build -o main .
 
-
 CMD ["/app/main"]

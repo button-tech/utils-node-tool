@@ -16,6 +16,4 @@ RUN go get github.com/swaggo/swag
 
 RUN go build -o main .
 
-EXPOSE 8545
-
 CMD ["/app/main"]
