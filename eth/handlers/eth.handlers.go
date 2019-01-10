@@ -47,7 +47,7 @@ func GetBalance(c *gin.Context) {
 // @Produce  application/json
 // @Success 200 {array} responses.TransactionFeeResponse
 // @Router /eth/transactionFee [get]
-// GetBalance return Amount of ETH that you need to send a transaction
+// GetTxFee return Amount of ETH that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
 	gasPrice, err := storage.EthClient.EthGasPrice()
@@ -69,7 +69,7 @@ func GetTxFee(c *gin.Context) {
 // @Produce  application/json
 // @Success 200 {array} responses.GasPriceResponse
 // @Router /eth/gasPrice [get]
-// GetBalance return gas price of specific node
+// GetGasPrice return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
 	gasPrice, err := storage.EthClient.EthGasPrice()
@@ -91,7 +91,7 @@ func GetGasPrice(c *gin.Context) {
 // @Param   token        path    string     true        "token"
 // @Success 200 {array} responses.TokenBalanceResponse
 // @Router /eth/tokenBalance/{token}/{address} [get]
-// GetBalance return Amount of ETH ERC20 token
+// GetTokenBalancereturn Amount of ETH ERC20 token
 func GetTokenBalance(c *gin.Context) {
 
 	address := c.Param("address")

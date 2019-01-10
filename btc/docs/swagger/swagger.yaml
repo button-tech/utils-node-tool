@@ -6,6 +6,12 @@ definitions:
         example: 0
         type: number
     type: object
+  responses.TransactionFeeResponse:
+    properties:
+      fee:
+        example: 0
+        type: number
+    type: object
   responses.UTXO:
     properties:
       address:
@@ -63,6 +69,19 @@ paths:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: BTC balance of account
+  /btc/transactionFee:
+    get:
+      description: return Amount of ETH that you need to send a transaction
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.TransactionFeeResponse'
+            type: array
+      summary: return Amount of ETH that you need to send a transaction
   /btc/utxo/{address}:
     get:
       description: return UTXO of account

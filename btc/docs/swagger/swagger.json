@@ -45,6 +45,26 @@
                 }
             }
         },
+        "/btc/transactionFee": {
+            "get": {
+                "description": "return Amount of ETH that you need to send a transaction",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "return Amount of ETH that you need to send a transaction",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/btc/utxo/{address}": {
             "get": {
                 "description": "return UTXO of account",
@@ -80,6 +100,15 @@
             "type": "object",
             "properties": {
                 "balance": {
+                    "type": "number",
+                    "example": 0
+                }
+            }
+        },
+        "responses.TransactionFeeResponse": {
+            "type": "object",
+            "properties": {
+                "fee": {
                     "type": "number",
                     "example": 0
                 }

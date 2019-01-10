@@ -36,5 +36,7 @@ func main() {
 
 	r.GET("/btc/utxo/:address", handlers.GetUTXO)
 
+	r.GET("/btc/transactionFee", handlers.GetTxFee)
+
 	r.Run(":8080")
 }

@@ -43,6 +43,40 @@ func GetBalance(c *gin.Context) {
 
 }
 
+// @Summary return Amount of BTC that you need to send a transaction
+// @Description return Amount of BTC that you need to send a transaction
+// @Produce  application/json
+// @Success 200 {array} responses.TransactionFeeResponse
+// @Router /btc/transactionFee [get]
+// GetBalance return Amount of BTC that you need to send a transaction
+func GetTxFee(c *gin.Context) {
+
+	type BTCFee struct {
+		FastestFee  int `json:"fastestFee"`
+		HalfHourFee int `json:"halfHourFee"`
+		HourFee     int `json:"hourFee"`
+	}
+
+	var feeObj BTCFee
+
+	fee, err := req.Get("https://bitcoinfees.earn.com/api/v1/fees/recommended")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fee.ToJSON(&feeObj)
+
+	feeFloat, err := strconv.ParseFloat(strconv.Itoa(feeObj.FastestFee), 64)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	response := new(responses.TransactionFeeResponse)
+	response.Fee = feeFloat
+
+	c.JSON(http.StatusOK, response)
+}
+
 // @Summary BTC UTXO of account
 // @Description return UTXO of account
 // @Produce  application/json

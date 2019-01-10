@@ -19,7 +19,7 @@ var (
 
 var (
 	ctx       = context.Background()
-	EtcClient = ethrpc.New(etcURL)
+	etcClient = ethrpc.New(etcURL)
 )
 
 // @Summary ETC balance of account
@@ -50,7 +50,7 @@ func GetBalance(c *gin.Context) {
 // @Produce  application/json
 // @Success 200 {array} responses.TransactionFeeResponse
 // @Router /etc/transactionFee [get]
-// GetBalance return Amount of ETC that you need to send a transaction
+// GetTxFee return Amount of ETC that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
 	gasPrice, err := etcClient.EthGasPrice()
@@ -72,7 +72,7 @@ func GetTxFee(c *gin.Context) {
 // @Produce  application/json
 // @Success 200 {array} responses.GasPriceResponse
 // @Router /etc/gasPrice [get]
-// GetBalance return gas price of specific node
+// GetGasPrice return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
 	gasPrice, err := etcClient.EthGasPrice()
