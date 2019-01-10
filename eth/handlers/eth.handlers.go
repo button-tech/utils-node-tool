@@ -5,40 +5,19 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"os"
 	"strconv"
+	"sync"
 
 	"github.com/button-tech/utils-node-tool/eth/abi"
 	"github.com/button-tech/utils-node-tool/eth/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/eth/multiBalance"
+	"github.com/button-tech/utils-node-tool/eth/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
-	"github.com/onrik/ethrpc"
 )
 
-var (
-	ethURL = os.Getenv("ETH_NODE")
-)
-
-var (
-	ctx = context.Background()
-
-	ethClient = ethrpc.New(ethURL)
-
-	tokensAddresses = map[string]string{
-
-		"bix":  "0xb3104b4b9da82025e8b9f8fb28b3553ce2f67069",
-		"btm":  "0xcb97e65f07da24d46bcdd078ebebd7c6e6e3d750",
-		"omg":  "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07",
-		"elf":  "0xbf2179859fc6d5bee9bf9158632dc51678a4100e",
-		"bnb":  "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
-		"tusd": "0x8dd5fbce2f6a956c3022ba3663759011dd51e73e",
-		"knc":  "0xdd974d5c2e2928dea5f71b9825b8b646686bd200",
-		"zrx":  "0xe41d2489571d322189246dafa5ebde1f4699f498",
-		"rep":  "0x1985365e9f78359a9B6AD760e32412f4a445E862",
-		"gnt":  "0xa74476443119A942dE498590Fe1f2454d7D4aC0d",
-	}
-)
+var ctx = context.Background()
 
 // @Summary ETH balance of account
 // @Description return balance of account in ETH for specific node
@@ -49,7 +28,7 @@ var (
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
-	balance, err := ethClient.EthGetBalance(c.Param("address"), "latest")
+	balance, err := storage.EthClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
 		log.Println(err)
 	}
@@ -71,7 +50,7 @@ func GetBalance(c *gin.Context) {
 // GetBalance return Amount of ETH that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
-	gasPrice, err := ethClient.EthGasPrice()
+	gasPrice, err := storage.EthClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
@@ -93,7 +72,7 @@ func GetTxFee(c *gin.Context) {
 // GetBalance return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
-	gasPrice, err := ethClient.EthGasPrice()
+	gasPrice, err := storage.EthClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
@@ -119,12 +98,12 @@ func GetTokenBalance(c *gin.Context) {
 
 	token := c.Param("token")
 
-	ethClient, err := ethclient.Dial(ethURL)
+	ethClient, err := ethclient.Dial(storage.EthURL)
 	if err != nil {
 		log.Println(err)
 	}
 
-	instance, err := abi.NewToken(common.HexToAddress(tokensAddresses[token]), ethClient)
+	instance, err := abi.NewToken(common.HexToAddress(storage.TokensAddresses[token]), ethClient)
 	if err != nil {
 		log.Println(err)
 	}
@@ -140,6 +119,39 @@ func GetTokenBalance(c *gin.Context) {
 
 	response := new(responses.TokenBalanceResponse)
 	response.TokenBalance = tokenBalance
+
+	c.JSON(http.StatusOK, response)
+}
+
+// @Summary ETH balance of accounts by list
+// @Description return balances of accounts in ETH
+// @Produce  application/json
+// @Param addressesArray     body string true "addressesArray"
+// @Success 200 {array} responses.BalancesResponse
+// @Router /eth/balances [post]
+// GetBalanceForMultipleAdresses return balances of accounts in ETH
+func GetBalanceForMultipleAdresses(c *gin.Context) {
+
+	type Request struct {
+		AddressesArray []string `json:"addressesArray"`
+	}
+
+	req := new(Request)
+
+	balances := multiBalance.New()
+
+	c.BindJSON(&req)
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < len(req.AddressesArray); i++ {
+		wg.Add(1)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+	}
+	wg.Wait()
+
+	response := new(responses.BalancesResponse)
+	response.Balances = balances.Result
 
 	c.JSON(http.StatusOK, response)
 }

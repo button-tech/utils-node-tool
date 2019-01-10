@@ -19,7 +19,7 @@ var (
 
 var (
 	ctx       = context.Background()
-	etcClient = ethrpc.New(etcURL)
+	EtcClient = ethrpc.New(etcURL)
 )
 
 // @Summary ETC balance of account

@@ -1,8 +1,7 @@
 package responses
 
-
 type BalanceResponse struct {
-	Balance    float64 `json:"balance" example:"0"`
+	Balance float64 `json:"balance" example:"0"`
 }
 
 type TransactionFeeResponse struct {
@@ -15,4 +14,8 @@ type GasPriceResponse struct {
 
 type TokenBalanceResponse struct {
 	TokenBalance float64 `json:"tokenBalance" example:"0"`
+}
+
+type BalancesResponse struct {
+	Balances map[string]float64 `json:"balances"`
 }

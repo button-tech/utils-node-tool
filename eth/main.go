@@ -40,6 +40,8 @@ func main() {
 
 	r.GET("/eth/tokenBalance/:token/:address", handlers.GetTokenBalance)
 
+	r.POST("/eth/balances", handlers.GetBalanceForMultipleAdresses)
+
 	// r.POST("/eth/sendTx/", handlers.SendTX)
 
 	r.Run(":8080")

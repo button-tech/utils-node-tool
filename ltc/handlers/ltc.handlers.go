@@ -30,7 +30,7 @@ func GetBalance(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	balanceFloat, _ := strconv.ParseFloat(balance.String(),64)
+	balanceFloat, _ := strconv.ParseFloat(balance.String(), 64)
 
 	balanceFloat *= 0.00000001
 
@@ -42,7 +42,6 @@ func GetBalance(c *gin.Context) {
 
 }
 
-
 // @Summary LTC UTXO of account
 // @Description return UTXO of account
 // @Produce  application/json
@@ -50,7 +49,7 @@ func GetBalance(c *gin.Context) {
 // @Success 200 {array} responses.UTXOResponse
 // @Router /ltc/utxo/{address} [get]
 // GetUTXO return UTXO of account
-func GetUTXO(c *gin.Context){
+func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
 	utxos, err := req.Get(ltcURL + "/api/addr/" + address + "/utxo")

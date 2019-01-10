@@ -6,6 +6,11 @@ definitions:
         example: 0
         type: number
     type: object
+  responses.BalancesResponse:
+    properties:
+      balances:
+        type: object
+    type: object
   responses.GasPriceResponse:
     properties:
       gasPrice:
@@ -54,7 +59,27 @@ paths:
             items:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
-      summary: ETH/ETC balance of account
+      summary: ETH balance of account
+  /eth/balances:
+    post:
+      description: return balances of accounts in ETH
+      parameters:
+      - description: addressesArray
+        in: body
+        name: addressesArray
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalancesResponse'
+            type: array
+      summary: ETH balance of accounts by list
   /eth/gasPrice:
     get:
       description: return Amount of ETH that you need to send a transaction
