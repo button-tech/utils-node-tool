@@ -88,22 +88,22 @@ func GetGasPrice(c *gin.Context) {
 // @Description return balance of specific token in ETH node
 // @Produce  application/json
 // @Param   address        path    string     true        "address"
-// @Param   token        path    string     true        "token"
+// @Param   sc-address        path    string     true        "sc-address"
 // @Success 200 {array} responses.TokenBalanceResponse
-// @Router /eth/tokenBalance/{token}/{address} [get]
-// GetTokenBalancereturn Amount of ETH ERC20 token
+// @Router /eth/tokenBalance/{sc-address}/{address} [get]
+// GetTokenBalance return Amount of ETH ERC20 token
 func GetTokenBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	token := c.Param("token")
+	smartContractAddress := c.Param("sc-address")
 
 	ethClient, err := ethclient.Dial(storage.EthURL)
 	if err != nil {
 		log.Println(err)
 	}
 
-	instance, err := abi.NewToken(common.HexToAddress(storage.TokensAddresses[token]), ethClient)
+	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
 	if err != nil {
 		log.Println(err)
 	}

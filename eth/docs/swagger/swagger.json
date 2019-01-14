@@ -96,7 +96,7 @@
                 }
             }
         },
-        "/eth/tokenBalance/{token}/{address}": {
+        "/eth/tokenBalance/{sc-address}/{address}": {
             "get": {
                 "description": "return balance of specific token in ETH node",
                 "produces": [
@@ -113,8 +113,8 @@
                     },
                     {
                         "type": "string",
-                        "description": "token",
-                        "name": "token",
+                        "description": "sc-address",
+                        "name": "sc-address",
                         "in": "path",
                         "required": true
                     }

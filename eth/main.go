@@ -38,7 +38,7 @@ func main() {
 
 	r.GET("/eth/gasPrice/", handlers.GetGasPrice)
 
-	r.GET("/eth/tokenBalance/:token/:address", handlers.GetTokenBalance)
+	r.GET("/eth/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
 
 	r.POST("/eth/balances", handlers.GetBalanceForMultipleAdresses)
 
