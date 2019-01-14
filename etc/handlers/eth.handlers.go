@@ -34,6 +34,8 @@ func GetBalance(c *gin.Context) {
 	balance, err := etcClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 	floatBalance, _ := strconv.ParseFloat(balance.String(), 64)
 
@@ -57,6 +59,8 @@ func GetTxFee(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	fee := float64(gasPrice.Int64()*21000) / math.Pow(10, 18)
@@ -79,6 +83,8 @@ func GetGasPrice(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	response := new(responses.GasPriceResponse)

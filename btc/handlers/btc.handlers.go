@@ -29,6 +29,8 @@ func GetBalance(c *gin.Context) {
 	balance, err := req.Get(btcURL + "/insight-api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	balanceFloat, _ := strconv.ParseFloat(balance.String(), 64)
@@ -62,6 +64,8 @@ func GetTxFee(c *gin.Context) {
 	fee, err := req.Get("https://bitcoinfees.earn.com/api/v1/fees/recommended")
 	if err != nil {
 		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	fee.ToJSON(&feeObj)
@@ -69,6 +73,8 @@ func GetTxFee(c *gin.Context) {
 	feeFloat, err := strconv.ParseFloat(strconv.Itoa(feeObj.FastestFee), 64)
 	if err != nil {
 		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	response := new(responses.TransactionFeeResponse)
@@ -90,6 +96,8 @@ func GetUTXO(c *gin.Context) {
 	utxos, err := req.Get(btcURL + "/insight-api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	var respArr []responses.UTXO

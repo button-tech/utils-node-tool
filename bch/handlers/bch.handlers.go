@@ -28,6 +28,8 @@ func GetBalance(c *gin.Context) {
 	balance, err := req.Get(bchURL + "/api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	balanceFloat, _ := strconv.ParseFloat(balance.String(), 64)
@@ -53,6 +55,8 @@ func GetUTXO(c *gin.Context) {
 	utxos, err := req.Get(bchURL + "/api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	var respArr []responses.UTXO

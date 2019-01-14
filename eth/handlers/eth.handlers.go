@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"log"
 	"math"
 	"net/http"
 	"strconv"
@@ -15,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 var ctx = context.Background()
@@ -31,6 +31,8 @@ func GetBalance(c *gin.Context) {
 	balance, err := storage.EthClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 	floatBalance, _ := strconv.ParseFloat(balance.String(), 64)
 
@@ -54,6 +56,8 @@ func GetTxFee(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	fee := float64(gasPrice.Int64()*21000) / math.Pow(10, 18)
@@ -76,6 +80,8 @@ func GetGasPrice(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	response := new(responses.GasPriceResponse)
@@ -101,16 +107,22 @@ func GetTokenBalance(c *gin.Context) {
 	ethClient, err := ethclient.Dial(storage.EthURL)
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	localBalance, err := instance.BalanceOf(nil, common.HexToAddress(address))
 	if err != nil {
 		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
 	}
 
 	floatTokenBalance, _ := strconv.ParseFloat(localBalance.String(), 64)
