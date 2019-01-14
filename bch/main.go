@@ -30,7 +30,7 @@ func main() {
 	r.Use(cors.Default())
 	gin.SetMode(gin.ReleaseMode)
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/bch/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/bch/balance/:address", handlers.GetBalance)
 
