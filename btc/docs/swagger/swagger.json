@@ -13,7 +13,6 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
         "/btc/balance/{address}": {
@@ -47,11 +46,11 @@
         },
         "/btc/transactionFee": {
             "get": {
-                "description": "return Amount of ETH that you need to send a transaction",
+                "description": "return Amount of BTC that you need to send a transaction",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "return Amount of ETH that you need to send a transaction",
+                "summary": "return Amount of BTC that you need to send a transaction",
                 "responses": {
                     "200": {
                         "description": "OK",

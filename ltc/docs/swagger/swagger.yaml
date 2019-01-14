@@ -32,7 +32,6 @@ definitions:
           $ref: '#/definitions/responses.UTXO'
         type: array
     type: object
-host: localhost:8080
 info:
   contact:
     email: nk

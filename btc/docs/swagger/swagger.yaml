@@ -38,7 +38,6 @@ definitions:
           $ref: '#/definitions/responses.UTXO'
         type: array
     type: object
-host: localhost:8080
 info:
   contact:
     email: nk
@@ -71,7 +70,7 @@ paths:
       summary: BTC balance of account
   /btc/transactionFee:
     get:
-      description: return Amount of ETH that you need to send a transaction
+      description: return Amount of BTC that you need to send a transaction
       produces:
       - application/json
       responses:
@@ -81,7 +80,7 @@ paths:
             items:
               $ref: '#/definitions/responses.TransactionFeeResponse'
             type: array
-      summary: return Amount of ETH that you need to send a transaction
+      summary: return Amount of BTC that you need to send a transaction
   /btc/utxo/{address}:
     get:
       description: return UTXO of account
