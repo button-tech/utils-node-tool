@@ -2,10 +2,10 @@ package multiBalance
 
 import (
 	"fmt"
-	"github.com/button-tech/utils-node-tool/eth/storage"
-	"math"
 	"strconv"
 	"sync"
+	"github.com/imroc/req"
+	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 )
 
 type Data struct {
@@ -31,12 +31,12 @@ func (ds *Data) Set(key string, value float64) {
 
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
-	balance, err := storage.EthClient.EthGetBalance(addr, "latest")
+	balance, err := req.Get(storage.BtcURL + "/insight-api/addr/" + addr + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	floatBalance, _ := strconv.ParseFloat(balance.String(), 64)
-	ethBalance := floatBalance / math.Pow(10, 18)
-	r.Set(addr, ethBalance)
+	balanceFloat, _ := strconv.ParseFloat(balance.String(), 64)
+	balanceFloat *= 0.00000001
+	r.Set(addr, balanceFloat)
 }

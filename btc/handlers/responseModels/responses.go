@@ -22,3 +22,8 @@ type UTXOResponse struct {
 type TransactionFeeResponse struct {
 	Fee float64 `json:"fee" example:"0"`
 }
+
+type BalancesResponse struct {
+	Balances map[string]float64 `json:"balances"`
+}
+

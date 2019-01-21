@@ -44,6 +44,37 @@
                 }
             }
         },
+        "/btc/balances": {
+            "post": {
+                "description": "return balances of accounts in BTC",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "BTC balance of accounts by list",
+                "parameters": [
+                    {
+                        "description": "addressesArray",
+                        "name": "addressesArray",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.BalancesResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/btc/transactionFee": {
             "get": {
                 "description": "return Amount of BTC that you need to send a transaction",
@@ -101,6 +132,14 @@
                 "balance": {
                     "type": "number",
                     "example": 0
+                }
+            }
+        },
+        "responses.BalancesResponse": {
+            "type": "object",
+            "properties": {
+                "balances": {
+                    "type": "object"
                 }
             }
         },

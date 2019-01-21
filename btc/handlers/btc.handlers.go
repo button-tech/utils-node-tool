@@ -3,17 +3,16 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/button-tech/utils-node-tool/btc/handlers/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
+	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
+	"sync"
+	"github.com/button-tech/utils-node-tool/btc/handlers/multiBalance"
 )
 
-var (
-	btcURL = os.Getenv("BTC_NODE")
-)
 
 // @Summary BTC balance of account
 // @Description return balance of account in BTC for specific node
@@ -26,7 +25,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(btcURL + "/insight-api/addr/" + address + "/balance")
+	balance, err := req.Get(storage.BtcURL + "/insight-api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -93,7 +92,7 @@ func GetTxFee(c *gin.Context) {
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
-	utxos, err := req.Get(btcURL + "/insight-api/addr/" + address + "/utxo")
+	utxos, err := req.Get(storage.BtcURL + "/insight-api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -108,5 +107,39 @@ func GetUTXO(c *gin.Context) {
 
 	response.Utxo = respArr
 
+	c.JSON(http.StatusOK, response)
+}
+
+
+
+// @Summary BTC balance of accounts by list
+// @Description return balances of accounts in BTC
+// @Produce  application/json
+// @Param addressesArray     body string true "addressesArray"
+// @Success 200 {array} responses.BalancesResponse
+// @Router /btc/balances [post]
+// GetBalanceForMultipleAdresses return balances of accounts in BTC
+func GetBalanceForMultipleAdresses(c *gin.Context) {
+
+	type Request struct {
+		AddressesArray []string `json:"addressesArray"`
+	}
+
+	req := new(Request)
+
+	balances := multiBalance.New()
+
+	c.BindJSON(&req)
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < len(req.AddressesArray); i++ {
+		wg.Add(1)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+	}
+	wg.Wait()
+
+	response := new(responses.BalancesResponse)
+	response.Balances = balances.Result
 	c.JSON(http.StatusOK, response)
 }

@@ -37,5 +37,7 @@ func main() {
 
 	r.GET("/btc/transactionFee", handlers.GetTxFee)
 
+	r.POST("/btc/balances", handlers.GetBalanceForMultipleAdresses)
+
 	r.Run(":8080")
 }
