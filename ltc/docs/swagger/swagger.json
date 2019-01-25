@@ -44,6 +44,26 @@
                 }
             }
         },
+        "/ltc/transactionFee": {
+            "get": {
+                "description": "return LTC fee",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "LTC fee",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/ltc/utxo/{address}": {
             "get": {
                 "description": "return UTXO of account",
@@ -79,6 +99,15 @@
             "type": "object",
             "properties": {
                 "balance": {
+                    "type": "number",
+                    "example": 0
+                }
+            }
+        },
+        "responses.TransactionFeeResponse": {
+            "type": "object",
+            "properties": {
+                "fee": {
                     "type": "number",
                     "example": 0
                 }

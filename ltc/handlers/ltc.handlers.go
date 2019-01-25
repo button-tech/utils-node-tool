@@ -44,6 +44,22 @@ func GetBalance(c *gin.Context) {
 
 }
 
+// @Summary LTC fee
+// @Description return LTC fee
+// @Produce  application/json
+// @Success 200 {array} responses.TransactionFeeResponse
+// @Router /ltc/transactionFee [get]
+// GetBalance return LTC fee
+func GetTxFee(c *gin.Context) {
+
+	resp := new(responses.TransactionFeeResponse)
+
+	// (148 * 1(input) + 34 * 2 (output))/1000 * 0.001(minimal LTC)
+	resp.Fee = 0.218 * 0.002
+
+	c.JSON(http.StatusOK, resp)
+}
+
 // @Summary LTC UTXO of account
 // @Description return UTXO of account
 // @Produce  application/json

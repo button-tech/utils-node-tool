@@ -93,7 +93,7 @@ paths:
               $ref: '#/definitions/responses.BalancesResponse'
             type: array
       summary: BTC balance of accounts by list
-  /btc/transactionFee:
+  /btc/bestTransactionFee:
     get:
       description: return Amount of BTC that you need to send a transaction
       produces:
@@ -106,6 +106,19 @@ paths:
               $ref: '#/definitions/responses.TransactionFeeResponse'
             type: array
       summary: return Amount of BTC that you need to send a transaction
+  /btc/transactionFee:
+    get:
+      description: return BTC fee
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.TransactionFeeResponse'
+            type: array
+      summary: BTC fee
   /btc/utxo/{address}:
     get:
       description: return UTXO of account

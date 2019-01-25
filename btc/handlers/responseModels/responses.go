@@ -26,4 +26,3 @@ type TransactionFeeResponse struct {
 type BalancesResponse struct {
 	Balances map[string]float64 `json:"balances"`
 }
-

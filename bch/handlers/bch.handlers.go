@@ -42,6 +42,22 @@ func GetBalance(c *gin.Context) {
 
 }
 
+// @Summary BCH fee of tx
+// @Description return fee of tx in BCH
+// @Produce  application/json
+// @Success 200 {array} responses.TransactionFeeResponse
+// @Router /bch/transactionFee [get]
+// GetBalance return fee of tx in BCH
+func GetTxFee(c *gin.Context) {
+
+	resp := new(responses.TransactionFeeResponse)
+
+	// (148 * 1(input) + 34 * 2 (output))/1000 * 0.0001(minimal BCH)
+	resp.Fee = 0.218 * 0.0001
+
+	c.JSON(http.StatusOK, resp)
+}
+
 // @Summary BCH UTXO of account
 // @Description return UTXO of account
 // @Produce  application/json

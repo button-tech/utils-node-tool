@@ -6,6 +6,12 @@ definitions:
         example: 0
         type: number
     type: object
+  responses.TransactionFeeResponse:
+    properties:
+      fee:
+        example: 0
+        type: number
+    type: object
   responses.UTXO:
     properties:
       address:
@@ -62,6 +68,19 @@ paths:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: LTC balance of account
+  /ltc/transactionFee:
+    get:
+      description: return LTC fee
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.TransactionFeeResponse'
+            type: array
+      summary: LTC fee
   /ltc/utxo/{address}:
     get:
       description: return UTXO of account

@@ -2,10 +2,10 @@ package multiBalance
 
 import (
 	"fmt"
+	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
+	"github.com/imroc/req"
 	"strconv"
 	"sync"
-	"github.com/imroc/req"
-	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 )
 
 type Data struct {

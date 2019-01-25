@@ -6,6 +6,12 @@ definitions:
         example: 0
         type: number
     type: object
+  responses.FeeResponse:
+    properties:
+      balance:
+        example: 0
+        type: number
+    type: object
   responses.UTXO:
     properties:
       address:
@@ -62,6 +68,25 @@ paths:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: BCH balance of account
+  /bch/transactionFee:
+    get:
+      description: return fee of tx in BCH
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.FeeResponse'
+            type: array
+      summary: BCH fee of tx
   /bch/utxo/{address}:
     get:
       description: return UTXO of account

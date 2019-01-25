@@ -5,14 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/button-tech/utils-node-tool/btc/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/btc/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
-	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 	"sync"
-	"github.com/button-tech/utils-node-tool/btc/handlers/multiBalance"
 )
-
 
 // @Summary BTC balance of account
 // @Description return balance of account in BTC for specific node
@@ -48,9 +47,9 @@ func GetBalance(c *gin.Context) {
 // @Description return Amount of BTC that you need to send a transaction
 // @Produce  application/json
 // @Success 200 {array} responses.TransactionFeeResponse
-// @Router /btc/transactionFee [get]
+// @Router /btc/bestTransactionFee [get]
 // GetBalance return Amount of BTC that you need to send a transaction
-func GetTxFee(c *gin.Context) {
+func GetBextTxFee(c *gin.Context) {
 
 	type BTCFee struct {
 		FastestFee  int `json:"fastestFee"`
@@ -82,6 +81,22 @@ func GetTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// @Summary BTC fee
+// @Description return BTC fee
+// @Produce  application/json
+// @Success 200 {array} responses.TransactionFeeResponse
+// @Router /btc/transactionFee [get]
+// GetBalance return BTC fee
+func GetTxFee(c *gin.Context) {
+
+	resp := new(responses.TransactionFeeResponse)
+
+	// (148 * 1(input) + 34 * 2 (output))/1000 * 0.0001(minimal BTC)
+	resp.Fee = 0.218 * 0.0001
+
+	c.JSON(http.StatusOK, resp)
+}
+
 // @Summary BTC UTXO of account
 // @Description return UTXO of account
 // @Produce  application/json
@@ -109,8 +124,6 @@ func GetUTXO(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
-
-
 
 // @Summary BTC balance of accounts by list
 // @Description return balances of accounts in BTC

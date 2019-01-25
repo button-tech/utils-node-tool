@@ -44,6 +44,35 @@
                 }
             }
         },
+        "/bch/transactionFee": {
+            "get": {
+                "description": "return fee of tx in BCH",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "BCH fee of tx",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.FeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/bch/utxo/{address}": {
             "get": {
                 "description": "return UTXO of account",
@@ -76,6 +105,15 @@
     },
     "definitions": {
         "responses.BalanceResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number",
+                    "example": 0
+                }
+            }
+        },
+        "responses.FeeResponse": {
             "type": "object",
             "properties": {
                 "balance": {

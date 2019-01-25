@@ -75,13 +75,33 @@
                 }
             }
         },
-        "/btc/transactionFee": {
+        "/btc/bestTransactionFee": {
             "get": {
                 "description": "return Amount of BTC that you need to send a transaction",
                 "produces": [
                     "application/json"
                 ],
                 "summary": "return Amount of BTC that you need to send a transaction",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/btc/transactionFee": {
+            "get": {
+                "description": "return BTC fee",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "BTC fee",
                 "responses": {
                     "200": {
                         "description": "OK",

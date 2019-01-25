@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "./docs"
+	_ "github.com/button-tech/utils-node-tool/etc/docs"
 	"github.com/button-tech/utils-node-tool/etc/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"

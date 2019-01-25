@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "./docs"
+	_ "github.com/button-tech/utils-node-tool/ltc/docs"
 	"github.com/button-tech/utils-node-tool/ltc/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -34,6 +34,8 @@ func main() {
 	r.GET("/ltc/balance/:address", handlers.GetBalance)
 
 	r.GET("/ltc/utxo/:address", handlers.GetUTXO)
+
+	r.GET("/ltc/transactionFee", handlers.GetTxFee)
 
 	r.Run(":8080")
 }

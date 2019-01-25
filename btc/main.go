@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "./docs"
+	_ "github.com/button-tech/utils-node-tool/btc/docs"
 	"github.com/button-tech/utils-node-tool/btc/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -36,6 +36,8 @@ func main() {
 	r.GET("/btc/utxo/:address", handlers.GetUTXO)
 
 	r.GET("/btc/transactionFee", handlers.GetTxFee)
+
+	r.GET("/btc/bestTransactionFee", handlers.GetBextTxFee)
 
 	r.POST("/btc/balances", handlers.GetBalanceForMultipleAdresses)
 
