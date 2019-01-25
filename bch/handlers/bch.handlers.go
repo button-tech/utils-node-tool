@@ -42,12 +42,12 @@ func GetBalance(c *gin.Context) {
 
 }
 
-// @Summary BCH fee of tx
-// @Description return fee of tx in BCH
+// @Summary BCH fee
+// @Description return BCH fee
 // @Produce  application/json
 // @Success 200 {array} responses.TransactionFeeResponse
 // @Router /bch/transactionFee [get]
-// GetBalance return fee of tx in BCH
+// GetBalance return BCH fee
 func GetTxFee(c *gin.Context) {
 
 	resp := new(responses.TransactionFeeResponse)
