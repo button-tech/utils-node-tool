@@ -46,7 +46,7 @@ func GetBalance(c *gin.Context) {
 // @Description return BCH fee
 // @Produce  application/json
 // @Success 200 {array} responses.TransactionFeeResponse
-// @Router /ltc/transactionFee [get]
+// @Router /bch/transactionFee [get]
 // GetBalance return BCH fee
 func GetTxFee(c *gin.Context) {
 
