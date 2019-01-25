@@ -68,6 +68,19 @@ paths:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: BCH balance of account
+  /bch/transactionFee:
+    get:
+      description: return BCH fee
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.TransactionFeeResponse'
+            type: array
+      summary: BCH fee
   /bch/utxo/{address}:
     get:
       description: return UTXO of account
@@ -87,17 +100,4 @@ paths:
               $ref: '#/definitions/responses.UTXOResponse'
             type: array
       summary: BCH UTXO of account
-  /ltc/transactionFee:
-    get:
-      description: return BCH fee
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/responses.TransactionFeeResponse'
-            type: array
-      summary: BCH fee
 swagger: "2.0"

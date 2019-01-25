@@ -44,6 +44,26 @@
                 }
             }
         },
+        "/bch/transactionFee": {
+            "get": {
+                "description": "return BCH fee",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "BCH fee",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/bch/utxo/{address}": {
             "get": {
                 "description": "return UTXO of account",
@@ -67,26 +87,6 @@
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/responses.UTXOResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/ltc/transactionFee": {
-            "get": {
-                "description": "return BCH fee",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "BCH fee",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/responses.TransactionFeeResponse"
                             }
                         }
                     }
