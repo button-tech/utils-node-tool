@@ -184,7 +184,7 @@ func GetTokenBalancesForMultipleAdresses(c *gin.Context) {
 
 	req := new(Request)
 
-	balances := multiBalance.New()
+	balances := multiBalance.NewToken()
 
 	c.BindJSON(&req)
 
@@ -196,11 +196,7 @@ func GetTokenBalancesForMultipleAdresses(c *gin.Context) {
 	}
 	wg.Wait()
 
-	response := new(responses.BalancesResponse)
-
-	response.Balances = balances.Result
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, balances.ArrayOfBalances)
 }
 
 //not Working yet on production

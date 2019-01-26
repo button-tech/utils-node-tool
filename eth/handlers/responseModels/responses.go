@@ -19,3 +19,7 @@ type TokenBalanceResponse struct {
 type BalancesResponse struct {
 	Balances map[string]float64 `json:"balances"`
 }
+
+type TokenMultResponse struct {
+	Balances map[string]float64 `json:"balances"`
+}

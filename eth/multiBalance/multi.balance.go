@@ -32,6 +32,7 @@ func (ds *Data) Set(key string, value float64) {
 	ds.set(key, value)
 }
 
+
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 	balance, err := storage.EthClient.EthGetBalance(addr, "latest")
@@ -44,7 +45,35 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	r.Set(addr, ethBalance)
 }
 
-func TokenWorker(wg *sync.WaitGroup, address string, smartContractAddress string, r *Data) {
+
+// Tokens
+
+type TokenData struct {
+	sync.Mutex
+	Balances map[string]float64
+	ArrayOfBalances []map[string]float64
+
+}
+
+func NewToken() *TokenData {
+	return &TokenData{
+		Balances: make(map[string]float64),
+	}
+}
+
+func (ds *TokenData) set(key string, value float64) {
+	ds.Balances[key] = value
+	ds.ArrayOfBalances = append(ds.ArrayOfBalances, map[string]float64{key:value})
+}
+
+func (ds *TokenData) Set(key string, value float64) {
+	ds.Lock()
+	defer ds.Unlock()
+	ds.set(key, value)
+}
+
+
+func TokenWorker(wg *sync.WaitGroup, address string, smartContractAddress string, r *TokenData) {
 	defer wg.Done()
 	ethClient, err := ethclient.Dial(storage.EthURL)
 	if err != nil {
