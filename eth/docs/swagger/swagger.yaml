@@ -116,6 +116,26 @@ paths:
               $ref: '#/definitions/responses.TokenBalanceResponse'
             type: array
       summary: return balance of specific token in ETH node
+  /eth/tokenBalances:
+    post:
+      description: return tokens balances of account
+      parameters:
+      - description: addressesArray
+        in: body
+        name: addressesArray
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalancesResponse'
+            type: array
+      summary: ETH ERC-20 tokens balance of account by list of smart contracts
   /eth/transactionFee:
     get:
       description: return Amount of ETH that you need to send a transaction

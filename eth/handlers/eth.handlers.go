@@ -168,6 +168,41 @@ func GetBalanceForMultipleAdresses(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// @Summary ETH ERC-20 tokens balance of account by list of smart contracts
+// @Description return tokens balances of account
+// @Produce  application/json
+// @Param addressesArray     body string true "addressesArray"
+// @Success 200 {array} responses.BalancesResponse
+// @Router /eth/tokenBalances [post]
+// GetBalanceForMultipleAdresses return tokens balances of account
+func GetTokenBalancesForMultipleAdresses(c *gin.Context) {
+
+	type Request struct {
+		OwnerAddress   string   `json:"ownerAddress""`
+		SmartAddresses []string `json:"smartAddresses"`
+	}
+
+	req := new(Request)
+
+	balances := multiBalance.New()
+
+	c.BindJSON(&req)
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < len(req.SmartAddresses); i++ {
+		wg.Add(1)
+		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], balances)
+	}
+	wg.Wait()
+
+	response := new(responses.BalancesResponse)
+
+	response.Balances = balances.Result
+
+	c.JSON(http.StatusOK, response)
+}
+
 //not Working yet on production
 // func SendTX(c *gin.Context) {
 

@@ -131,6 +131,37 @@
                 }
             }
         },
+        "/eth/tokenBalances": {
+            "post": {
+                "description": "return tokens balances of account",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "ETH ERC-20 tokens balance of account by list of smart contracts",
+                "parameters": [
+                    {
+                        "description": "addressesArray",
+                        "name": "addressesArray",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.BalancesResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/eth/transactionFee": {
             "get": {
                 "description": "return Amount of ETH that you need to send a transaction",
