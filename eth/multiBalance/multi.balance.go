@@ -11,29 +11,22 @@ import (
 	"sync"
 )
 
-type Data struct {
+type Balances struct {
 	sync.Mutex
-	Result map[string]float64
+	Result []map[string]float64 // eth -> ["account":balance] tokens -> ["smart contract addr": token balance]
 }
 
-func New() *Data {
-	return &Data{
-		Result: make(map[string]float64),
-	}
+func (ds *Balances) set(key string, value float64) {
+	ds.Result = append(ds.Result, map[string]float64{key: value})
 }
 
-func (ds *Data) set(key string, value float64) {
-	ds.Result[key] = value
-}
-
-func (ds *Data) Set(key string, value float64) {
+func (ds *Balances) Set(key string, value float64) {
 	ds.Lock()
 	defer ds.Unlock()
 	ds.set(key, value)
 }
 
-
-func Worker(wg *sync.WaitGroup, addr string, r *Data) {
+func Worker(wg *sync.WaitGroup, addr string, r *Balances) {
 	defer wg.Done()
 	balance, err := storage.EthClient.EthGetBalance(addr, "latest")
 	if err != nil {
@@ -45,36 +38,10 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	r.Set(addr, ethBalance)
 }
 
+func TokenWorker(wg *sync.WaitGroup, address string, smartContractAddress string, r *Balances) {
 
-// Tokens
-
-type TokenData struct {
-	sync.Mutex
-	Balances map[string]float64
-	ArrayOfBalances []map[string]float64
-
-}
-
-func NewToken() *TokenData {
-	return &TokenData{
-		Balances: make(map[string]float64),
-	}
-}
-
-func (ds *TokenData) set(key string, value float64) {
-	ds.Balances[key] = value
-	ds.ArrayOfBalances = append(ds.ArrayOfBalances, map[string]float64{key:value})
-}
-
-func (ds *TokenData) Set(key string, value float64) {
-	ds.Lock()
-	defer ds.Unlock()
-	ds.set(key, value)
-}
-
-
-func TokenWorker(wg *sync.WaitGroup, address string, smartContractAddress string, r *TokenData) {
 	defer wg.Done()
+
 	ethClient, err := ethclient.Dial(storage.EthURL)
 	if err != nil {
 		fmt.Println(err)

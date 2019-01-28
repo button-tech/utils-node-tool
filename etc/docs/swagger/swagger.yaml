@@ -6,6 +6,15 @@ definitions:
         example: 0
         type: number
     type: object
+  responses.BalancesResponse:
+    properties:
+      balances:
+        example:
+        - "0"
+        items:
+          type: '&{%!s(token.Pos=300) string float64}'
+        type: array
+    type: object
   responses.GasPriceResponse:
     properties:
       gasPrice:
@@ -48,6 +57,26 @@ paths:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: ETC balance of account
+  /etc/balances:
+    post:
+      description: return balances of accounts in ETC
+      parameters:
+      - description: addressesArray
+        in: body
+        name: addressesArray
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalancesResponse'
+            type: array
+      summary: ETC balance of accounts by list
   /etc/gasPrice:
     get:
       description: return Amount of ETC that you need to send a transaction

@@ -35,7 +35,9 @@ func main() {
 
 	r.GET("/etc/transactionFee", handlers.GetTxFee)
 
-	r.GET("/etc/gasPrice/", handlers.GetGasPrice)
+	r.GET("/etc/gasPrice", handlers.GetGasPrice)
+
+	r.POST("/etc/balances", handlers.GetBalances)
 
 	// r.POST("/eth/sendTx/", handlers.SendTX)
 

@@ -39,9 +39,9 @@ func main() {
 
 	r.GET("/eth/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
 
-	r.POST("/eth/balances", handlers.GetBalanceForMultipleAdresses)
+	r.POST("/eth/balances", handlers.GetBalances)
 
-	r.POST("/eth/tokenBalances", handlers.GetTokenBalancesForMultipleAdresses)
+	r.POST("/eth/tokenBalances", handlers.GetTokenBalances)
 
 	// r.POST("/eth/sendTx/", handlers.SendTX)
 

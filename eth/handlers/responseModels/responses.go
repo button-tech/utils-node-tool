@@ -12,14 +12,6 @@ type GasPriceResponse struct {
 	GasPrice int64 `json:"gasPrice" example:"0"`
 }
 
-type TokenBalanceResponse struct {
-	TokenBalance float64 `json:"tokenBalance" example:"0"`
-}
-
 type BalancesResponse struct {
-	Balances map[string]float64 `json:"balances"`
-}
-
-type TokenMultResponse struct {
-	Balances map[string]float64 `json:"balances"`
+	Balances []map[string]float64 `json:"balances" example:"0"`
 }

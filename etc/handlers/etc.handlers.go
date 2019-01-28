@@ -5,22 +5,16 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"os"
 	"strconv"
 
 	"github.com/button-tech/utils-node-tool/etc/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/etc/multiBalance"
+	. "github.com/button-tech/utils-node-tool/etc/storage"
 	"github.com/gin-gonic/gin"
-	"github.com/onrik/ethrpc"
+	"sync"
 )
 
-var (
-	etcURL = os.Getenv("ETC_NODE")
-)
-
-var (
-	ctx       = context.Background()
-	etcClient = ethrpc.New(etcURL)
-)
+var ctx = context.Background()
 
 // @Summary ETC balance of account
 // @Description return balance of account in ETC for specific node
@@ -31,7 +25,7 @@ var (
 // GetBalance return balance of account in ETC for specific node
 func GetBalance(c *gin.Context) {
 
-	balance, err := etcClient.EthGetBalance(c.Param("address"), "latest")
+	balance, err := EtcClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -55,7 +49,7 @@ func GetBalance(c *gin.Context) {
 // GetTxFee return Amount of ETC that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
-	gasPrice, err := etcClient.EthGasPrice()
+	gasPrice, err := EtcClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
@@ -79,7 +73,7 @@ func GetTxFee(c *gin.Context) {
 // GetGasPrice return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
-	gasPrice, err := etcClient.EthGasPrice()
+	gasPrice, err := EtcClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
@@ -91,6 +85,36 @@ func GetGasPrice(c *gin.Context) {
 	response.GasPrice = gasPrice.Int64()
 
 	c.JSON(http.StatusOK, response)
+}
+
+// @Summary ETC balance of accounts by list
+// @Description return balances of accounts in ETC
+// @Produce  application/json
+// @Param addressesArray     body string true "addressesArray"
+// @Success 200 {array} responses.BalancesResponse
+// @Router /etc/balances [post]
+// GetBalanceForMultipleAdresses return balances of accounts in ETC
+func GetBalances(c *gin.Context) {
+
+	type Request struct {
+		AddressesArray []string `json:"addressesArray"`
+	}
+
+	req := new(Request)
+
+	var balances multiBalance.Balances
+
+	c.BindJSON(&req)
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < len(req.AddressesArray); i++ {
+		wg.Add(1)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], &balances)
+	}
+	wg.Wait()
+
+	c.JSON(http.StatusOK, balances.Result)
 }
 
 //not Working yet on production

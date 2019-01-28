@@ -132,7 +132,7 @@ func GetUTXO(c *gin.Context) {
 // @Success 200 {array} responses.BalancesResponse
 // @Router /btc/balances [post]
 // GetBalanceForMultipleAdresses return balances of accounts in BTC
-func GetBalanceForMultipleAdresses(c *gin.Context) {
+func GetBalances(c *gin.Context) {
 
 	type Request struct {
 		AddressesArray []string `json:"addressesArray"`

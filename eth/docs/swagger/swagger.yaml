@@ -9,19 +9,17 @@ definitions:
   responses.BalancesResponse:
     properties:
       balances:
-        type: object
+        example:
+        - "0"
+        items:
+          type: '&{%!s(token.Pos=300) string float64}'
+        type: array
     type: object
   responses.GasPriceResponse:
     properties:
       gasPrice:
         example: 0
         type: integer
-    type: object
-  responses.TokenBalanceResponse:
-    properties:
-      tokenBalance:
-        example: 0
-        type: number
     type: object
   responses.TransactionFeeResponse:
     properties:
@@ -113,7 +111,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.TokenBalanceResponse'
+              $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: return balance of specific token in ETH node
   /eth/tokenBalances:

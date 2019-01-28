@@ -95,7 +95,7 @@ func GetGasPrice(c *gin.Context) {
 // @Produce  application/json
 // @Param   address        path    string     true        "address"
 // @Param   sc-address        path    string     true        "sc-address"
-// @Success 200 {array} responses.TokenBalanceResponse
+// @Success 200 {array} responses.BalanceResponse
 // @Router /eth/tokenBalance/{sc-address}/{address} [get]
 // GetTokenBalance return Amount of ETH ERC20 token
 func GetTokenBalance(c *gin.Context) {
@@ -129,8 +129,9 @@ func GetTokenBalance(c *gin.Context) {
 
 	tokenBalance := floatTokenBalance / math.Pow(10, 18)
 
-	response := new(responses.TokenBalanceResponse)
-	response.TokenBalance = tokenBalance
+	response := new(responses.BalanceResponse)
+
+	response.Balance = tokenBalance
 
 	c.JSON(http.StatusOK, response)
 }
@@ -142,7 +143,7 @@ func GetTokenBalance(c *gin.Context) {
 // @Success 200 {array} responses.BalancesResponse
 // @Router /eth/balances [post]
 // GetBalanceForMultipleAdresses return balances of accounts in ETH
-func GetBalanceForMultipleAdresses(c *gin.Context) {
+func GetBalances(c *gin.Context) {
 
 	type Request struct {
 		AddressesArray []string `json:"addressesArray"`
@@ -150,7 +151,7 @@ func GetBalanceForMultipleAdresses(c *gin.Context) {
 
 	req := new(Request)
 
-	balances := multiBalance.New()
+	var balances multiBalance.Balances
 
 	c.BindJSON(&req)
 
@@ -158,14 +159,11 @@ func GetBalanceForMultipleAdresses(c *gin.Context) {
 
 	for i := 0; i < len(req.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], &balances)
 	}
 	wg.Wait()
 
-	response := new(responses.BalancesResponse)
-	response.Balances = balances.Result
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, balances.Result)
 }
 
 // @Summary ETH ERC-20 tokens balance of account by list of smart contracts
@@ -175,7 +173,7 @@ func GetBalanceForMultipleAdresses(c *gin.Context) {
 // @Success 200 {array} responses.BalancesResponse
 // @Router /eth/tokenBalances [post]
 // GetBalanceForMultipleAdresses return tokens balances of account
-func GetTokenBalancesForMultipleAdresses(c *gin.Context) {
+func GetTokenBalances(c *gin.Context) {
 
 	type Request struct {
 		OwnerAddress   string   `json:"ownerAddress""`
@@ -184,7 +182,7 @@ func GetTokenBalancesForMultipleAdresses(c *gin.Context) {
 
 	req := new(Request)
 
-	balances := multiBalance.NewToken()
+	var balances multiBalance.Balances
 
 	c.BindJSON(&req)
 
@@ -192,11 +190,11 @@ func GetTokenBalancesForMultipleAdresses(c *gin.Context) {
 
 	for i := 0; i < len(req.SmartAddresses); i++ {
 		wg.Add(1)
-		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], balances)
+		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], &balances)
 	}
 	wg.Wait()
 
-	c.JSON(http.StatusOK, balances.ArrayOfBalances)
+	c.JSON(http.StatusOK, balances.Result)
 }
 
 //not Working yet on production

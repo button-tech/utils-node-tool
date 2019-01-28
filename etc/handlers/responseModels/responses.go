@@ -11,3 +11,7 @@ type TransactionFeeResponse struct {
 type GasPriceResponse struct {
 	GasPrice int64 `json:"gasPrice" example:"0"`
 }
+
+type BalancesResponse struct {
+	Balances []map[string]float64 `json:"balances" example:"0"`
+}

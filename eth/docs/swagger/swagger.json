@@ -124,7 +124,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.TokenBalanceResponse"
+                                "$ref": "#/definitions/responses.BalanceResponse"
                             }
                         }
                     }
@@ -197,7 +197,13 @@
             "type": "object",
             "properties": {
                 "balances": {
-                    "type": "object"
+                    "type": "array",
+                    "items": {
+                        "type": "\u0026{%!s(token.Pos=300) string float64}"
+                    },
+                    "example": [
+                        "0"
+                    ]
                 }
             }
         },
@@ -206,15 +212,6 @@
             "properties": {
                 "gasPrice": {
                     "type": "integer",
-                    "example": 0
-                }
-            }
-        },
-        "responses.TokenBalanceResponse": {
-            "type": "object",
-            "properties": {
-                "tokenBalance": {
-                    "type": "number",
                     "example": 0
                 }
             }
