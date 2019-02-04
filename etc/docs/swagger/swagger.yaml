@@ -3,8 +3,7 @@ definitions:
   responses.BalanceResponse:
     properties:
       balance:
-        example: 0
-        type: number
+        type: string
     type: object
   responses.BalancesResponse:
     properties:
@@ -12,7 +11,7 @@ definitions:
         example:
         - "0"
         items:
-          type: '&{%!s(token.Pos=300) string float64}'
+          type: '&{%!s(token.Pos=287) string float64}'
         type: array
     type: object
   responses.GasPriceResponse:

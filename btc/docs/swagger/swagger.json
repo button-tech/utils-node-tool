@@ -150,8 +150,8 @@
             "type": "object",
             "properties": {
                 "balance": {
-                    "type": "number",
-                    "example": 0
+                    "type": "string",
+                    "example": "0"
                 }
             }
         },

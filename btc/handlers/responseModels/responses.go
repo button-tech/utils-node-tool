@@ -12,7 +12,7 @@ type UTXO struct {
 }
 
 type BalanceResponse struct {
-	Balance float64 `json:"balance" example:"0"`
+	Balance string `json:"balance" example:"0"`
 }
 
 type UTXOResponse struct {

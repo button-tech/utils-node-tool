@@ -95,42 +95,6 @@
                 }
             }
         },
-        "/eth/tokenBalance/{sc-address}/{address}": {
-            "get": {
-                "description": "return balance of specific token in ETH node",
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "return balance of specific token in ETH node",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "address",
-                        "name": "address",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "sc-address",
-                        "name": "sc-address",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/responses.BalanceResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/eth/tokenBalances": {
             "post": {
                 "description": "return tokens balances of account",
@@ -188,8 +152,7 @@
             "type": "object",
             "properties": {
                 "balance": {
-                    "type": "number",
-                    "example": 0
+                    "type": "string"
                 }
             }
         },
@@ -199,7 +162,7 @@
                 "balances": {
                     "type": "array",
                     "items": {
-                        "type": "\u0026{%!s(token.Pos=300) string float64}"
+                        "type": "\u0026{%!s(token.Pos=287) string float64}"
                     },
                     "example": [
                         "0"

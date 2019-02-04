@@ -7,7 +7,6 @@ import (
 	"github.com/imroc/req"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 var (
@@ -32,11 +31,9 @@ func GetBalance(c *gin.Context) {
 		return
 	}
 
-	balanceFloat, _ := strconv.ParseFloat(balance.String(), 64)
-
 	response := new(responses.BalanceResponse)
 
-	response.Balance = balanceFloat
+	response.Balance = balance.String()
 
 	c.JSON(http.StatusOK, response)
 

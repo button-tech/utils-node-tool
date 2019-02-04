@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "github.com/button-tech/utils-node-tool/eth/docs"
-	"github.com/button-tech/utils-node-tool/eth/handlers"
+	_ "github.com/button-tech/utils-node-tool/waves/docs"
+	"github.com/button-tech/utils-node-tool/waves/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
@@ -29,21 +29,9 @@ func main() {
 	r.Use(cors.Default())
 	gin.SetMode(gin.ReleaseMode)
 
-	r.GET("/eth/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/waves/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/eth/balance/:address", handlers.GetBalance)
-
-	r.GET("/eth/transactionFee", handlers.GetTxFee)
-
-	r.GET("/eth/gasPrice/", handlers.GetGasPrice)
-
-	//r.GET("/eth/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
-
-	r.POST("/eth/balances", handlers.GetBalances)
-
-	r.POST("/eth/tokenBalances", handlers.GetTokenBalances)
-
-	// r.POST("/eth/sendTx/", handlers.SendTX)
+	r.GET("/waves/balance/:address", handlers.GetBalance)
 
 	r.Run(":8080")
 }

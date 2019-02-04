@@ -1,7 +1,7 @@
 package responses
 
 type BalanceResponse struct {
-	Balance float64 `json:"balance" example:"0"`
+	Balance string `json:"balance"`
 }
 
 type TransactionFeeResponse struct {

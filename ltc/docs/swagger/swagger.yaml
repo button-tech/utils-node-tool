@@ -3,8 +3,7 @@ definitions:
   responses.BalanceResponse:
     properties:
       balance:
-        example: 0
-        type: number
+        type: string
     type: object
   responses.TransactionFeeResponse:
     properties:

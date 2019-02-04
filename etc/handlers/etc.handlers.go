@@ -2,15 +2,13 @@ package handlers
 
 import (
 	"context"
-	"log"
-	"math"
-	"net/http"
-	"strconv"
-
 	"github.com/button-tech/utils-node-tool/etc/handlers/responseModels"
 	"github.com/button-tech/utils-node-tool/etc/multiBalance"
 	. "github.com/button-tech/utils-node-tool/etc/storage"
 	"github.com/gin-gonic/gin"
+	"log"
+	"math"
+	"net/http"
 	"sync"
 )
 
@@ -31,12 +29,10 @@ func GetBalance(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
-	floatBalance, _ := strconv.ParseFloat(balance.String(), 64)
-
-	ethBalance := floatBalance / math.Pow(10, 18)
 
 	response := new(responses.BalanceResponse)
-	response.Balance = ethBalance
+
+	response.Balance = balance.String()
 
 	c.JSON(http.StatusOK, response)
 }
