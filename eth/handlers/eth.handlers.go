@@ -6,9 +6,12 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/button-tech/utils-node-tool/eth/abi"
 	"github.com/button-tech/utils-node-tool/eth/handlers/responseModels"
 	"github.com/button-tech/utils-node-tool/eth/multiBalance"
 	"github.com/button-tech/utils-node-tool/eth/storage"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"log"
 )
@@ -92,44 +95,39 @@ func GetGasPrice(c *gin.Context) {
 // @Success 200 {array} responses.BalanceResponse
 // @Router /eth/tokenBalance/{sc-address}/{address} [get]
 // GetTokenBalance return Amount of ETH ERC20 token
+func GetTokenBalance(c *gin.Context) {
 
-//func GetTokenBalance(c *gin.Context) {
-//
-//	address := c.Param("address")
-//
-//	smartContractAddress := c.Param("sc-address")
-//
-//	ethClient, err := ethclient.Dial(storage.EthURL)
-//	if err != nil {
-//		log.Println(err)
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
-//		return
-//	}
-//
-//	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
-//	if err != nil {
-//		log.Println(err)
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
-//		return
-//	}
-//
-//	localBalance, err := instance.BalanceOf(nil, common.HexToAddress(address))
-//	if err != nil {
-//		log.Println(err)
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
-//		return
-//	}
-//
-//	floatTokenBalance, _ := strconv.ParseFloat(localBalance.String(), 64)
-//
-//	tokenBalance := floatTokenBalance / math.Pow(10, 18)
-//
-//	response := new(responses.BalanceResponse)
-//
-//	response.Balance = tokenBalance
-//
-//	c.JSON(http.StatusOK, response)
-//}
+	address := c.Param("address")
+
+	smartContractAddress := c.Param("sc-address")
+
+	ethClient, err := ethclient.Dial(storage.EthURL)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	balance, err := instance.BalanceOf(nil, common.HexToAddress(address))
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	response := new(responses.BalanceResponse)
+
+	response.Balance = balance.String()
+
+	c.JSON(http.StatusOK, response)
+}
 
 // @Summary ETH balance of accounts by list
 // @Description return balances of accounts in ETH

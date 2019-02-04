@@ -89,6 +89,30 @@ paths:
               $ref: '#/definitions/responses.GasPriceResponse'
             type: array
       summary: return gas price of specific node
+  /eth/tokenBalance/{sc-address}/{address}:
+    get:
+      description: return balance of specific token in ETH node
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: sc-address
+        in: path
+        name: sc-address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalanceResponse'
+            type: array
+      summary: return balance of specific token in ETH node
   /eth/tokenBalances:
     post:
       description: return tokens balances of account

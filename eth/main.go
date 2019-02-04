@@ -37,13 +37,11 @@ func main() {
 
 	r.GET("/eth/gasPrice/", handlers.GetGasPrice)
 
-	//r.GET("/eth/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
+	r.GET("/eth/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
 
 	r.POST("/eth/balances", handlers.GetBalances)
 
 	r.POST("/eth/tokenBalances", handlers.GetTokenBalances)
-
-	// r.POST("/eth/sendTx/", handlers.SendTX)
 
 	r.Run(":8080")
 }
