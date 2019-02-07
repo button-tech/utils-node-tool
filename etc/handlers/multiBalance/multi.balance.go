@@ -2,7 +2,7 @@ package multiBalance
 
 import (
 	"fmt"
-	"github.com/button-tech/utils-node-tool/etc/storage"
+	"github.com/button-tech/utils-node-tool/etc/handlers/storage"
 	"math"
 	"strconv"
 	"sync"

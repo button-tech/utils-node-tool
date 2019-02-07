@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"sync"
-	"github.com/button-tech/utils-node-tool/ltc/multi-balance"
+	"github.com/button-tech/utils-node-tool/ltc/handlers/multi-balance"
 )
 
 // @Summary LTC balance of account
