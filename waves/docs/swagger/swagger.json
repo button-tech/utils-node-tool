@@ -43,6 +43,37 @@
                     }
                 }
             }
+        },
+        "/waves/balances": {
+            "post": {
+                "description": "return balances of accounts in Waves",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Waves balance of accounts by list",
+                "parameters": [
+                    {
+                        "description": "addressesArray",
+                        "name": "addressesArray",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.BalancesResponse"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -51,6 +82,14 @@
             "properties": {
                 "balance": {
                     "type": "string"
+                }
+            }
+        },
+        "responses.BalancesResponse": {
+            "type": "object",
+            "properties": {
+                "balances": {
+                    "type": "object"
                 }
             }
         }
