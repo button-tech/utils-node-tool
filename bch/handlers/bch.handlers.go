@@ -2,15 +2,13 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/button-tech/utils-node-tool/bch/handlers/multi-balance"
 	"github.com/button-tech/utils-node-tool/bch/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/bch/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
-	"os"
-)
-
-var (
-	bchURL = os.Getenv("BCH_NODE")
+	"sync"
 )
 
 // @Summary BCH balance of account
@@ -24,7 +22,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(bchURL + "/api/addr/" + address + "/balance")
+	balance, err := req.Get(storage.BchURL + "/api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -65,7 +63,7 @@ func GetTxFee(c *gin.Context) {
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
-	utxos, err := req.Get(bchURL + "/api/addr/" + address + "/utxo")
+	utxos, err := req.Get(storage.BchURL + "/api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -79,6 +77,39 @@ func GetUTXO(c *gin.Context) {
 	response := new(responses.UTXOResponse)
 
 	response.Utxo = respArr
+
+	c.JSON(http.StatusOK, response)
+}
+
+// @Description return balances of accounts in BCH
+// @Produce  application/json
+// @Param addressesArray     body string true "addressesArray"
+// @Success 200 {array} responses.BalancesResponse
+// @Router /bch/balances [post]
+// GetBalanceForMultipleAdresses return balances of accounts in BCH
+func GetBalances(c *gin.Context) {
+
+	type Request struct {
+		AddressesArray []string `json:"addressesArray"`
+	}
+
+	req := new(Request)
+
+	balances := multiBalance.New()
+
+	c.BindJSON(&req)
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < len(req.AddressesArray); i++ {
+		wg.Add(1)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+	}
+	wg.Wait()
+
+	response := new(responses.BalancesResponse)
+
+	response.Balances = balances.Result
 
 	c.JSON(http.StatusOK, response)
 }

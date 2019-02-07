@@ -2,7 +2,7 @@ package multiBalance
 
 import (
 	"fmt"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
+	"github.com/button-tech/utils-node-tool/bch/handlers/storage"
 	"github.com/imroc/req"
 	"sync"
 )
@@ -31,7 +31,7 @@ func (ds *Data) Set(key string, value string) {
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 
-	balance, err := req.Get(storage.LtcURL + "/api/addr/" + addr + "/balance")
+	balance, err := req.Get(storage.BchURL + "/api/addr/" + addr + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -44,5 +44,4 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	}
 
 	r.Set(addr, balanceStr)
-
 }

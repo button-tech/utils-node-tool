@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/button-tech/utils-node-tool/ltc/handlers/multi-balance"
 	"github.com/button-tech/utils-node-tool/ltc/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"sync"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/multi-balance"
 )
 
 // @Summary LTC balance of account
@@ -22,7 +22,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get( storage.LtcURL + "/api/addr/" + address + "/balance")
+	balance, err := req.Get(storage.LtcURL + "/api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -107,6 +107,7 @@ func GetBalances(c *gin.Context) {
 	wg.Wait()
 
 	response := new(responses.BalancesResponse)
+
 	response.Balances = balances.Result
 
 	c.JSON(http.StatusOK, response)

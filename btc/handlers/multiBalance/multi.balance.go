@@ -4,26 +4,25 @@ import (
 	"fmt"
 	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 	"github.com/imroc/req"
-	"strconv"
 	"sync"
 )
 
 type Data struct {
 	sync.Mutex
-	Result map[string]float64
+	Result map[string]string
 }
 
 func New() *Data {
 	return &Data{
-		Result: make(map[string]float64),
+		Result: make(map[string]string),
 	}
 }
 
-func (ds *Data) set(key string, value float64) {
+func (ds *Data) set(key string, value string) {
 	ds.Result[key] = value
 }
 
-func (ds *Data) Set(key string, value float64) {
+func (ds *Data) Set(key string, value string) {
 	ds.Lock()
 	defer ds.Unlock()
 	ds.set(key, value)
@@ -36,7 +35,12 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 		fmt.Println(err)
 		return
 	}
-	balanceFloat, _ := strconv.ParseFloat(balance.String(), 64)
-	balanceFloat *= 0.00000001
-	r.Set(addr, balanceFloat)
+
+	balanceStr, err := balance.ToString()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	r.Set(addr, balanceStr)
 }

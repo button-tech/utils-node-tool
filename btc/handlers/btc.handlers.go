@@ -150,5 +150,6 @@ func GetBalances(c *gin.Context) {
 
 	response := new(responses.BalancesResponse)
 	response.Balances = balances.Result
+
 	c.JSON(http.StatusOK, response)
 }

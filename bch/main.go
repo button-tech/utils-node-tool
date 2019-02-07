@@ -37,5 +37,7 @@ func main() {
 
 	r.GET("/bch/transactionFee", handlers.GetTxFee)
 
+	r.POST("/bch/balances", handlers.GetBalances)
+
 	r.Run(":8080")
 }

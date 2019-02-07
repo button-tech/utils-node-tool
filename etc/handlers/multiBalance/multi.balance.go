@@ -3,21 +3,19 @@ package multiBalance
 import (
 	"fmt"
 	"github.com/button-tech/utils-node-tool/etc/handlers/storage"
-	"math"
-	"strconv"
 	"sync"
 )
 
 type Balances struct {
 	sync.Mutex
-	Result []map[string]float64 // eth -> ["account":balance]
+	Result []map[string]string // eth -> ["account":balance]
 }
 
-func (ds *Balances) set(key string, value float64) {
-	ds.Result = append(ds.Result, map[string]float64{key: value})
+func (ds *Balances) set(key string, value string) {
+	ds.Result = append(ds.Result, map[string]string{key: value})
 }
 
-func (ds *Balances) Set(key string, value float64) {
+func (ds *Balances) Set(key string, value string) {
 	ds.Lock()
 	defer ds.Unlock()
 	ds.set(key, value)
@@ -25,12 +23,12 @@ func (ds *Balances) Set(key string, value float64) {
 
 func Worker(wg *sync.WaitGroup, addr string, r *Balances) {
 	defer wg.Done()
+
 	balance, err := storage.EtcClient.EthGetBalance(addr, "latest")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	floatBalance, _ := strconv.ParseFloat(balance.String(), 64)
-	ethBalance := floatBalance / math.Pow(10, 18)
-	r.Set(addr, ethBalance)
+
+	r.Set(addr, balance.String())
 }
