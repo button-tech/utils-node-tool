@@ -33,7 +33,7 @@ func main() {
 
 	r.GET("/waves/balance/:address", handlers.GetBalance)
 
-	r.POST("/waves/balances",handlers.GetBalances)
+	r.POST("/waves/balances", handlers.GetBalances)
 
 	r.Run(":8080")
 }

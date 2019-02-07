@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/button-tech/utils-node-tool/waves/handlers/storage"
 	"github.com/imroc/req"
-	"sync"
 	"strconv"
+	"sync"
 )
 
 type Data struct {
@@ -31,7 +31,6 @@ func (ds *Data) Set(key string, value string) {
 
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
-
 
 	balance, err := req.Get(storage.WavesURL + "/addresses/balance/" + addr)
 	if err != nil {
