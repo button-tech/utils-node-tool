@@ -5,6 +5,11 @@ definitions:
       balance:
         type: string
     type: object
+  responses.BalancesResponse:
+    properties:
+      balances:
+        type: object
+    type: object
   responses.TransactionFeeResponse:
     properties:
       fee:
@@ -67,6 +72,25 @@ paths:
               $ref: '#/definitions/responses.BalanceResponse'
             type: array
       summary: LTC balance of account
+  /ltc/balances:
+    post:
+      description: return balances of accounts in LTC
+      parameters:
+      - description: addressesArray
+        in: body
+        name: addressesArray
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.BalancesResponse'
+            type: array
   /ltc/transactionFee:
     get:
       description: return LTC fee

@@ -37,5 +37,7 @@ func main() {
 
 	r.GET("/ltc/transactionFee", handlers.GetTxFee)
 
+	r.POST("/ltc/balances", handlers.GetBalances)
+
 	r.Run(":8080")
 }

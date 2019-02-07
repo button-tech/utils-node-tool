@@ -6,11 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
-	"os"
-)
-
-var (
-	ltcURL = os.Getenv("LTC_NODE")
+	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
+	"sync"
+	"github.com/button-tech/utils-node-tool/ltc/multi-balance"
 )
 
 // @Summary LTC balance of account
@@ -24,7 +22,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(ltcURL + "/api/addr/" + address + "/balance")
+	balance, err := req.Get( storage.LtcURL + "/api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -64,7 +62,7 @@ func GetTxFee(c *gin.Context) {
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
-	utxos, err := req.Get(ltcURL + "/api/addr/" + address + "/utxo")
+	utxos, err := req.Get(storage.LtcURL + "/api/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -78,6 +76,38 @@ func GetUTXO(c *gin.Context) {
 	response := new(responses.UTXOResponse)
 
 	response.Utxo = respArr
+
+	c.JSON(http.StatusOK, response)
+}
+
+// @Description return balances of accounts in LTC
+// @Produce  application/json
+// @Param addressesArray     body string true "addressesArray"
+// @Success 200 {array} responses.BalancesResponse
+// @Router /ltc/balances [post]
+// GetBalanceForMultipleAdresses return balances of accounts in LTC
+func GetBalances(c *gin.Context) {
+
+	type Request struct {
+		AddressesArray []string `json:"addressesArray"`
+	}
+
+	req := new(Request)
+
+	balances := multiBalance.New()
+
+	c.BindJSON(&req)
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < len(req.AddressesArray); i++ {
+		wg.Add(1)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+	}
+	wg.Wait()
+
+	response := new(responses.BalancesResponse)
+	response.Balances = balances.Result
 
 	c.JSON(http.StatusOK, response)
 }
