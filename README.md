@@ -1,18 +1,27 @@
 # UTILS-NODE-TOOL
 
-### Now available for: 
-* Ethereum
-* Ethereum Classic
-
 ### API:
 
 ### GET 
+For all:
 * "*/balance/:address" - return balance of account in crypto for specific nodeget balance of address
+
+For eth,etc,btc,ltc,bch:
 * "*/transactionFee" - return Amount of crypto that you need to send a transaction
 
+For eth,etc:
 * "*/gasPrice"
 
+For eth:
 * "/eth/tokenBalance/:token/:address"
+
+For btc,ltc,bch:
+* "*/utxo/:address"
+
+### POST:
+For all:
+
+* "*/balances" -> send "addressesArray":["address","address"]
 
 
 
