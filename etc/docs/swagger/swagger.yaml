@@ -8,11 +8,7 @@ definitions:
   responses.BalancesResponse:
     properties:
       balances:
-        example:
-        - "0"
-        items:
-          type: '&{%!s(token.Pos=287) string float64}'
-        type: array
+        type: object
     type: object
   responses.GasPriceResponse:
     properties:

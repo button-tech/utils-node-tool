@@ -13,5 +13,5 @@ type GasPriceResponse struct {
 }
 
 type BalancesResponse struct {
-	Balances []map[string]string `json:"balances"`
+	Balances map[string]string `json:"balances"`
 }

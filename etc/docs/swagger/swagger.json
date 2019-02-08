@@ -129,13 +129,7 @@
             "type": "object",
             "properties": {
                 "balances": {
-                    "type": "array",
-                    "items": {
-                        "type": "\u0026{%!s(token.Pos=287) string float64}"
-                    },
-                    "example": [
-                        "0"
-                    ]
+                    "type": "object"
                 }
             }
         },

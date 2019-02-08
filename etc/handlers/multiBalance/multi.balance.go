@@ -6,22 +6,28 @@ import (
 	"sync"
 )
 
-type Balances struct {
+type Data struct {
 	sync.Mutex
-	Result []map[string]string // eth -> ["account":balance]
+	Result map[string]string
 }
 
-func (ds *Balances) set(key string, value string) {
-	ds.Result = append(ds.Result, map[string]string{key: value})
+func New() *Data {
+	return &Data{
+		Result: make(map[string]string),
+	}
 }
 
-func (ds *Balances) Set(key string, value string) {
+func (ds *Data) set(key string, value string) {
+	ds.Result[key] = value
+}
+
+func (ds *Data) Set(key string, value string) {
 	ds.Lock()
 	defer ds.Unlock()
 	ds.set(key, value)
 }
 
-func Worker(wg *sync.WaitGroup, addr string, r *Balances) {
+func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 
 	balance, err := storage.EtcClient.EthGetBalance(addr, "latest")

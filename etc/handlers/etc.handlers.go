@@ -98,7 +98,7 @@ func GetBalances(c *gin.Context) {
 
 	req := new(Request)
 
-	var balances multiBalance.Balances
+	balances := multiBalance.New()
 
 	c.BindJSON(&req)
 
@@ -106,11 +106,14 @@ func GetBalances(c *gin.Context) {
 
 	for i := 0; i < len(req.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, req.AddressesArray[i], &balances)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
 	}
 	wg.Wait()
 
-	c.JSON(http.StatusOK, balances.Result)
+	response := new(responses.BalancesResponse)
+	response.Balances = balances.Result
+
+	c.JSON(http.StatusOK, response)
 }
 
 //not Working yet on production

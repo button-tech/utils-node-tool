@@ -144,7 +144,7 @@ func GetBalances(c *gin.Context) {
 
 	req := new(Request)
 
-	var balances multiBalance.Balances
+	balances := multiBalance.New()
 
 	c.BindJSON(&req)
 
@@ -152,11 +152,14 @@ func GetBalances(c *gin.Context) {
 
 	for i := 0; i < len(req.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, req.AddressesArray[i], &balances)
+		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
 	}
 	wg.Wait()
 
-	c.JSON(http.StatusOK, balances.Result)
+	response := new(responses.BalancesResponse)
+	response.Balances = balances.Result
+
+	c.JSON(http.StatusOK, response)
 }
 
 // @Summary ETH ERC-20 tokens balance of account by list of smart contracts
@@ -175,7 +178,7 @@ func GetTokenBalances(c *gin.Context) {
 
 	req := new(Request)
 
-	var balances multiBalance.Balances
+	balances := multiBalance.New()
 
 	c.BindJSON(&req)
 
@@ -183,11 +186,14 @@ func GetTokenBalances(c *gin.Context) {
 
 	for i := 0; i < len(req.SmartAddresses); i++ {
 		wg.Add(1)
-		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], &balances)
+		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], balances)
 	}
 	wg.Wait()
 
-	c.JSON(http.StatusOK, balances.Result)
+	response := new(responses.BalancesResponse)
+	response.Balances = balances.Result
+
+	c.JSON(http.StatusOK, response)
 }
 
 //not Working yet on production
