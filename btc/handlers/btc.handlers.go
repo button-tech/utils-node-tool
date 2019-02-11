@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"strconv"
 
+	"sync"
+
 	"github.com/button-tech/utils-node-tool/btc/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/btc/handlers/responseModels"
 	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
-	"sync"
 )
 
 // @Summary BTC balance of account
@@ -24,7 +25,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(storage.BtcURL + "/insight-api/addr/" + address + "/balance")
+	balance, err := req.Get(storage.BtcURL + "/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
