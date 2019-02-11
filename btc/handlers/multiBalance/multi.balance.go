@@ -30,7 +30,7 @@ func (ds *Data) Set(key string, value string) {
 
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
-	balance, err := req.Get(storage.BtcURL + "/insight-api/addr/" + addr + "/balance")
+	balance, err := req.Get(storage.BtcURL + "/addr/" + addr + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		return

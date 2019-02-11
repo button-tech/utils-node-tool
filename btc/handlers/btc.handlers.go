@@ -103,7 +103,7 @@ func GetTxFee(c *gin.Context) {
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
-	utxos, err := req.Get(storage.BtcURL + "/insight-api/addr/" + address + "/utxo")
+	utxos, err := req.Get(storage.BtcURL + "/addr/" + address + "/utxo")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
