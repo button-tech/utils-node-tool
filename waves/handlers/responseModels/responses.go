@@ -7,3 +7,7 @@ type BalanceResponse struct {
 type BalancesResponse struct {
 	Balances map[string]string `json:"balances"`
 }
+
+type TransactionFeeResponse struct {
+	Fee float64 `json:"fee" example:"0"`
+}

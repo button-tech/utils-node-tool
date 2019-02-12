@@ -2,14 +2,15 @@ package handlers
 
 import (
 	"fmt"
+	"net/http"
+	"strconv"
+	"sync"
+
 	"github.com/button-tech/utils-node-tool/waves/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/waves/handlers/responseModels"
 	"github.com/button-tech/utils-node-tool/waves/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
-	"net/http"
-	"strconv"
-	"sync"
 )
 
 // @Summary Waves balance of account
@@ -73,4 +74,19 @@ func GetBalances(c *gin.Context) {
 	response.Balances = balances.Result
 
 	c.JSON(http.StatusOK, response)
+}
+
+// @Summary Waves fee
+// @Description return Waves fee
+// @Produce  application/json
+// @Success 200 {array} responses.TransactionFeeResponse
+// @Router /waves/transactionFee [get]
+// GetBalance return Waves fee
+func GetTxFee(c *gin.Context) {
+
+	resp := new(responses.TransactionFeeResponse)
+
+	resp.Fee = 0.001
+
+	c.JSON(http.StatusOK, resp)
 }

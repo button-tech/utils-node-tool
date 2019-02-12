@@ -16,7 +16,7 @@ type BalanceResponse struct {
 }
 
 type TransactionFeeResponse struct {
-	Fee float64 `json:"balance" example:"0"`
+	Fee float64 `json:"fee" example:"0"`
 }
 
 type UTXOResponse struct {

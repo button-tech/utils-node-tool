@@ -74,6 +74,26 @@
                     }
                 }
             }
+        },
+        "/waves/transactionFee": {
+            "get": {
+                "description": "return Waves fee",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Waves fee",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/responses.TransactionFeeResponse"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -90,6 +110,15 @@
             "properties": {
                 "balances": {
                     "type": "object"
+                }
+            }
+        },
+        "responses.TransactionFeeResponse": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number",
+                    "example": 0
                 }
             }
         }

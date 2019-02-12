@@ -10,6 +10,12 @@ definitions:
       balances:
         type: object
     type: object
+  responses.TransactionFeeResponse:
+    properties:
+      balance:
+        example: 0
+        type: number
+    type: object
 info:
   contact:
     email: nk
@@ -60,4 +66,17 @@ paths:
               $ref: '#/definitions/responses.BalancesResponse'
             type: array
       summary: Waves balance of accounts by list
+  /waves/transactionFee:
+    get:
+      description: return Waves fee
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/responses.TransactionFeeResponse'
+            type: array
+      summary: Waves fee
 swagger: "2.0"
