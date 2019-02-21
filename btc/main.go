@@ -3,10 +3,15 @@ package main
 import (
 	_ "github.com/button-tech/utils-node-tool/btc/docs"
 	"github.com/button-tech/utils-node-tool/btc/handlers"
+	"github.com/button-tech/utils-node-tool/btc/handlers/addresses"
+	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/hlts2/round-robin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"log"
+	"os"
 )
 
 func main() {
@@ -24,10 +29,20 @@ func main() {
 
 	// @BasePath /
 
+	rr, err := roundrobin.New(addresses.BtcNodes)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
-	gin.SetMode(gin.ReleaseMode)
+
+	// Round Robin middleware
+	r.Use(func(c *gin.Context) {
+		storage.BtcNodeAddress.Set(rr.Next())
+	})
 
 	r.GET("/btc/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

@@ -3,15 +3,15 @@ package main
 import (
 	_ "github.com/button-tech/utils-node-tool/eth/docs"
 	"github.com/button-tech/utils-node-tool/eth/handlers"
-	"github.com/gin-gonic/contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"github.com/hlts2/round-robin"
 	"github.com/button-tech/utils-node-tool/eth/handlers/addresses"
 	"github.com/button-tech/utils-node-tool/eth/handlers/storage"
-	"os"
+	"github.com/gin-gonic/contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/hlts2/round-robin"
+	"github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"log"
+	"os"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 	// @BasePath /
 
 	rr, err := roundrobin.New(addresses.EthNodes)
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}

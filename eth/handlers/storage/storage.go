@@ -24,7 +24,6 @@ var (
 		"rep":  "0x1985365e9f78359a9B6AD760e32412f4a445E862",
 		"gnt":  "0xa74476443119A942dE498590Fe1f2454d7D4aC0d",
 	}
-
 )
 
 type NodeAddr struct {

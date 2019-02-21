@@ -25,7 +25,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(storage.BtcURL + "/addr/" + address + "/balance")
+	balance, err := req.Get(storage.BtcNodeAddress.Address + "/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})

@@ -3,15 +3,15 @@ package main
 import (
 	_ "github.com/button-tech/utils-node-tool/ltc/docs"
 	"github.com/button-tech/utils-node-tool/ltc/handlers"
+	"github.com/button-tech/utils-node-tool/ltc/handlers/addresses"
+	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/hlts2/round-robin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"github.com/hlts2/round-robin"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/addresses"
-	"os"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"log"
+	"os"
 )
 
 func main() {

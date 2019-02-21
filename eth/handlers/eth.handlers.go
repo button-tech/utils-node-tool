@@ -13,8 +13,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
-	"log"
 	"github.com/onrik/ethrpc"
+	"log"
 )
 
 var ctx = context.Background()
