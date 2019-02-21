@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"log"
+	"github.com/onrik/ethrpc"
 )
 
 var ctx = context.Background()
@@ -27,7 +28,9 @@ var ctx = context.Background()
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
-	balance, err := storage.EthClient.EthGetBalance(c.Param("address"), "latest")
+	var EthClient = ethrpc.New(storage.EthNodeAddress.Address)
+
+	balance, err := EthClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
