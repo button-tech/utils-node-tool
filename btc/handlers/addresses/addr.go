@@ -1,3 +1,3 @@
 package addresses
 
-//var BtcNodes = []string{}
+var BtcNodes = []string{}

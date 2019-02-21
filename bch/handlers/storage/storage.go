@@ -7,7 +7,6 @@ import (
 
 var BchURL = os.Getenv("BCH_NODE")
 
-
 type NodeAddr struct {
 	sync.Mutex
 	Address string
