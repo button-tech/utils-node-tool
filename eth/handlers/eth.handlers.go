@@ -104,7 +104,7 @@ func GetTokenBalance(c *gin.Context) {
 
 	smartContractAddress := c.Param("sc-address")
 
-	ethClient, err := ethclient.Dial(storage.EthURL)
+	ethClient, err := ethclient.Dial(storage.EthNodeAddress.Address)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})

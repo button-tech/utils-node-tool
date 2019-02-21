@@ -22,7 +22,7 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(storage.LtcURL + "/api/addr/" + address + "/balance")
+	balance, err := req.Get(storage.LtcNodeAddress.Address + "/api/addr/" + address + "/balance")
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})

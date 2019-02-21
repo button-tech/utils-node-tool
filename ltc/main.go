@@ -7,6 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"github.com/hlts2/round-robin"
+	"github.com/button-tech/utils-node-tool/ltc/handlers/addresses"
+	"os"
+	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
+	"log"
 )
 
 func main() {
@@ -24,10 +29,20 @@ func main() {
 
 	// @BasePath /
 
+	rr, err := roundrobin.New(addresses.LtcNodes)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
-	gin.SetMode(gin.ReleaseMode)
+
+	// Round Robin middleware
+	r.Use(func(c *gin.Context) {
+		storage.LtcNodeAddress.Set(rr.Next())
+	})
 
 	r.GET("/ltc/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

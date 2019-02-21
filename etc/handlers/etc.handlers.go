@@ -4,8 +4,10 @@ import (
 	"context"
 	"github.com/button-tech/utils-node-tool/etc/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/etc/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/etc/handlers/storage"
 	. "github.com/button-tech/utils-node-tool/etc/handlers/storage"
 	"github.com/gin-gonic/gin"
+	"github.com/onrik/ethrpc"
 	"log"
 	"math"
 	"net/http"
@@ -22,6 +24,8 @@ var ctx = context.Background()
 // @Router /etc/balance/{address} [get]
 // GetBalance return balance of account in ETC for specific node
 func GetBalance(c *gin.Context) {
+
+	var EtcClient = ethrpc.New(storage.EtcNodeAddress.Address)
 
 	balance, err := EtcClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
