@@ -43,6 +43,7 @@ func main() {
 	r.Use(func(c *gin.Context) {
 		storage.BchNodeAddress.Set(rr.Next())
 	})
+
 	gin.SetMode(gin.ReleaseMode)
 
 	r.GET("/bch/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

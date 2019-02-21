@@ -44,6 +44,8 @@ func main() {
 		storage.EtcNodeAddress.Set(rr.Next())
 	})
 
+	gin.SetMode(gin.ReleaseMode)
+
 	r.GET("/etc/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/etc/balance/:address", handlers.GetBalance)

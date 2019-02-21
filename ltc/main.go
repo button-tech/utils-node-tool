@@ -44,6 +44,8 @@ func main() {
 		storage.LtcNodeAddress.Set(rr.Next())
 	})
 
+	gin.SetMode(gin.ReleaseMode)
+
 	r.GET("/ltc/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/ltc/balance/:address", handlers.GetBalance)

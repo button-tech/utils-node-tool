@@ -44,6 +44,8 @@ func main() {
 		storage.BtcNodeAddress.Set(rr.Next())
 	})
 
+	gin.SetMode(gin.ReleaseMode)
+
 	r.GET("/btc/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/btc/balance/:address", handlers.GetBalance)
