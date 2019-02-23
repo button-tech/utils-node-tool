@@ -3,7 +3,6 @@ package main
 import (
 	_ "github.com/button-tech/utils-node-tool/stellar/docs"
 	"github.com/button-tech/utils-node-tool/stellar/handlers"
-	"github.com/button-tech/utils-node-tool/stellar/handlers/addresses"
 	"github.com/button-tech/utils-node-tool/stellar/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,7 +28,10 @@ func main() {
 
 	// @BasePath /
 
-	rr, err := roundrobin.New(addresses.StellarNodes)
+	// must add addresses to slice
+	var StellarNodes = []string{}
+
+	rr, err := roundrobin.New(StellarNodes)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)

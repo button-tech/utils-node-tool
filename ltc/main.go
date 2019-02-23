@@ -3,7 +3,6 @@ package main
 import (
 	_ "github.com/button-tech/utils-node-tool/ltc/docs"
 	"github.com/button-tech/utils-node-tool/ltc/handlers"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/addresses"
 	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,7 +28,10 @@ func main() {
 
 	// @BasePath /
 
-	rr, err := roundrobin.New(addresses.LtcNodes)
+	// must add addresses to slice
+	var LtcNodes = []string{}
+
+	rr, err := roundrobin.New(LtcNodes)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)

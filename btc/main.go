@@ -3,7 +3,6 @@ package main
 import (
 	_ "github.com/button-tech/utils-node-tool/btc/docs"
 	"github.com/button-tech/utils-node-tool/btc/handlers"
-	"github.com/button-tech/utils-node-tool/btc/handlers/addresses"
 	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,7 +28,10 @@ func main() {
 
 	// @BasePath /
 
-	rr, err := roundrobin.New(addresses.BtcNodes)
+	// must add addresses to slice
+	var BtcNodes = []string{}
+
+	rr, err := roundrobin.New(BtcNodes)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)

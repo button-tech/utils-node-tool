@@ -3,7 +3,6 @@ package main
 import (
 	_ "github.com/button-tech/utils-node-tool/eth/docs"
 	"github.com/button-tech/utils-node-tool/eth/handlers"
-	"github.com/button-tech/utils-node-tool/eth/handlers/addresses"
 	"github.com/button-tech/utils-node-tool/eth/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,7 +28,10 @@ func main() {
 
 	// @BasePath /
 
-	rr, err := roundrobin.New(addresses.EthNodes)
+	// must add addresses to slice
+	var EthNodes = []string{}
+
+	rr, err := roundrobin.New(EthNodes)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
