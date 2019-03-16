@@ -9,7 +9,7 @@ import (
 	"github.com/button-tech/utils-node-tool/bch/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/hlts2/round-robin"
+	"github.com/prazd/round-robin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )

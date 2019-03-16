@@ -1,16 +1,17 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	_ "github.com/button-tech/utils-node-tool/stellar/docs"
 	"github.com/button-tech/utils-node-tool/stellar/handlers"
 	"github.com/button-tech/utils-node-tool/stellar/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/hlts2/round-robin"
+	"github.com/prazd/round-robin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"log"
-	"os"
 )
 
 func main() {

@@ -4,9 +4,9 @@ RUN mkdir /build
 ADD btc /build
 WORKDIR /build
 RUN go get -d ./...
-RUN go build -o main 
+RUN go build -o bin/main .
 
 FROM ubuntu:latest
-COPY --from=builder /build/main /app
+COPY --from=builder /build/bin /app
 EXPOSE 8080
 CMD ["/app/main"]
