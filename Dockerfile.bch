@@ -13,6 +13,7 @@ RUN go get github.com/swaggo/swag
 RUN go get github.com/imroc/req
 RUN go get github.com/hlts2/round-robin
 
+
 RUN go build -o main .
 
 CMD ["/app/main"]

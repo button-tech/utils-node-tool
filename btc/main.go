@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	_ "github.com/button-tech/utils-node-tool/btc/docs"
 	"github.com/button-tech/utils-node-tool/btc/handlers"
 	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
@@ -9,8 +12,6 @@ import (
 	"github.com/hlts2/round-robin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"log"
-	"os"
 )
 
 func main() {
