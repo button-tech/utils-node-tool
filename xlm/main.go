@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/button-tech/utils-node-tool/stellar/docs"
-	"github.com/button-tech/utils-node-tool/stellar/handlers"
-	"github.com/button-tech/utils-node-tool/stellar/handlers/storage"
+	_ "github.com/button-tech/utils-node-tool/xlm/docs"
+	"github.com/button-tech/utils-node-tool/xlm/handlers"
+	"github.com/button-tech/utils-node-tool/xlm/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prazd/round-robin"

@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/button-tech/utils-node-tool/stellar/handlers/responseModels"
-	"github.com/button-tech/utils-node-tool/stellar/handlers/storage"
+	"github.com/button-tech/utils-node-tool/xlm/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/xlm/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"net/http"
@@ -34,6 +34,10 @@ func GetBalance(c *gin.Context) {
 		if j.Asset_type == "native" {
 			stellarBalanceString = j.Balance
 		}
+	}
+	
+	if stellarBalanceString == "" {
+		stellarBalanceString = "0"
 	}
 
 	response := new(responses.BalanceResponse)
