@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/button-tech/utils-node-tool/xlm/handlers/responseModels"
 	"github.com/button-tech/utils-node-tool/xlm/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
-	"net/http"
 )
 
 // @Summary Stellar balance of account
@@ -22,11 +23,17 @@ func GetBalance(c *gin.Context) {
 
 	balanceReq, err := req.Get(storage.StellarNodeAddress.Address + "/accounts/" + c.Param("address"))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
 
-	balanceReq.ToJSON(&balance)
+	err = balanceReq.ToJSON(&balance)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	var stellarBalanceString string
 
@@ -35,7 +42,7 @@ func GetBalance(c *gin.Context) {
 			stellarBalanceString = j.Balance
 		}
 	}
-	
+
 	if stellarBalanceString == "" {
 		stellarBalanceString = "0"
 	}

@@ -13,10 +13,13 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
+	github.com/hlts2/lock-free v0.0.0-20180728112035-df59f3adb0c5 // indirect
+	github.com/imroc/req v0.2.3
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/onrik/ethrpc v0.0.0-20181010104327-12d6347182d4
 	github.com/pborman/uuid v1.2.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/prazd/round-robin v0.0.0-20180807023201-c95f2a417d98
 	github.com/rjeczalik/notify v0.9.2 // indirect
 	github.com/rs/cors v1.6.0 // indirect
 	github.com/swaggo/gin-swagger v1.0.0

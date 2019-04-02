@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"log"
+	"os"
 )
 
 func main() {
@@ -37,5 +39,8 @@ func main() {
 
 	r.POST("/waves/balances", handlers.GetBalances)
 
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
 }

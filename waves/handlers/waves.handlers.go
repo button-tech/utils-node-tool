@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -26,14 +26,19 @@ func GetBalance(c *gin.Context) {
 
 	res, err := req.Get(storage.WavesURL + "/addresses/balance/" + address)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
 
 	var data storage.BalanceData
 
-	res.ToJSON(&data)
+	err = res.ToJSON(&data)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	response := new(responses.BalanceResponse)
 
@@ -55,17 +60,22 @@ func GetBalances(c *gin.Context) {
 		AddressesArray []string `json:"addressesArray"`
 	}
 
-	req := new(Request)
+	request := new(Request)
 
 	balances := multiBalance.New()
 
-	c.BindJSON(&req)
+	err := c.BindJSON(&request)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	var wg sync.WaitGroup
 
-	for i := 0; i < len(req.AddressesArray); i++ {
+	for i := 0; i < len(request.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+		go multiBalance.Worker(&wg, request.AddressesArray[i], balances)
 	}
 	wg.Wait()
 

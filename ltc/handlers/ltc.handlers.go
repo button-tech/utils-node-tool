@@ -1,14 +1,15 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
+	"net/http"
+	"sync"
+
 	"github.com/button-tech/utils-node-tool/ltc/handlers/multi-balance"
 	"github.com/button-tech/utils-node-tool/ltc/handlers/responseModels"
 	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
-	"net/http"
-	"sync"
 )
 
 // @Summary LTC balance of account
@@ -24,7 +25,7 @@ func GetBalance(c *gin.Context) {
 
 	balance, err := req.Get(storage.LtcNodeAddress.Address + "/api/addr/" + address + "/balance")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
@@ -64,14 +65,19 @@ func GetUTXO(c *gin.Context) {
 	address := c.Param("address")
 	utxos, err := req.Get(storage.LtcURL + "/api/addr/" + address + "/utxo")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
 
 	var respArr []responses.UTXO
 
-	utxos.ToJSON(&respArr)
+	err = utxos.ToJSON(&respArr)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	response := new(responses.UTXOResponse)
 
@@ -96,7 +102,12 @@ func GetBalances(c *gin.Context) {
 
 	balances := multiBalance.New()
 
-	c.BindJSON(&req)
+	err := c.BindJSON(&req)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	var wg sync.WaitGroup
 

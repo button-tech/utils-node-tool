@@ -1,11 +1,12 @@
 package multiBalance
 
 import (
-	"fmt"
-	"github.com/button-tech/utils-node-tool/waves/handlers/storage"
-	"github.com/imroc/req"
+	"log"
 	"strconv"
 	"sync"
+
+	"github.com/button-tech/utils-node-tool/waves/handlers/storage"
+	"github.com/imroc/req"
 )
 
 type Data struct {
@@ -34,13 +35,16 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 
 	balance, err := req.Get(storage.WavesURL + "/addresses/balance/" + addr)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	var data storage.BalanceData
 
-	balance.ToJSON(&data)
+	err = balance.ToJSON(&data)
+	if err != nil {
+		log.Println(err)
+	}
 
 	balanceStr := strconv.FormatInt(data.Balance, 10)
 

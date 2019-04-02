@@ -1,20 +1,18 @@
 package handlers
 
 import (
-	"context"
+	"log"
+	"math"
+	"net/http"
+	"sync"
+
 	"github.com/button-tech/utils-node-tool/etc/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/etc/handlers/responseModels"
 	"github.com/button-tech/utils-node-tool/etc/handlers/storage"
 	. "github.com/button-tech/utils-node-tool/etc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
-	"log"
-	"math"
-	"net/http"
-	"sync"
 )
-
-var ctx = context.Background()
 
 // @Summary ETC balance of account
 // @Description return balance of account in ETC for specific node
@@ -104,7 +102,12 @@ func GetBalances(c *gin.Context) {
 
 	balances := multiBalance.New()
 
-	c.BindJSON(&req)
+	err := c.BindJSON(&req)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	var wg sync.WaitGroup
 

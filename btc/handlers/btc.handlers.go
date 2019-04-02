@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -27,7 +27,7 @@ func GetBalance(c *gin.Context) {
 
 	balance, err := req.Get(storage.BtcNodeAddress.Address + "/addr/" + address + "/balance")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
@@ -58,16 +58,21 @@ func GetBextTxFee(c *gin.Context) {
 
 	fee, err := req.Get("https://bitcoinfees.earn.com/api/v1/fees/recommended")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
 
-	fee.ToJSON(&feeObj)
+	err = fee.ToJSON(&feeObj)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	feeFloat, err := strconv.ParseFloat(strconv.Itoa(feeObj.FastestFee), 64)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
@@ -106,14 +111,19 @@ func GetUTXO(c *gin.Context) {
 	address := c.Param("address")
 	utxos, err := req.Get(storage.BtcURL + "/addr/" + address + "/utxo")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
 	}
 
 	var respArr []responses.UTXO
 
-	utxos.ToJSON(&respArr)
+	err = utxos.ToJSON(&respArr)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	response := new(responses.UTXOResponse)
 
@@ -137,11 +147,16 @@ func GetBalances(c *gin.Context) {
 
 	req := new(Request)
 
-	balances := multiBalance.New()
-
-	c.BindJSON(&req)
+	err := c.BindJSON(&req)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	var wg sync.WaitGroup
+
+	balances := multiBalance.New()
 
 	for i := 0; i < len(req.AddressesArray); i++ {
 		wg.Add(1)

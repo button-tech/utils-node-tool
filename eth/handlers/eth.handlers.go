@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"math"
 	"net/http"
 	"sync"
+
+	"log"
 
 	"github.com/button-tech/utils-node-tool/eth/abi"
 	"github.com/button-tech/utils-node-tool/eth/handlers/multiBalance"
@@ -14,10 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
-	"log"
 )
-
-var ctx = context.Background()
 
 // @Summary ETH balance of account
 // @Description return balance of account in ETH for specific node
@@ -149,7 +147,12 @@ func GetBalances(c *gin.Context) {
 
 	balances := multiBalance.New()
 
-	c.BindJSON(&req)
+	err := c.BindJSON(&req)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	var wg sync.WaitGroup
 
@@ -175,7 +178,7 @@ func GetBalances(c *gin.Context) {
 func GetTokenBalances(c *gin.Context) {
 
 	type Request struct {
-		OwnerAddress   string   `json:"ownerAddress""`
+		OwnerAddress   string   `json:"ownerAddress"`
 		SmartAddresses []string `json:"smartAddresses"`
 	}
 
@@ -183,7 +186,12 @@ func GetTokenBalances(c *gin.Context) {
 
 	balances := multiBalance.New()
 
-	c.BindJSON(&req)
+	err := c.BindJSON(&req)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
 	var wg sync.WaitGroup
 
