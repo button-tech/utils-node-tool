@@ -12,6 +12,7 @@ import (
 	. "github.com/button-tech/utils-node-tool/etc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
+	"github.com/button-tech/utils-node-tool/db"
 )
 
 // @Summary ETC balance of account
@@ -23,7 +24,14 @@ import (
 // GetBalance return balance of account in ETC for specific node
 func GetBalance(c *gin.Context) {
 
-	var EtcClient = ethrpc.New(storage.EtcNodeAddress.Address)
+	endPoint, err := db.GetEndpoint("etc")
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	var EtcClient = ethrpc.New(endPoint)
 
 	balance, err := EtcClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
@@ -46,6 +54,8 @@ func GetBalance(c *gin.Context) {
 // @Router /etc/transactionFee [get]
 // GetTxFee return Amount of ETC that you need to send a transaction
 func GetTxFee(c *gin.Context) {
+
+
 
 	gasPrice, err := EtcClient.EthGasPrice()
 
@@ -122,37 +132,3 @@ func GetBalances(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
-
-//not Working yet on production
-// func SendTX(c *gin.Context) {
-
-// 	etcClient, err := ethclient.Dial(etcURL)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	type DataToSend struct {
-// 		RawTx string `json:"RawTx"`
-// 	}
-// 	var data DataToSend
-
-// 	c.BindJSON(&data)
-
-// 	fmt.Println("RawTx: " + data.RawTx)
-
-// 	rawTxBytes, err := hex.DecodeString(data.RawTx)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	tx := new(types.Transaction)
-// 	rlp.DecodeBytes(rawTxBytes, &tx)
-
-// 	err = etcClient.SendTransaction(context.Background(), tx)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	fmt.Printf("tx sent: %s", tx.Hash().Hex())
-
-// 	c.JSON(http.StatusOK, gin.H{"response": tx.Hash().Hex()})
-// }
