@@ -1,0 +1,6 @@
+package endpoints
+
+
+func GetEndpoint(){
+
+}

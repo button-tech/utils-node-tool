@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
+	"github.com/button-tech/utils-node-tool/db"
 )
 
 // @Summary ETH balance of account
@@ -26,7 +27,14 @@ import (
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
-	var EthClient = ethrpc.New(storage.EthNodeAddress.Address)
+	endPoint,err := db.GetEndpoint("eth")
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	var EthClient = ethrpc.New(endPoint)
 
 	balance, err := EthClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
@@ -102,7 +110,14 @@ func GetTokenBalance(c *gin.Context) {
 
 	smartContractAddress := c.Param("sc-address")
 
-	ethClient, err := ethclient.Dial(storage.EthNodeAddress.Address)
+	endPoint,err := db.GetEndpoint("eth")
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	ethClient, err := ethclient.Dial(endPoint)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -206,37 +221,3 @@ func GetTokenBalances(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 }
-
-//not Working yet on production
-// func SendTX(c *gin.Context) {
-
-// 	ethClient, err := ethclient.Dial(ethURL)
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-
-// 	type DataToSend struct {
-// 		RawTx string `json:"RawTx"`
-// 	}
-// 	var data DataToSend
-
-// 	c.BindJSON(&data)
-
-// 	fmt.Println("RawTx: " + data.RawTx)
-
-// 	rawTxBytes, err := hex.DecodeString(data.RawTx)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	tx := new(types.Transaction)
-// 	rlp.DecodeBytes(rawTxBytes, &tx)
-
-// 	err = ethClient.SendTransaction(context.Background(), tx)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	fmt.Printf("tx sent: %s", tx.Hash().Hex())
-
-// 	c.JSON(http.StatusOK, gin.H{"response": tx.Hash().Hex()})
-// }

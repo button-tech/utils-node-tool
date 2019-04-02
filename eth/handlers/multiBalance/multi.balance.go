@@ -3,10 +3,12 @@ package multiBalance
 import (
 	"fmt"
 	"github.com/button-tech/utils-node-tool/eth/abi"
-	"github.com/button-tech/utils-node-tool/eth/handlers/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"sync"
+	"github.com/button-tech/utils-node-tool/db"
+	"log"
+	"github.com/onrik/ethrpc"
 )
 
 type Data struct {
@@ -32,7 +34,16 @@ func (ds *Data) Set(key string, value string) {
 
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
-	balance, err := storage.EthClient.EthGetBalance(addr, "latest")
+
+	endPoint, err := db.GetEndpoint("eth")
+	if err != nil{
+		log.Println(err)
+		return
+	}
+
+	ethClient := ethrpc.New(endPoint)
+
+	balance, err := ethClient.EthGetBalance(addr, "latest")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -45,7 +56,13 @@ func TokenWorker(wg *sync.WaitGroup, address string, smartContractAddress string
 
 	defer wg.Done()
 
-	ethClient, err := ethclient.Dial(storage.EthURL)
+	endPoint, err := db.GetEndpoint("eth")
+	if err != nil{
+		log.Println(err)
+		return
+	}
+
+	ethClient, err := ethclient.Dial(endPoint)
 	if err != nil {
 		fmt.Println(err)
 		return
