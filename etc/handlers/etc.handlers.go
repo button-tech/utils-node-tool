@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/etc/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/etc/handlers/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
-	"github.com/button-tech/utils-node-tool/db"
 )
 
 // @Summary ETC balance of account
@@ -23,7 +23,7 @@ import (
 func GetBalance(c *gin.Context) {
 
 	endPoint, err := db.GetEndpoint("etc")
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return

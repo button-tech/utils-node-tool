@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	"log"
-	"net/http"
-
+	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/xlm/handlers/responseModels"
-	"github.com/button-tech/utils-node-tool/xlm/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
+	"log"
+	"net/http"
 )
 
 // @Summary Stellar balance of account
@@ -19,9 +18,25 @@ import (
 // GetBalance return balance of account in Stellar for specific node
 func GetBalance(c *gin.Context) {
 
-	var balance storage.StellarBalance
+	type StellarBalance struct {
+		Balances []struct {
+			Balance             string `json:"balance"`
+			Buying_liabilities  string `json:"buying_liabilities"`
+			Selling_liabilities string `json:"selling_liabilities"`
+			Asset_type          string `json:"asset_type"`
+		}
+	}
 
-	balanceReq, err := req.Get(storage.StellarNodeAddress.Address + "/accounts/" + c.Param("address"))
+	var balance StellarBalance
+
+	endPoint, err := db.GetEndpoint("xlm")
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	balanceReq, err := req.Get(endPoint + "/accounts/" + c.Param("address"))
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})

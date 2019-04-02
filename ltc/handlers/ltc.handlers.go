@@ -5,12 +5,11 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/ltc/handlers/multi-balance"
 	"github.com/button-tech/utils-node-tool/ltc/handlers/responseModels"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
-	"github.com/button-tech/utils-node-tool/db"
 )
 
 // @Summary LTC balance of account
@@ -25,7 +24,7 @@ func GetBalance(c *gin.Context) {
 	address := c.Param("address")
 
 	endPoint, err := db.GetEndpoint("ltc")
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
@@ -73,7 +72,7 @@ func GetUTXO(c *gin.Context) {
 	address := c.Param("address")
 
 	endPoint, err := db.GetEndpoint("ltc")
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return

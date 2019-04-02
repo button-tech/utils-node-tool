@@ -1,10 +1,10 @@
 package multiBalance
 
 import (
-	"github.com/imroc/req"
-	"sync"
 	"github.com/button-tech/utils-node-tool/db"
+	"github.com/imroc/req"
 	"log"
+	"sync"
 )
 
 type Data struct {
@@ -32,7 +32,7 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 
 	endPoint, err := db.GetEndpoint("ltc")
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		return
 	}

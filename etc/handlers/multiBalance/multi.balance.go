@@ -1,9 +1,9 @@
 package multiBalance
 
 import (
-	"sync"
 	"github.com/button-tech/utils-node-tool/db"
 	"github.com/onrik/ethrpc"
+	"sync"
 )
 
 type Data struct {
@@ -31,13 +31,12 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 
 	endPoint, err := db.GetEndpoint("etc")
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		return
 	}
 
 	etcClient := ethrpc.New(endPoint)
-
 
 	balance, err := etcClient.EthGetBalance(addr, "latest")
 	if err != nil {

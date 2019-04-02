@@ -9,7 +9,6 @@ import (
 	"github.com/button-tech/utils-node-tool/xlm/handlers/storage"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/prazd/round-robin"
 	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
@@ -29,23 +28,9 @@ func main() {
 
 	// @BasePath /
 
-	// must add addresses to slice
-	var StellarNodes = []string{}
-
-	rr, err := roundrobin.New(StellarNodes)
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
-
-	// Round Robin middleware
-	r.Use(func(c *gin.Context) {
-		storage.StellarNodeAddress.Set(rr.Next())
-	})
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -53,7 +38,7 @@ func main() {
 
 	r.GET("/stellar/balance/:address", handlers.GetBalance)
 
-	if err = r.Run(":8080"); err != nil {
+	if err := r.Run(":8080"); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}

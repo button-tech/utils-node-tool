@@ -28,7 +28,6 @@ func main() {
 
 	// @BasePath /
 
-
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())

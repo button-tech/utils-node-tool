@@ -1,9 +1,9 @@
 package multiBalance
 
 import (
-	"fmt"
-	"github.com/button-tech/utils-node-tool/btc/handlers/storage"
+	"github.com/button-tech/utils-node-tool/db"
 	"github.com/imroc/req"
+	"log"
 	"sync"
 )
 
@@ -30,15 +30,22 @@ func (ds *Data) Set(key string, value string) {
 
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
-	balance, err := req.Get(storage.BtcURL + "/addr/" + addr + "/balance")
+
+	endPoint, err := db.GetEndpoint("btc")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		return
+	}
+
+	balance, err := req.Get(endPoint + "/addr/" + addr + "/balance")
+	if err != nil {
+		log.Println(err)
 		return
 	}
 
 	balanceStr, err := balance.ToString()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 

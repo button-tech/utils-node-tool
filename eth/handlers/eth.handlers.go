@@ -67,7 +67,6 @@ func GetTxFee(c *gin.Context) {
 
 	ethClient := ethrpc.New(endPoint)
 
-
 	gasPrice, err := ethClient.EthGasPrice()
 
 	if err != nil {
