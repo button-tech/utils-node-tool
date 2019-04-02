@@ -1,7 +1,6 @@
 package multiBalance
 
 import (
-	"fmt"
 	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/eth/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -45,7 +44,7 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 
 	balance, err := ethClient.EthGetBalance(addr, "latest")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -64,19 +63,19 @@ func TokenWorker(wg *sync.WaitGroup, address string, smartContractAddress string
 
 	ethClient, err := ethclient.Dial(endPoint)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	localBalance, err := instance.BalanceOf(nil, common.HexToAddress(address))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
