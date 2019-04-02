@@ -1,6 +1,5 @@
 package endpoints
 
-
-func GetEndpoint(){
+func GetEndpoint() {
 
 }

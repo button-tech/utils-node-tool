@@ -1,12 +1,12 @@
 package db
 
 import (
-	"gopkg.in/mgo.v2"
-	"time"
-	"gopkg.in/mgo.v2/bson"
-	"github.com/button-tech/utils-node-tool/db/schema"
-	"math/rand"
 	"fmt"
+	"github.com/button-tech/utils-node-tool/db/schema"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+	"math/rand"
+	"time"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 
 func GetEndpoint(currency string) (string, error) {
 	session, err := mgo.Dial(hosts)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	defer session.Close()
@@ -30,8 +30,8 @@ func GetEndpoint(currency string) (string, error) {
 
 	rand.Seed(time.Now().UnixNano())
 
-	err = c.Find(bson.M{"currency":currency}).One(&addrs)
-	if err != nil{
+	err = c.Find(bson.M{"currency": currency}).One(&addrs)
+	if err != nil {
 		return "", err
 	}
 
@@ -41,5 +41,3 @@ func GetEndpoint(currency string) (string, error) {
 
 	return result, nil
 }
-
-

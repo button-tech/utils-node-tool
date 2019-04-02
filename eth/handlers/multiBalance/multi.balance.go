@@ -2,13 +2,13 @@ package multiBalance
 
 import (
 	"fmt"
+	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/eth/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"sync"
-	"github.com/button-tech/utils-node-tool/db"
-	"log"
 	"github.com/onrik/ethrpc"
+	"log"
+	"sync"
 )
 
 type Data struct {
@@ -36,7 +36,7 @@ func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 
 	endPoint, err := db.GetEndpoint("eth")
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		return
 	}
@@ -57,7 +57,7 @@ func TokenWorker(wg *sync.WaitGroup, address string, smartContractAddress string
 	defer wg.Done()
 
 	endPoint, err := db.GetEndpoint("eth")
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		return
 	}

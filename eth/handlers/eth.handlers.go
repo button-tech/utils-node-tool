@@ -7,6 +7,7 @@ import (
 
 	"log"
 
+	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/eth/abi"
 	"github.com/button-tech/utils-node-tool/eth/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/eth/handlers/responseModels"
@@ -15,7 +16,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
-	"github.com/button-tech/utils-node-tool/db"
 )
 
 // @Summary ETH balance of account
@@ -27,8 +27,8 @@ import (
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
-	endPoint,err := db.GetEndpoint("eth")
-	if err != nil{
+	endPoint, err := db.GetEndpoint("eth")
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
@@ -110,8 +110,8 @@ func GetTokenBalance(c *gin.Context) {
 
 	smartContractAddress := c.Param("sc-address")
 
-	endPoint,err := db.GetEndpoint("eth")
-	if err != nil{
+	endPoint, err := db.GetEndpoint("eth")
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
 		return
