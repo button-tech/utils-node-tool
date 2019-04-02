@@ -8,8 +8,6 @@ import (
 
 	"github.com/button-tech/utils-node-tool/etc/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/etc/handlers/responseModels"
-	"github.com/button-tech/utils-node-tool/etc/handlers/storage"
-	. "github.com/button-tech/utils-node-tool/etc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
 	"github.com/button-tech/utils-node-tool/db"
@@ -55,9 +53,16 @@ func GetBalance(c *gin.Context) {
 // GetTxFee return Amount of ETC that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
+	endPoint, err := db.GetEndpoint("etc")
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
 
+	etcClient := ethrpc.New(endPoint)
 
-	gasPrice, err := EtcClient.EthGasPrice()
+	gasPrice, err := etcClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
@@ -81,7 +86,16 @@ func GetTxFee(c *gin.Context) {
 // GetGasPrice return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
-	gasPrice, err := EtcClient.EthGasPrice()
+	endPoint, err := db.GetEndpoint("etc")
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	etcClient := ethrpc.New(endPoint)
+
+	gasPrice, err := etcClient.EthGasPrice()
 
 	if err != nil {
 		log.Println(err)
