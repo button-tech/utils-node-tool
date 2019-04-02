@@ -29,23 +29,11 @@ func main() {
 
 	// @BasePath /
 
-	// must add addresses to slice
-	var LtcNodes = []string{}
-
-	rr, err := roundrobin.New(LtcNodes)
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
 
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
 
-	// Round Robin middleware
-	r.Use(func(c *gin.Context) {
-		storage.LtcNodeAddress.Set(rr.Next())
-	})
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -59,7 +47,7 @@ func main() {
 
 	r.POST("/ltc/balances", handlers.GetBalances)
 
-	if err = r.Run(":8080"); err != nil {
+	if err := r.Run(":8080"); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}

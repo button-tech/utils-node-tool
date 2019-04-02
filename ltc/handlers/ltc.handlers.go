@@ -10,6 +10,7 @@ import (
 	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
+	"github.com/button-tech/utils-node-tool/db"
 )
 
 // @Summary LTC balance of account
@@ -23,7 +24,14 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	balance, err := req.Get(storage.LtcNodeAddress.Address + "/api/addr/" + address + "/balance")
+	endPoint, err := db.GetEndpoint("ltc")
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	balance, err := req.Get(endPoint + "/api/addr/" + address + "/balance")
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -63,7 +71,15 @@ func GetTxFee(c *gin.Context) {
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
-	utxos, err := req.Get(storage.LtcURL + "/api/addr/" + address + "/utxo")
+
+	endPoint, err := db.GetEndpoint("ltc")
+	if err != nil{
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		return
+	}
+
+	utxos, err := req.Get(endPoint + "/api/addr/" + address + "/utxo")
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -98,11 +114,11 @@ func GetBalances(c *gin.Context) {
 		AddressesArray []string `json:"addressesArray"`
 	}
 
-	req := new(Request)
+	request := new(Request)
 
 	balances := multiBalance.New()
 
-	err := c.BindJSON(&req)
+	err := c.BindJSON(&request)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
@@ -111,9 +127,9 @@ func GetBalances(c *gin.Context) {
 
 	var wg sync.WaitGroup
 
-	for i := 0; i < len(req.AddressesArray); i++ {
+	for i := 0; i < len(request.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+		go multiBalance.Worker(&wg, request.AddressesArray[i], balances)
 	}
 	wg.Wait()
 

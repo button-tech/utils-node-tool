@@ -1,10 +1,10 @@
 package multiBalance
 
 import (
-	"fmt"
-	"github.com/button-tech/utils-node-tool/ltc/handlers/storage"
 	"github.com/imroc/req"
 	"sync"
+	"github.com/button-tech/utils-node-tool/db"
+	"log"
 )
 
 type Data struct {
@@ -31,15 +31,21 @@ func (ds *Data) Set(key string, value string) {
 func Worker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 
-	balance, err := req.Get(storage.LtcURL + "/api/addr/" + addr + "/balance")
+	endPoint, err := db.GetEndpoint("ltc")
+	if err != nil{
+		log.Println(err)
+		return
+	}
+
+	balance, err := req.Get(endPoint + "/api/addr/" + addr + "/balance")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	balanceStr, err := balance.ToString()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
