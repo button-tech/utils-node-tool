@@ -29,9 +29,9 @@ func GetBalance(c *gin.Context) {
 		return
 	}
 
-	var EtcClient = ethrpc.New(endPoint)
+	var etcClient = ethrpc.New(endPoint)
 
-	balance, err := EtcClient.EthGetBalance(c.Param("address"), "latest")
+	balance, err := etcClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
