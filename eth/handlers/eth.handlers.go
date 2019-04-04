@@ -11,7 +11,6 @@ import (
 	"github.com/button-tech/utils-node-tool/eth/abi"
 	"github.com/button-tech/utils-node-tool/eth/handlers/multiBalance"
 	"github.com/button-tech/utils-node-tool/eth/handlers/responseModels"
-	"github.com/button-tech/utils-node-tool/eth/handlers/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"

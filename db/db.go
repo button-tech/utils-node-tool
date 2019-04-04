@@ -2,18 +2,19 @@ package db
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/button-tech/utils-node-tool/db/schema"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"math/rand"
-	"time"
 )
 
 const (
-	hosts      = "localhost:27017"
-	database   = "endpoints"
-	username   = ""
-	password   = ""
+	hosts    = "localhost:27017"
+	database = "endpoints"
+	// username   = ""
+	// password   = ""
 	collection = "addresses"
 )
 
