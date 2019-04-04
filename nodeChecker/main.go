@@ -23,32 +23,38 @@ func main() {
 		"ltc": 3001,
 	}
 
-	entrys, err := db.GetAll()
-	if err != nil {
-		fmt.Println(err)
-	}
+	for {
 
-	for _, entry := range entrys {
+		entrys, err := db.GetAll()
+		if err != nil {
+			fmt.Println(err)
+		}
 
-		for _, address := range entry.Addresses {
+		for _, entry := range entrys {
 
-			ip := re.FindAllString(address, -1)
+			for _, address := range entry.Addresses {
 
-			ps := portscanner.NewPortScanner(ip[0], 1*time.Second, 1)
+				ip := re.FindAllString(address, -1)
 
-			isAlive := ps.IsOpen(ports[entry.Currency])
+				ps := portscanner.NewPortScanner(ip[0], 1*time.Second, 1)
 
-			fmt.Println(isAlive)
+				isAlive := ps.IsOpen(ports[entry.Currency])
 
-			if !isAlive {
-				isDel, err := db.DeleteAddress(entry.Currency, address)
-				if err != nil {
-					log.Println(err)
-				}
-				if !isDel {
-					panic("Cant del")
+				if !isAlive {
+					isDel, err := db.DeleteAddress(entry.Currency, address)
+					if err != nil {
+						log.Println(err)
+					}
+					if !isDel {
+						panic("Cant del")
+					} else {
+						fmt.Print("Del address:")
+						fmt.Println(address)
+					}
 				}
 			}
 		}
+
+		time.Sleep(time.Second * 5)
 	}
 }
