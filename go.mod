@@ -2,6 +2,7 @@ module github.com/button-tech/utils-node-tool
 
 require (
 	github.com/allegro/bigcache v1.1.0 // indirect
+	github.com/anvie/port-scanner v0.0.0-20180225151059-8159197d3770
 	github.com/aristanetworks/goarista v0.0.0-20190113184425-23a91eb493c6 // indirect
 	github.com/btcsuite/btcd v0.0.0-20190315201642-aa6e0f35703c // indirect
 	github.com/cespare/cp v1.1.1 // indirect
