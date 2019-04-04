@@ -34,9 +34,9 @@ func main() {
 
 			for _, address := range entry.Addresses {
 
-				ip := re.FindAllString(address, -1)
+				ip := re.FindString(address)
 
-				ps := portscanner.NewPortScanner(ip[0], 1*time.Second, 1)
+				ps := portscanner.NewPortScanner(ip, 1*time.Second, 1)
 
 				isAlive := ps.IsOpen(ports[entry.Currency])
 
