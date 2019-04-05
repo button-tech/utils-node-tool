@@ -11,15 +11,22 @@ import (
 )
 
 const (
-	hosts    = "localhost:27017"
-	database = "endpoints"
-	// username   = ""
-	// password   = ""
-	collection = "addresses"
+	hosts      = ""
+	database   = ""
+	username   = ""
+	password   = ""
+	collection = ""
 )
 
+var info = mgo.DialInfo{
+	Addrs:[]string{hosts},
+	Database:database,
+	Username:username,
+	Password:password,
+}
+
 func GetEndpoint(currency string) (string, error) {
-	session, err := mgo.Dial(hosts)
+	session, err := mgo.DialWithInfo(&info)
 	if err != nil {
 		return "", err
 	}
@@ -44,7 +51,7 @@ func GetEndpoint(currency string) (string, error) {
 }
 
 func GetAll() ([]schema.Endpoints, error) {
-	session, err := mgo.Dial(hosts)
+	session, err := mgo.DialWithInfo(&info)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +69,7 @@ func GetAll() ([]schema.Endpoints, error) {
 }
 
 func DeleteAddress(currency, address string) (bool, error) {
-	session, err := mgo.Dial(hosts)
+	session, err := mgo.DialWithInfo(&info)
 	if err != nil {
 		return false, err
 	}

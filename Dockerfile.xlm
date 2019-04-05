@@ -6,7 +6,7 @@ WORKDIR /build
 RUN go get -d ./...
 RUN go build -o bin/main .
 
-FROM ubuntu:latest
+FROM golang:latest
 COPY --from=builder /build/bin /app
 EXPOSE 8080
 CMD ["/app/main"]
