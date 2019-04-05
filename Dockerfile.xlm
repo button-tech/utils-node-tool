@@ -1,10 +1,9 @@
 FROM golang:latest AS builder
 
 RUN mkdir /build
-ADD xlm /build
+ADD . /build
 WORKDIR /build
-RUN go get -d ./...
-RUN go build -o bin/main .
+RUN go build -o xlm/bin/main .
 
 FROM golang:latest
 COPY --from=builder /build/bin /app
