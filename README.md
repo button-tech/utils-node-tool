@@ -3,34 +3,36 @@
 ### API:
 
 ### GET 
-For all:
+
+####For all(eth,etc,btc,ltc,bch,waves,stellar):
 * "*/balance/:address" - return balance of account in crypto for specific nodeget balance of address
 
-For eth,etc,btc,ltc,bch:
+####For eth,etc,btc,ltc,bch:
 * "*/transactionFee" - return Amount of crypto that you need to send a transaction
 
-For eth,etc:
+####For eth,etc:
 * "*/gasPrice"
 
-For eth:
+####For eth:
 * "/eth/tokenBalance/:token/:address"
 
-For btc,ltc,bch:
+####For btc,ltc,bch:
 * "*/utxo/:address"
 
 ### POST:
-For all:
+
+####For all:
 
 * "*/balances" -> send "addressesArray":["address","address"]
 
 
-
-### Run on localhost:
-```
-# ETH_NODE=ADDRESS_OF_NODE go run eth/main.go
-```
 ### Run in Docker container
+ - Build
 ```
-# docker build -f Dockerfile.eth -t name .
-# docker run -p 8080:8080 -e ETH_NODE=ADDRESS_OF_NODE name
+# docker build -f --build-arg DIR=dir_with_main.go -t name_of_image .
+```
+- Run (env for MongoDB)
+
+```
+# docker run -p 8080:8080 -e HOST=host -e DB=database -e USER=username -e PASS=password -e COLLECTION=collection name_of_image
 ```
