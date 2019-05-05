@@ -25,7 +25,6 @@ import (
 // @Router /eth/balance/{address} [get]
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
-
 	endPoint, err := db.GetEndpoint("eth")
 	if err != nil {
 		log.Println(err)
@@ -36,10 +35,21 @@ func GetBalance(c *gin.Context) {
 	var EthClient = ethrpc.New(endPoint)
 
 	balance, err := EthClient.EthGetBalance(c.Param("address"), "latest")
+
 	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
-		return
+
+		reserveNode, _ := db.GetReserveHost("eth")
+
+		EthClient =  ethrpc.New(reserveNode)
+
+		result, err := EthClient.EthGetBalance(c.Param("address"), "latest")
+		if err != nil{
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+			return
+		}
+
+		balance = result
 	}
 
 	response := new(responses.BalanceResponse)

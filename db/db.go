@@ -8,18 +8,20 @@ import (
 	"github.com/button-tech/utils-node-tool/db/schema"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"os"
+	"log"
 )
 
-const (
-	hosts      = ""
-	database   = ""
-	username   = ""
-	password   = ""
-	collection = ""
+var (
+	host     = os.Getenv("HOST")
+	database   = os.Getenv("DB")
+	username   = os.Getenv("USER")
+	password   = os.Getenv("PASS")
+	collection = os.Getenv("COLLECTION")
 )
 
 var info = mgo.DialInfo{
-	Addrs:[]string{hosts},
+	Addrs:[]string{host},
 	Database:database,
 	Username:username,
 	Password:password,
@@ -101,4 +103,32 @@ func removeSliceElement(s []string, r string) []string {
 		}
 	}
 	return s
+}
+
+
+func GetReserveHost(currency string) (string, error) {
+	session, err := mgo.DialWithInfo(&info)
+	if err != nil {
+		return "", err
+	}
+	defer session.Close()
+
+	var addrs schema.Endpoints
+
+	c := session.DB(database).C(collection)
+
+	var result string
+
+	switch currency {
+	case "eth":
+		err = c.Find(bson.M{"currency": currency}).One(&addrs)
+		if err != nil {
+			return "", err
+		}
+
+		log.Println(addrs)
+		result = addrs.Reserve
+	}
+
+	return result, nil
 }
