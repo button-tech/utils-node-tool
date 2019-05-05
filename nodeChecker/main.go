@@ -36,7 +36,7 @@ func main() {
 
 				ip := re.FindString(address)
 
-				ps := portscanner.NewPortScanner(ip, 1*time.Second, 1)
+				ps := portscanner.NewPortScanner(ip, 4*time.Second, 1)
 
 				isAlive := ps.IsOpen(ports[entry.Currency])
 
