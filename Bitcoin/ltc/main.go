@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/button-tech/utils-node-tool/Bitcoin/ltccoin/ltc/docs"
-	"github.com/button-tech/utils-node-tool/Bitcoin/ltccoin/ltc/handlers"
+	_ "github.com/button-tech/utils-node-tool/Bitcoin/ltc/docs"
+	"github.com/button-tech/utils-node-tool/Bitcoin/ltc/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"

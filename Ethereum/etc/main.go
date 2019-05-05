@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/button-tech/utils-node-tool/Ethereum/etcereum/etc/docs"
-	"github.com/button-tech/utils-node-tool/Ethereum/etcereum/etc/handlers"
+	_ "github.com/button-tech/utils-node-tool/Ethereum/etc/docs"
+	"github.com/button-tech/utils-node-tool/Ethereum/etc/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
