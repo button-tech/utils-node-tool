@@ -33,21 +33,25 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
+	eth := r.Group("/eth")
 
+	{
 
-	r.GET("/eth/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		eth.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/eth/balance/:address", handlers.GetBalance)
+		eth.GET("/balance/:address", handlers.GetBalance)
 
-	r.GET("/eth/transactionFee", handlers.GetTxFee)
+		eth.GET("/transactionFee", handlers.GetTxFee)
 
-	r.GET("/eth/gasPrice/", handlers.GetGasPrice)
+		eth.GET("/gasPrice/", handlers.GetGasPrice)
 
-	r.GET("/eth/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
+		eth.GET("/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
 
-	r.POST("/eth/balances", handlers.GetBalances)
+		eth.POST("/balances", handlers.GetBalances)
 
-	r.POST("/eth/tokenBalances", handlers.GetTokenBalances)
+		eth.POST("/tokenBalances", handlers.GetTokenBalances)
+	}
+
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)

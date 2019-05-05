@@ -33,17 +33,20 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	r.GET("/etc/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	etc := r.Group("/etc")
 
-	r.GET("/etc/balance/:address", handlers.GetBalance)
+	{
+		etc.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/etc/transactionFee", handlers.GetTxFee)
+		etc.GET("/balance/:address", handlers.GetBalance)
 
-	r.GET("/etc/gasPrice", handlers.GetGasPrice)
+		etc.GET("/transactionFee", handlers.GetTxFee)
 
-	r.POST("/etc/balances", handlers.GetBalances)
+		etc.GET("/gasPrice", handlers.GetGasPrice)
 
-	// r.POST("/eth/sendTx/", handlers.SendTX)
+		etc.POST("/balances", handlers.GetBalances)
+	}
+
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)

@@ -33,15 +33,20 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	r.GET("/bch/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	bch := r.Group("/bch")
 
-	r.GET("/bch/balance/:address", handlers.GetBalance)
+	{
+		bch.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/bch/utxo/:address", handlers.GetUTXO)
+		bch.GET("/balance/:address", handlers.GetBalance)
 
-	r.GET("/bch/transactionFee", handlers.GetTxFee)
+		bch.GET("/utxo/:address", handlers.GetUTXO)
 
-	r.POST("/bch/balances", handlers.GetBalances)
+		bch.GET("/transactionFee", handlers.GetTxFee)
+
+		bch.POST("/balances", handlers.GetBalances)
+	}
+
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)

@@ -1,8 +1,8 @@
 package main
 
 import (
-	_ "github.com/button-tech/utils-node-tool/OtherBlockchains/wavesBlockchains/waves/docs"
-	"github.com/button-tech/utils-node-tool/OtherBlockchains/wavesBlockchains/waves/handlers"
+	_ "github.com/button-tech/utils-node-tool/OtherBlockchains/waves/docs"
+	"github.com/button-tech/utils-node-tool/OtherBlockchains/waves/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
@@ -29,15 +29,22 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
+
 	gin.SetMode(gin.ReleaseMode)
 
-	r.GET("/waves/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	waves := r.Group("/waves")
 
-	r.GET("/waves/balance/:address", handlers.GetBalance)
+	{
 
-	r.GET("/waves/transactionFee", handlers.GetTxFee)
+		waves.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.POST("/waves/balances", handlers.GetBalances)
+		waves.GET("/balance/:address", handlers.GetBalance)
+
+		waves.GET("/transactionFee", handlers.GetTxFee)
+
+		waves.POST("/balances", handlers.GetBalances)
+	}
+
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)

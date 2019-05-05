@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/button-tech/utils-node-tool/OtherBlockchains/xlmerBlockchains/xlm/docs"
-	"github.com/button-tech/utils-node-tool/OtherBlockchains/xlmerBlockchains/xlm/handlers"
+	_ "github.com/button-tech/utils-node-tool/OtherBlockchains/xlm/docs"
+	"github.com/button-tech/utils-node-tool/OtherBlockchains/xlm/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/gin-swagger"
@@ -31,11 +31,17 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
 
+
 	gin.SetMode(gin.ReleaseMode)
 
-	r.GET("/stellar/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	xlm := r.Group("/stellar")
 
-	r.GET("/stellar/balance/:address", handlers.GetBalance)
+	{
+		xlm.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+		xlm.GET("/balance/:address", handlers.GetBalance)
+	}
+
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)

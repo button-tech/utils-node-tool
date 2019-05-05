@@ -33,17 +33,22 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	r.GET("/btc/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	btc := r.Group("/btc")
 
-	r.GET("/btc/balance/:address", handlers.GetBalance)
+	{
+		btc.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/btc/utxo/:address", handlers.GetUTXO)
+		btc.GET("/balance/:address", handlers.GetBalance)
 
-	r.GET("/btc/transactionFee", handlers.GetTxFee)
+		btc.GET("/utxo/:address", handlers.GetUTXO)
 
-	r.GET("/btc/bestTransactionFee", handlers.GetBextTxFee)
+		btc.GET("/transactionFee", handlers.GetTxFee)
 
-	r.POST("/btc/balances", handlers.GetBalances)
+		btc.GET("/bestTransactionFee", handlers.GetBextTxFee)
+
+		btc.POST("/balances", handlers.GetBalances)
+	}
+
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)
