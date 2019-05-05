@@ -6,12 +6,13 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/button-tech/utils-node-tool/waves/handlers/multiBalance"
+	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
-	"github.com/button-tech/utils-node-tool/waves/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
+	"github.com/button-tech/utils-node-tool/shared/db"
 )
+
 
 // @Summary Waves balance of account
 // @Description return balance of account in Waves for specific node
@@ -24,14 +25,21 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	res, err := req.Get(storage.WavesURL + "/addresses/balance/" + address)
+	endPoint, err := db.GetEndpoint("waves")
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
-	var data storage.BalanceData
+	res, err := req.Get(endPoint + "/addresses/balance/" + address)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	var data responses.BalanceData
 
 	err = res.ToJSON(&data)
 	if err != nil {
@@ -75,7 +83,7 @@ func GetBalances(c *gin.Context) {
 
 	for i := 0; i < len(request.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, request.AddressesArray[i], balances)
+		go multiBalance.WavesWorker(&wg, request.AddressesArray[i], balances)
 	}
 	wg.Wait()
 

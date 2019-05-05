@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/button-tech/utils-node-tool/shared/db"
-	"github.com/button-tech/utils-node-tool/etc/handlers/multiBalance"
+	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
@@ -137,7 +137,7 @@ func GetBalances(c *gin.Context) {
 
 	for i := 0; i < len(req.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+		go multiBalance.EtcWorker(&wg, req.AddressesArray[i], balances)
 	}
 	wg.Wait()
 

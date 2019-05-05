@@ -30,3 +30,8 @@ type BalancesResponse struct {
 type GasPriceResponse struct {
 	GasPrice int64 `json:"gasPrice" example:"0"`
 }
+
+// for waves
+type BalanceData struct {
+	Balance int64 `json:"balance"`
+}

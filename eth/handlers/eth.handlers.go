@@ -8,8 +8,8 @@ import (
 	"log"
 
 	"github.com/button-tech/utils-node-tool/shared/db"
-	"github.com/button-tech/utils-node-tool/eth/abi"
-	"github.com/button-tech/utils-node-tool/eth/handlers/multiBalance"
+	"github.com/button-tech/utils-node-tool/shared/abi"
+	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -205,7 +205,7 @@ func GetBalances(c *gin.Context) {
 
 	for i := 0; i < len(req.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, req.AddressesArray[i], balances)
+		go multiBalance.EthWorker(&wg, req.AddressesArray[i], balances)
 	}
 	wg.Wait()
 

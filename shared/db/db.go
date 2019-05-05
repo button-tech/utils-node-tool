@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/button-tech/utils-node-tool/shared/dbared/db/schema"
+	"github.com/button-tech/utils-node-tool/shared/db/schema"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"os"

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/button-tech/utils-node-tool/bch/handlers/multi-balance"
+	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/gin-gonic/gin"
@@ -129,7 +129,7 @@ func GetBalances(c *gin.Context) {
 
 	for i := 0; i < len(request.AddressesArray); i++ {
 		wg.Add(1)
-		go multiBalance.Worker(&wg, request.AddressesArray[i], balances)
+		go multiBalance.BchWorker(&wg, request.AddressesArray[i], balances)
 	}
 	wg.Wait()
 
