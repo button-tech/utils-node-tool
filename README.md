@@ -4,19 +4,19 @@
 
 ### GET 
 
-####For all(eth,etc,btc,ltc,bch,waves,stellar):
+#### For all(eth,etc,btc,ltc,bch,waves,stellar):
 * "*/balance/:address" - return balance of account in crypto for specific nodeget balance of address
 
-####For eth,etc,btc,ltc,bch:
+#### For eth,etc,btc,ltc,bch:
 * "*/transactionFee" - return Amount of crypto that you need to send a transaction
 
-####For eth,etc:
+#### For eth,etc:
 * "*/gasPrice"
 
-####For eth:
+#### For eth:
 * "/eth/tokenBalance/:token/:address"
 
-####For btc,ltc,bch:
+#### For btc,ltc,bch:
 * "*/utxo/:address"
 
 ### POST:
