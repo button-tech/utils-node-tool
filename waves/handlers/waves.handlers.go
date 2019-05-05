@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"github.com/button-tech/utils-node-tool/waves/handlers/multiBalance"
-	"github.com/button-tech/utils-node-tool/waves/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/button-tech/utils-node-tool/waves/handlers/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"

@@ -4,7 +4,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/button-tech/utils-node-tool/db"
+	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/onrik/ethrpc"
 )
 

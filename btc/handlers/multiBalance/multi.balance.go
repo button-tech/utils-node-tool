@@ -1,7 +1,7 @@
 package multiBalance
 
 import (
-	"github.com/button-tech/utils-node-tool/db"
+	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/imroc/req"
 	"log"
 	"sync"

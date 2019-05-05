@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/anvie/port-scanner"
-	"github.com/button-tech/utils-node-tool/db"
+	"github.com/button-tech/utils-node-tool/shared/db"
 )
 
 func main() {

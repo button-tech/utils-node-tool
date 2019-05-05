@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/button-tech/utils-node-tool/db"
+	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/etc/handlers/multiBalance"
-	"github.com/button-tech/utils-node-tool/etc/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
 )

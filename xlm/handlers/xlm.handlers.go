@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/button-tech/utils-node-tool/db"
-	"github.com/button-tech/utils-node-tool/xlm/handlers/responseModels"
+	"github.com/button-tech/utils-node-tool/shared/db"
+	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"log"

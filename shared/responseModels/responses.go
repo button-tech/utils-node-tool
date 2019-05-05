@@ -15,14 +15,18 @@ type BalanceResponse struct {
 	Balance string `json:"balance" example:"0"`
 }
 
-type UTXOResponse struct {
-	Utxo []UTXO `json:"utxo"`
-}
-
 type TransactionFeeResponse struct {
 	Fee float64 `json:"fee" example:"0"`
 }
 
+type UTXOResponse struct {
+	Utxo []UTXO `json:"utxo"`
+}
+
 type BalancesResponse struct {
 	Balances map[string]string `json:"balances"`
+}
+
+type GasPriceResponse struct {
+	GasPrice int64 `json:"gasPrice" example:"0"`
 }
