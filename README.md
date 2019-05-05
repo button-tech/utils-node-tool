@@ -21,7 +21,7 @@
 
 ### POST:
 
-####For all:
+#### For all:
 
 * "*/balances" -> send "addressesArray":["address","address"]
 
