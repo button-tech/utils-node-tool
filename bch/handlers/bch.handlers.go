@@ -26,14 +26,14 @@ func GetBalance(c *gin.Context) {
 	endPoint, err := db.GetEndpoint("bch")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	balance, err := req.Get(endPoint + "/api/addr/" + address + "/balance")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -75,14 +75,14 @@ func GetUTXO(c *gin.Context) {
 	endPoint, err := db.GetEndpoint("bch")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	utxos, err := req.Get(endPoint + "/api/addr/" + address + "/utxo")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -91,7 +91,7 @@ func GetUTXO(c *gin.Context) {
 	err = utxos.ToJSON(&respArr)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -121,7 +121,7 @@ func GetBalances(c *gin.Context) {
 	err := c.BindJSON(&request)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 

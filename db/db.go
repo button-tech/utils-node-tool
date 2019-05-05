@@ -9,11 +9,10 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"os"
-	"log"
 )
 
 var (
-	host     = os.Getenv("HOST")
+	host       = os.Getenv("HOST")
 	database   = os.Getenv("DB")
 	username   = os.Getenv("USER")
 	password   = os.Getenv("PASS")
@@ -21,10 +20,10 @@ var (
 )
 
 var info = mgo.DialInfo{
-	Addrs:[]string{host},
-	Database:database,
-	Username:username,
-	Password:password,
+	Addrs:    []string{host},
+	Database: database,
+	Username: username,
+	Password: password,
 }
 
 func GetEndpoint(currency string) (string, error) {
@@ -105,7 +104,6 @@ func removeSliceElement(s []string, r string) []string {
 	return s
 }
 
-
 func GetReserveHost(currency string) (string, error) {
 	session, err := mgo.DialWithInfo(&info)
 	if err != nil {
@@ -113,22 +111,34 @@ func GetReserveHost(currency string) (string, error) {
 	}
 	defer session.Close()
 
-	var addrs schema.Endpoints
+	var entry schema.Endpoints
 
 	c := session.DB(database).C(collection)
 
-	var result string
-
-	switch currency {
-	case "eth":
-		err = c.Find(bson.M{"currency": currency}).One(&addrs)
-		if err != nil {
-			return "", err
-		}
-
-		log.Println(addrs)
-		result = addrs.Reserve
+	err = c.Find(bson.M{"currency": currency}).One(&entry)
+	if err != nil {
+		return "", err
 	}
 
-	return result, nil
+	return entry.Reserve, nil
+}
+
+func GetAllNodes(currency string) ([]string, error) {
+	session, err := mgo.DialWithInfo(&info)
+	if err != nil {
+		return nil, err
+	}
+
+	defer session.Close()
+
+	var entry schema.Endpoints
+
+	c := session.DB(database).C(collection)
+
+	err = c.Find(bson.M{"currency": currency}).One(&entry)
+	if err != nil {
+		return nil, err
+	}
+
+	return entry.Addresses, nil
 }

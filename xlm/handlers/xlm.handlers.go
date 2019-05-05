@@ -32,21 +32,21 @@ func GetBalance(c *gin.Context) {
 	endPoint, err := db.GetEndpoint("xlm")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	balanceReq, err := req.Get(endPoint + "/accounts/" + c.Param("address"))
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	err = balanceReq.ToJSON(&balance)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 

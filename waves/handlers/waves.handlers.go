@@ -27,7 +27,7 @@ func GetBalance(c *gin.Context) {
 	res, err := req.Get(storage.WavesURL + "/addresses/balance/" + address)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -36,7 +36,7 @@ func GetBalance(c *gin.Context) {
 	err = res.ToJSON(&data)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -67,7 +67,7 @@ func GetBalances(c *gin.Context) {
 	err := c.BindJSON(&request)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 

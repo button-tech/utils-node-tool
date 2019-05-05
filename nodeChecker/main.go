@@ -55,6 +55,7 @@ func main() {
 			}
 		}
 
+		fmt.Println("All nodes checked!")
 		time.Sleep(time.Second * 5)
 	}
 }

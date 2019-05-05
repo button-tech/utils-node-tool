@@ -28,7 +28,7 @@ func GetBalance(c *gin.Context) {
 	endPoint, err := db.GetEndpoint("eth")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -38,14 +38,19 @@ func GetBalance(c *gin.Context) {
 
 	if err != nil {
 
-		reserveNode, _ := db.GetReserveHost("eth")
+		reserveNode, err := db.GetReserveHost("eth")
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
 
-		EthClient =  ethrpc.New(reserveNode)
+		EthClient = ethrpc.New(reserveNode)
 
 		result, err := EthClient.EthGetBalance(c.Param("address"), "latest")
-		if err != nil{
+		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
 
@@ -70,7 +75,7 @@ func GetTxFee(c *gin.Context) {
 	endPoint, err := db.GetEndpoint("eth")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -80,7 +85,7 @@ func GetTxFee(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -103,7 +108,7 @@ func GetGasPrice(c *gin.Context) {
 	endPoint, err := db.GetEndpoint("eth")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -113,7 +118,7 @@ func GetGasPrice(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -140,28 +145,28 @@ func GetTokenBalance(c *gin.Context) {
 	endPoint, err := db.GetEndpoint("eth")
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	ethClient, err := ethclient.Dial(endPoint)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	balance, err := instance.BalanceOf(nil, common.HexToAddress(address))
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -192,7 +197,7 @@ func GetBalances(c *gin.Context) {
 	err := c.BindJSON(&req)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -231,7 +236,7 @@ func GetTokenBalances(c *gin.Context) {
 	err := c.BindJSON(&req)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": 500})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
