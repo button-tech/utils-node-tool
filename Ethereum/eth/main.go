@@ -33,6 +33,8 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
+
+
 	r.GET("/eth/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/eth/balance/:address", handlers.GetBalance)
