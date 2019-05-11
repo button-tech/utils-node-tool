@@ -33,9 +33,26 @@ func GetBalance(c *gin.Context) {
 
 	balance, err := etcClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		if err != nil {
+
+			reserveNode, err := db.GetReserveHost("eth")
+			if err != nil {
+				log.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				return
+			}
+
+			etcClient = ethrpc.New(reserveNode)
+
+			result, err := etcClient.EthGetBalance(c.Param("address"), "latest")
+			if err != nil {
+				log.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				return
+			}
+
+			balance = result
+		}
 	}
 
 	response := new(responses.BalanceResponse)

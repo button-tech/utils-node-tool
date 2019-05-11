@@ -15,6 +15,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
+	"os"
 )
 
 // @Summary ETH balance of account
@@ -25,14 +26,8 @@ import (
 // @Router /eth/balance/{address} [get]
 // GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
-	endPoint, err := db.GetEndpoint("eth")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
 
-	var EthClient = ethrpc.New(endPoint)
+	var EthClient = ethrpc.New(os.Getenv("eth-api"))
 
 	balance, err := EthClient.EthGetBalance(c.Param("address"), "latest")
 
