@@ -36,20 +36,24 @@ func main() {
 
 				ip := re.FindString(address)
 
-				ps := portscanner.NewPortScanner(ip, 4*time.Second, 1)
+				ps := portscanner.NewPortScanner(ip, 5*time.Second, 1)
 
 				isAlive := ps.IsOpen(ports[entry.Currency])
 
 				if !isAlive {
-					isDel, err := db.DeleteAddress(entry.Currency, address)
-					if err != nil {
-						log.Println(err)
-					}
-					if !isDel {
-						panic("Cant del")
-					} else {
-						fmt.Print("Del address:")
-						fmt.Println(address)
+					time.Sleep(time.Second * 5)
+					secondCheck := ps.IsOpen(ports[entry.Currency])
+					if !secondCheck {
+						isDel, err := db.DeleteAddress(entry.Currency, address)
+						if err != nil {
+							log.Println(err)
+						}
+						if !isDel {
+							panic("Cant del")
+						} else {
+							fmt.Print("Del address:")
+							fmt.Println(address)
+						}
 					}
 				}
 			}
