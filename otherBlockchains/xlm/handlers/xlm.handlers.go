@@ -1,13 +1,14 @@
-package handlers
+	package handlers
 
-import (
-	"github.com/button-tech/utils-node-tool/shared/db"
-	"github.com/button-tech/utils-node-tool/shared/responseModels"
-	"github.com/gin-gonic/gin"
-	"github.com/imroc/req"
-	"log"
-	"net/http"
-)
+	import (
+		"github.com/button-tech/utils-node-tool/shared/responseModels"
+		"github.com/gin-gonic/gin"
+		"github.com/imroc/req"
+		"log"
+		"net/http"
+		"os"
+		"github.com/button-tech/utils-node-tool/shared/db"
+	)
 
 // @Summary Stellar balance of account
 // @Description return balance of account in Stellar for specific node
@@ -29,18 +30,22 @@ func GetBalance(c *gin.Context) {
 
 	var balance StellarBalance
 
-	endPoint, err := db.GetEndpoint("xlm")
+	balanceReq, err := req.Get(os.Getenv("xlm-api") + "/accounts/" + c.Param("address"))
 	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
 
-	balanceReq, err := req.Get(endPoint + "/accounts/" + c.Param("address"))
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		endPoint, err := db.GetEndpoint("xlm")
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		balanceReq, err = req.Get(endPoint + "/accounts/" + c.Param("address"))
+		if err != nil{
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
 	}
 
 	err = balanceReq.ToJSON(&balance)

@@ -56,7 +56,12 @@ func GetBalance(c *gin.Context) {
 		return
 	}
 
-	balance.ToJSON(&ltc)
+	err = balance.ToJSON(&ltc)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
 
 	response.Balance = ltc.Balance
 
