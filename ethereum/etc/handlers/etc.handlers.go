@@ -11,6 +11,7 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
+	"os"
 )
 
 // @Summary ETC balance of account
@@ -22,37 +23,29 @@ import (
 // GetBalance return balance of account in ETC for specific node
 func GetBalance(c *gin.Context) {
 
-	endPoint, err := db.GetEndpoint("etc")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
-
-	var etcClient = ethrpc.New(endPoint)
+	var etcClient = ethrpc.New(os.Getenv("etc-api"))
 
 	balance, err := etcClient.EthGetBalance(c.Param("address"), "latest")
+
 	if err != nil {
+
+		reserveNode, err := db.GetReserveHost("etc")
 		if err != nil {
-
-			reserveNode, err := db.GetReserveHost("eth")
-			if err != nil {
-				log.Println(err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-				return
-			}
-
-			etcClient = ethrpc.New(reserveNode)
-
-			result, err := etcClient.EthGetBalance(c.Param("address"), "latest")
-			if err != nil {
-				log.Println(err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-				return
-			}
-
-			balance = result
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
 		}
+
+		etcClient = ethrpc.New(reserveNode)
+
+		result, err := etcClient.EthGetBalance(c.Param("address"), "latest")
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		balance = result
 	}
 
 	response := new(responses.BalanceResponse)
