@@ -10,6 +10,7 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
+	"os"
 )
 
 // @Summary LTC balance of account
@@ -23,23 +24,41 @@ func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	endPoint, err := db.GetEndpoint("ltc")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+	type LTC struct {
+		Balance string `json:"balance"`
 	}
 
-	balance, err := req.Get(endPoint + "/api/addr/" + address + "/balance")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
+	var ltc LTC
 
 	response := new(responses.BalanceResponse)
 
-	response.Balance = balance.String()
+	balance, err := req.Get(os.Getenv("ltc-api") + "/v1/address/" + address)
+
+	if err != nil {
+		endPoint, err := db.GetEndpoint("ltc")
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		balance, err = req.Get(endPoint + "/api/addr/" + address + "/balance")
+		if err != nil{
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		response.Balance = balance.String()
+
+		c.JSON(http.StatusOK, response)
+
+		return
+	}
+
+	balance.ToJSON(&ltc)
+
+	response.Balance = ltc.Balance
 
 	c.JSON(http.StatusOK, response)
 }
