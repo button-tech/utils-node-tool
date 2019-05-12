@@ -64,8 +64,6 @@ func GetBalance(c *gin.Context) {
 
 		response.Balance = balanceStr
 
-		response.Balance = balance.String()
-
 		c.JSON(http.StatusOK, response)
 
 		return
