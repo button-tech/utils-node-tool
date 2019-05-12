@@ -11,6 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"os"
+	"strconv"
+	"fmt"
 )
 
 // @Summary LTC balance of account
@@ -48,6 +50,19 @@ func GetBalance(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
+
+		balanceFloat, err := strconv.ParseFloat(balance.String(), 64)
+		if err != nil{
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		balanceFloat *= 0.00000001
+
+		balanceStr := fmt.Sprintf("%f", balanceFloat)
+
+		response.Balance = balanceStr
 
 		response.Balance = balance.String()
 

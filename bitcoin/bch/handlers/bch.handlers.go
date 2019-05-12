@@ -11,6 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"os"
+	"strconv"
+	"fmt"
 )
 
 // @Summary BCH balance of account
@@ -49,14 +51,25 @@ func GetBalance(c *gin.Context) {
 			return
 		}
 
-		response.Balance = balance.String()
+		balanceFloat, err := strconv.ParseFloat(balance.String(), 64)
+		if err != nil{
+				log.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				return
+		}
+
+		balanceFloat *= 0.00000001
+
+		balanceStr := fmt.Sprintf("%f", balanceFloat)
+
+		response.Balance = balanceStr
 
 		c.JSON(http.StatusOK, response)
 
 		return
 	}
 
-	err =balance.ToJSON(&bch)
+	err = balance.ToJSON(&bch)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -64,6 +77,8 @@ func GetBalance(c *gin.Context) {
 	}
 
 	response.Balance = bch.Balance
+
+	log.Println(bch.Balance)
 
 	c.JSON(http.StatusOK, response)
 
