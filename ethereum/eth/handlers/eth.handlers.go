@@ -137,18 +137,21 @@ func GetTokenBalance(c *gin.Context) {
 
 	smartContractAddress := c.Param("sc-address")
 
-	endPoint, err := db.GetEndpoint("eth")
+	ethClient, err := ethclient.Dial(os.Getenv("eth-api"))
 	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
+		endPoint, err := db.GetEndpoint("eth")
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
 
-	ethClient, err := ethclient.Dial(endPoint)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		ethClient, err = ethclient.Dial(endPoint)
+		if err != nil{
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
 	}
 
 	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
