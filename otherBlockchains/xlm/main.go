@@ -31,17 +31,15 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(cors.Default())
 
-
 	gin.SetMode(gin.ReleaseMode)
 
-	xlm := r.Group("/stellar")
+	xlm := r.Group("/xlm")
 
 	{
 		xlm.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 		xlm.GET("/balance/:address", handlers.GetBalance)
 	}
-
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)
