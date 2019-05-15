@@ -163,9 +163,36 @@ func GetTokenBalance(c *gin.Context) {
 
 	balance, err := instance.BalanceOf(nil, common.HexToAddress(address))
 	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		//log.Println(err)
+		//c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		//return
+		endPoint, err := db.GetEndpoint("eth")
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		ethClient, err = ethclient.Dial(endPoint)
+		if err != nil{
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		instance, err = abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		balance, err = instance.BalanceOf(nil, common.HexToAddress(address))
+		if err != nil {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
 	}
 
 	response := new(responses.BalanceResponse)
