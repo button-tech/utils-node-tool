@@ -41,7 +41,7 @@ func main() {
 				isAlive := ps.IsOpen(ports[entry.Currency])
 
 				if !isAlive {
-					time.Sleep(time.Second * 5)
+					time.Sleep(time.Second * 10)
 					secondCheck := ps.IsOpen(ports[entry.Currency])
 					if !secondCheck {
 						isDel, err := db.DeleteAddress(entry.Currency, address)
