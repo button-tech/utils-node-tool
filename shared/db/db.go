@@ -69,7 +69,7 @@ func GetAll() ([]schema.Endpoints, error) {
 	return addresses, nil
 }
 
-func DeleteAddress(currency, address string) (bool, error) {
+func AddToStoppedList(currency, address string) (bool, error) {
 	session, err := mgo.DialWithInfo(&info)
 	if err != nil {
 		return false, err
@@ -85,9 +85,9 @@ func DeleteAddress(currency, address string) (bool, error) {
 		return false, err
 	}
 
-	newAddresses := removeSliceElement(entry.Addresses, address)
+	stoppedList := append(entry.Stopped, address)
 
-	err = c.Update(bson.M{"currency": currency}, bson.M{"$set": bson.M{"addresses": newAddresses}})
+	err = c.Update(bson.M{"currency": currency}, bson.M{"$set": bson.M{"stopped": stoppedList}})
 	if err != nil {
 		return false, err
 	}

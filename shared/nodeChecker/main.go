@@ -35,22 +35,21 @@ func main() {
 					time.Sleep(time.Second * 10)
 					secondCheck := ps.IsOpen(entry.Port)
 					if !secondCheck {
-						isDel, err := db.DeleteAddress(entry.Currency, address)
+						isDel, err := db.AddToStoppedList(entry.Currency, address)
 						if err != nil {
 							log.Println(err)
 						}
 						if !isDel {
-							panic("Cant del")
+							panic("Cant add")
 						} else {
-							fmt.Print("Del address:")
-							fmt.Println(address)
+							fmt.Printf("Add to stopped list: %s",address)
 						}
 					}
 				}
 			}
 		}
 
-		fmt.Println("All nodes checked!")
+		fmt.Println("\nAll nodes checked!")
 		time.Sleep(time.Second * 5)
 	}
 }
