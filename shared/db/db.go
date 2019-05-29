@@ -85,9 +85,10 @@ func AddToStoppedList(currency, address string) (bool, error) {
 		return false, err
 	}
 
+	newAddresses := removeSliceElement(entry.Addresses, address)
 	stoppedList := append(entry.Stopped, address)
 
-	err = c.Update(bson.M{"currency": currency}, bson.M{"$set": bson.M{"stopped": stoppedList}})
+	err = c.Update(bson.M{"currency": currency}, bson.M{"$set": bson.M{"stopped": stoppedList, "addresses":newAddresses}})
 	if err != nil {
 		return false, err
 	}
