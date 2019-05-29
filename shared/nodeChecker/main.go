@@ -14,15 +14,6 @@ func main() {
 
 	re := regexp.MustCompile(`(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`)
 
-	ports := map[string]int{
-		"eth": 8545,
-		"etc": 8545,
-		"bch": 3000,
-		"btc": 80,
-		"xlm": 8000,
-		"ltc": 3001,
-	}
-
 	for {
 
 		entrys, err := db.GetAll()
@@ -38,11 +29,11 @@ func main() {
 
 				ps := portscanner.NewPortScanner(ip, 5*time.Second, 1)
 
-				isAlive := ps.IsOpen(ports[entry.Currency])
+				isAlive := ps.IsOpen(entry.Port)
 
 				if !isAlive {
 					time.Sleep(time.Second * 10)
-					secondCheck := ps.IsOpen(ports[entry.Currency])
+					secondCheck := ps.IsOpen(entry.Port)
 					if !secondCheck {
 						isDel, err := db.DeleteAddress(entry.Currency, address)
 						if err != nil {
