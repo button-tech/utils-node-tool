@@ -147,7 +147,7 @@ func GetTokenBalance(c *gin.Context) {
 		}
 
 		ethClient, err = ethclient.Dial(endPoint)
-		if err != nil{
+		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
@@ -174,7 +174,7 @@ func GetTokenBalance(c *gin.Context) {
 		}
 
 		ethClient, err = ethclient.Dial(endPoint)
-		if err != nil{
+		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return

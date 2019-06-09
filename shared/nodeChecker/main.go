@@ -42,7 +42,7 @@ func main() {
 						if !isDel {
 							panic("Cant add")
 						} else {
-							fmt.Printf("Add to stopped list: %s",address)
+							fmt.Printf("Add to stopped list: %s", address)
 						}
 					}
 				}

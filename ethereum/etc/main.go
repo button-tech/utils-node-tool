@@ -47,7 +47,6 @@ func main() {
 		etc.POST("/balances", handlers.GetBalances)
 	}
 
-
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)
 		os.Exit(1)

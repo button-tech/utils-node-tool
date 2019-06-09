@@ -7,13 +7,13 @@ import (
 
 	"sync"
 
+	"fmt"
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"os"
-	"fmt"
 )
 
 // @Summary BTC balance of account
@@ -45,14 +45,14 @@ func GetBalance(c *gin.Context) {
 		}
 
 		balance, err = req.Get(endPoint + "/addr/" + address + "/balance")
-		if err != nil{
+		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
 
 		balanceFloat, err := strconv.ParseFloat(balance.String(), 64)
-		if err != nil{
+		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
