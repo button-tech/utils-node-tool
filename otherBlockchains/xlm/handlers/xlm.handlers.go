@@ -29,11 +29,11 @@ func GetBalance(c *gin.Context) {
 	var balance StellarBalance
 
 	balanceReq, err := req.Get("https://horizon.stellar.org/accounts/" + c.Param("address"))
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
-		}
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
 
 	err = balanceReq.ToJSON(&balance)
 	if err != nil {

@@ -12,7 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"os"
-	"strconv"
 )
 
 // @Summary BCH balance of account
@@ -30,39 +29,35 @@ func GetBalance(c *gin.Context) {
 		Balance string `json:"balance"`
 	}
 
+	type reserveBCH struct {
+		Balance float64 `json:"balance"`
+	}
+
 	var bch BCH
+	var reserveBch reserveBCH
 
 	response := new(responses.BalanceResponse)
 
 	balance, err := req.Get(os.Getenv("bch-api") + "/v1/address/" + address)
 
-	if err != nil {
-		endPoint, err := db.GetEndpoint("bch")
+	if err != nil || balance.Response().StatusCode != 200 {
+		balance, err = req.Get(os.Getenv("reserve-api") + "/v1/address/details/" + address)
+		if err != nil || balance.Response().StatusCode != 200 {
+			log.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+			return
+		}
+
+		err = balance.ToJSON(&reserveBch)
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
 
-		balance, err = req.Get(endPoint + "/api/addr/" + address + "/balance")
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
-		}
+		result := fmt.Sprintf("%f", reserveBch.Balance)
 
-		balanceFloat, err := strconv.ParseFloat(balance.String(), 64)
-		if err != nil {
-			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
-		}
-
-		balanceFloat *= 0.00000001
-
-		balanceStr := fmt.Sprintf("%f", balanceFloat)
-
-		response.Balance = balanceStr
+		response.Balance = result
 
 		c.JSON(http.StatusOK, response)
 
@@ -77,8 +72,6 @@ func GetBalance(c *gin.Context) {
 	}
 
 	response.Balance = bch.Balance
-
-	log.Println(bch.Balance)
 
 	c.JSON(http.StatusOK, response)
 
