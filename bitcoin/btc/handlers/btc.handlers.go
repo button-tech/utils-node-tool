@@ -36,7 +36,7 @@ func GetBalance(c *gin.Context) {
 	response := new(responses.BalanceResponse)
 
 	balance, err := req.Get(os.Getenv("btc-api") + "/v1/address/" + address)
-	if err != nil {
+	if err != nil || balance.Response().StatusCode != 200 {
 		endPoint, err := db.GetEndpoint("btc")
 		if err != nil {
 			log.Println(err)

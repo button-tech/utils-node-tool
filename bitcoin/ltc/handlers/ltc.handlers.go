@@ -11,8 +11,8 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
-	"os"
 	"strconv"
+	"os"
 )
 
 // @Summary LTC balance of account
@@ -35,8 +35,7 @@ func GetBalance(c *gin.Context) {
 	response := new(responses.BalanceResponse)
 
 	balance, err := req.Get(os.Getenv("ltc-api") + "/v1/address/" + address)
-
-	if err != nil {
+	if err != nil || balance.Response().StatusCode != 200 {
 		endPoint, err := db.GetEndpoint("ltc")
 		if err != nil {
 			log.Println(err)
@@ -44,7 +43,7 @@ func GetBalance(c *gin.Context) {
 			return
 		}
 
-		balance, err = req.Get(endPoint + "/api/addr/" + address + "/balance")
+		balance, err := req.Get(endPoint + "/api/addr/" + address + "/balance")
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
