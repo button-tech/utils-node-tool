@@ -1,7 +1,7 @@
 package responses
 
 type UTXO struct {
-	Address       string  `json:"address"`
+	Address       string  `json:"address,omitempty"`
 	Txid          string  `json:"txid"`
 	Vout          int     `json:"vout"`
 	ScriptPubKey  string  `json:"scriptPubKey"`
@@ -9,6 +9,12 @@ type UTXO struct {
 	Satoshis      int     `json:"satoshis"`
 	Height        int     `json:"height"`
 	Confirmations int     `json:"confirmations"`
+	LegacyAddress string  `json:"legacyAddress,omitempty"`
+	CashAddress   string  `json:"cashAddress,omitempty"`
+}
+
+type UTXOResponse struct {
+	Utxo []UTXO `json:"utxo"`
 }
 
 type BalanceResponse struct {
@@ -17,10 +23,6 @@ type BalanceResponse struct {
 
 type TransactionFeeResponse struct {
 	Fee float64 `json:"fee" example:"0"`
-}
-
-type UTXOResponse struct {
-	Utxo []UTXO `json:"utxo"`
 }
 
 type BalancesResponse struct {

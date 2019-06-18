@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"fmt"
-	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
@@ -104,14 +103,7 @@ func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
 
-	endPoint, err := db.GetEndpoint("bch")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
-
-	utxos, err := req.Get(endPoint + "/api/addr/" + address + "/utxo")
+	utxos, err := req.Get(os.Getenv("reserve-api") + "/v1/address/utxo/" + address);
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
