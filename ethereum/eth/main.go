@@ -43,7 +43,7 @@ func main() {
 
 		eth.GET("/transactionFee", handlers.GetTxFee)
 
-		eth.GET("/gasPrice/", handlers.GetGasPrice)
+		eth.GET("/gasPrice", handlers.GetGasPrice)
 
 		eth.GET("/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
 

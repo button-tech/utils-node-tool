@@ -63,14 +63,7 @@ func GetBalance(c *gin.Context) {
 // GetTxFee return Amount of ETC that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
-	endPoint, err := db.GetEndpoint("etc")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
-
-	etcClient := ethrpc.New(endPoint)
+	etcClient := ethrpc.New(os.Getenv("etc-api"))
 
 	gasPrice, err := etcClient.EthGasPrice()
 
@@ -96,14 +89,7 @@ func GetTxFee(c *gin.Context) {
 // GetGasPrice return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
-	endPoint, err := db.GetEndpoint("etc")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
-
-	etcClient := ethrpc.New(endPoint)
+	etcClient := ethrpc.New(os.Getenv("etc-api"))
 
 	gasPrice, err := etcClient.EthGasPrice()
 
