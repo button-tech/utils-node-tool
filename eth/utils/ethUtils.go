@@ -1,16 +1,16 @@
-package ethUtils
+package utils
 
 import (
-	"github.com/onrik/ethrpc"
-	"github.com/button-tech/utils-node-tool/shared/db"
-	"os"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/button-tech/utils-node-tool/shared/abi"
-	"math/big"
-	"golang.org/x/crypto/sha3"
-	"github.com/ethereum/go-ethereum"
 	"context"
+	"github.com/button-tech/utils-node-tool/shared/abi"
+	"github.com/button-tech/utils-node-tool/shared/db"
+	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/onrik/ethrpc"
+	"golang.org/x/crypto/sha3"
+	"math/big"
+	"os"
 )
 
 type TxData struct {
@@ -19,7 +19,7 @@ type TxData struct {
 	Amount       string `json:"amount"`
 }
 
-func GetBalance(address string) (string, error){
+func GetBalance(address string) (string, error) {
 
 	var ethClient = ethrpc.New(os.Getenv("main-api"))
 
@@ -43,8 +43,7 @@ func GetBalance(address string) (string, error){
 	return balance.String(), nil
 }
 
-
-func GetTokenBalance(userAddress, smartContractAddress string)(string, error){
+func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
 	if err != nil {
 		endPoint, err := db.GetEndpoint("blockChain")
@@ -89,7 +88,7 @@ func GetTokenBalance(userAddress, smartContractAddress string)(string, error){
 	return balance.String(), nil
 }
 
-func GetEstimateGas(txData *TxData)(uint64, error){
+func GetEstimateGas(txData *TxData) (uint64, error) {
 
 	toAddress := common.HexToAddress(txData.ToAddress)
 

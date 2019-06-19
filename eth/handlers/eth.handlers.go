@@ -1,22 +1,22 @@
 package handlers
 
 import (
-	"log"
-	"math"
-	"os"
 	"encoding/json"
+	"github.com/button-tech/utils-node-tool/eth/utils"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
-	"github.com/button-tech/utils-node-tool/eth/ethUtils"
+	"log"
+	"math"
+	"os"
 )
 
 func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	balance, err := ethUtils.GetBalance(address)
-	if err != nil{
+	balance, err := utils.GetBalance(address)
+	if err != nil {
 		return err
 	}
 
@@ -83,8 +83,8 @@ func GetTokenBalance(c *routing.Context) error {
 
 	smartContractAddress := c.Param("smart-contract-address")
 
-	balance, err := ethUtils.GetTokenBalance(userAddress, smartContractAddress)
-	if err != nil{
+	balance, err := utils.GetTokenBalance(userAddress, smartContractAddress)
+	if err != nil {
 		return err
 	}
 
@@ -101,15 +101,15 @@ func GetTokenBalance(c *routing.Context) error {
 
 func GetEstimateGas(c *routing.Context) error {
 
-	var txData ethUtils.TxData
+	var txData utils.TxData
 
 	if err := json.Unmarshal(c.PostBody(), &txData); err != nil {
 		log.Println(err)
 		return err
 	}
 
-	gasLimit, err := ethUtils.GetEstimateGas(&txData)
-	if err != nil{
+	gasLimit, err := utils.GetEstimateGas(&txData)
+	if err != nil {
 		return err
 	}
 

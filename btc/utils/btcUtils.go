@@ -1,4 +1,4 @@
-package btcUtils
+package utils
 
 import (
 	"errors"
