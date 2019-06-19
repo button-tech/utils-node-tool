@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/button-tech/utils-node-tool/ethereum/etc/handlers"
+	"github.com/button-tech/utils-node-tool/ethBlockChains/etc/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 )

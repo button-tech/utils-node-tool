@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/otherBlockchains/waves/handlers"
+	"github.com/button-tech/utils-node-tool/waves/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/bitcoin/bch/handlers"
+	"github.com/button-tech/utils-node-tool/xlm/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -16,17 +16,9 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	bch := r.Group("/bch")
+	xlm := r.Group("/xlm")
 
-	{
-		bch.GET("/balance/:address", handlers.GetBalance)
-
-		bch.GET("/utxo/:address", handlers.GetUTXO)
-
-		bch.GET("/transactionFee", handlers.GetTxFee)
-
-		bch.POST("/balances", handlers.GetBalances)
-	}
+	xlm.GET("/balance/:address", handlers.GetBalance)
 
 	if err := r.Run(":8080"); err != nil {
 		log.Println(err)

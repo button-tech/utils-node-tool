@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/ethereum/eth/handlers"
+	"github.com/button-tech/utils-node-tool/ethBlockChains/eth/handlers"
 	"github.com/gin-gonic/contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
