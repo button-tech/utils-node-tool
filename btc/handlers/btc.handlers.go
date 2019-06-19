@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/button-tech/utils-node-tool/shared/btcUtils"
+	"github.com/button-tech/utils-node-tool/btc/btcUtils"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/qiangxue/fasthttp-routing"
 )

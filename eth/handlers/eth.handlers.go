@@ -3,49 +3,26 @@ package handlers
 import (
 	"log"
 	"math"
-
-	"context"
-	"math/big"
 	"os"
-
 	"encoding/json"
-	"github.com/button-tech/utils-node-tool/shared/abi"
-	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
-	"github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
-	"golang.org/x/crypto/sha3"
+	"github.com/button-tech/utils-node-tool/eth/ethUtils"
 )
 
 func GetBalance(c *routing.Context) error {
 
-	var ethClient = ethrpc.New(os.Getenv("main-api"))
+	address := c.Param("address")
 
-	balance, err := ethClient.EthGetBalance(c.Param("address"), "latest")
-	if err != nil {
-		reserveNode, err := db.GetEndpoint("blockChain")
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
-		ethClient = ethrpc.New(reserveNode)
-
-		result, err := ethClient.EthGetBalance(c.Param("address"), "latest")
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
-		balance = result
+	balance, err := ethUtils.GetBalance(address)
+	if err != nil{
+		return err
 	}
 
 	response := new(responses.BalanceResponse)
 
-	response.Balance = balance.String()
+	response.Balance = balance
 
 	if err := responses.JsonResponse(c, response); err != nil {
 		return err
@@ -102,61 +79,18 @@ func GetGasPrice(c *routing.Context) error {
 
 func GetTokenBalance(c *routing.Context) error {
 
-	address := c.Param("address")
+	userAddress := c.Param("user-address")
 
-	smartContractAddress := c.Param("sc-address")
+	smartContractAddress := c.Param("smart-contract-address")
 
-	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
-	if err != nil {
-		endPoint, err := db.GetEndpoint("blockChain")
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
-		ethClient, err = ethclient.Dial(endPoint)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-	}
-
-	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
-	if err != nil {
-		log.Println(err)
+	balance, err := ethUtils.GetTokenBalance(userAddress, smartContractAddress)
+	if err != nil{
 		return err
-	}
-
-	balance, err := instance.BalanceOf(nil, common.HexToAddress(address))
-	if err != nil {
-		endPoint, err := db.GetEndpoint("main-api")
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
-		ethClient, err = ethclient.Dial(endPoint)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
-		instance, err = abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-
-		balance, err = instance.BalanceOf(nil, common.HexToAddress(address))
-		if err != nil {
-			log.Println(err)
-			return err
-		}
 	}
 
 	response := new(responses.BalanceResponse)
 
-	response.Balance = balance.String()
+	response.Balance = balance
 
 	if err := responses.JsonResponse(c, response); err != nil {
 		return err
@@ -167,58 +101,20 @@ func GetTokenBalance(c *routing.Context) error {
 
 func GetEstimateGas(c *routing.Context) error {
 
-	txData := struct {
-		ToAddress    string `json:"toAddress"`
-		TokenAddress string `json:"tokenAddress"`
-		Amount       string `json:"amount"`
-	}{}
+	var txData ethUtils.TxData
 
 	if err := json.Unmarshal(c.PostBody(), &txData); err != nil {
 		log.Println(err)
 		return err
 	}
 
-	toAddress := common.HexToAddress(txData.ToAddress)
-	tokenAddress := common.HexToAddress(txData.TokenAddress)
-
-	amount := new(big.Int)
-	amount.SetString(txData.Amount, 10)
-
-	transferFnSignature := []byte("transfer(address,uint256)")
-	hash := sha3.NewLegacyKeccak256()
-	_, err := hash.Write(transferFnSignature)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-	methodID := hash.Sum(nil)[:4]
-
-	paddedAmount := common.LeftPadBytes(amount.Bytes(), 32)
-
-	paddedAddress := common.LeftPadBytes(toAddress.Bytes(), 32)
-
-	var data []byte
-	data = append(data, methodID...)
-	data = append(data, paddedAddress...)
-	data = append(data, paddedAmount...)
-
-	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	gasLimit, err := ethClient.EstimateGas(context.Background(), ethereum.CallMsg{
-		To:   &tokenAddress,
-		Data: data,
-	})
-
-	if err != nil {
-		log.Println(err)
+	gasLimit, err := ethUtils.GetEstimateGas(&txData)
+	if err != nil{
 		return err
 	}
 
 	response := new(responses.GasLimitResponse)
+
 	response.GasLimit = gasLimit
 
 	if err := responses.JsonResponse(c, response); err != nil {

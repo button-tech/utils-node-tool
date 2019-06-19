@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/ethBlockChains/handlers"
+	"github.com/button-tech/utils-node-tool/eth/handlers"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
@@ -20,7 +20,7 @@ func main() {
 
 	eth.Get("/gasPrice", handlers.GetGasPrice)
 
-	eth.Get("/tokenBalance/<sc-address>/<address>", handlers.GetTokenBalance)
+	eth.Get("/tokenBalance/<smart-contract-address>/<user-address>", handlers.GetTokenBalance)
 
 	eth.Post("/estimateGas", handlers.GetEstimateGas)
 
