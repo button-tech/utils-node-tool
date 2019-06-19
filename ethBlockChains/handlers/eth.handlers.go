@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"math"
 	"log"
+	"math"
 
 	"context"
 	"math/big"
 	"os"
 
+	"encoding/json"
 	"github.com/button-tech/utils-node-tool/shared/abi"
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
@@ -15,9 +16,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/onrik/ethrpc"
-	"golang.org/x/crypto/sha3"
 	"github.com/qiangxue/fasthttp-routing"
-	"encoding/json"
+	"golang.org/x/crypto/sha3"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -47,7 +47,7 @@ func GetBalance(c *routing.Context) error {
 
 	response.Balance = balance.String()
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 
@@ -71,7 +71,7 @@ func GetTxFee(c *routing.Context) error {
 
 	response.Fee = fee
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 
@@ -93,7 +93,7 @@ func GetGasPrice(c *routing.Context) error {
 
 	response.GasPrice = gasPrice.Int64()
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 
@@ -158,14 +158,14 @@ func GetTokenBalance(c *routing.Context) error {
 
 	response.Balance = balance.String()
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func GetEstimateGas(c *routing.Context) error  {
+func GetEstimateGas(c *routing.Context) error {
 
 	txData := struct {
 		ToAddress    string `json:"toAddress"`
@@ -173,7 +173,7 @@ func GetEstimateGas(c *routing.Context) error  {
 		Amount       string `json:"amount"`
 	}{}
 
-	if err := json.Unmarshal(c.PostBody(), &txData); err != nil{
+	if err := json.Unmarshal(c.PostBody(), &txData); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -218,11 +218,10 @@ func GetEstimateGas(c *routing.Context) error  {
 		return err
 	}
 
-
 	response := new(responses.GasLimitResponse)
 	response.GasLimit = gasLimit
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/qiangxue/fasthttp-routing"
 	"github.com/button-tech/utils-node-tool/waves/handlers"
+	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
-	"os"
 	"log"
+	"os"
 )
 
 func main() {
@@ -17,7 +17,6 @@ func main() {
 	waves.Get("/balance/<address>", handlers.GetBalance)
 
 	waves.Post("/balances", handlers.GetBalances)
-
 
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)

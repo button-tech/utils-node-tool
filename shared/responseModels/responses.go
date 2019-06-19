@@ -1,8 +1,8 @@
 package responses
 
 import (
-	"github.com/qiangxue/fasthttp-routing"
 	"encoding/json"
+	"github.com/qiangxue/fasthttp-routing"
 )
 
 type UTXO struct {

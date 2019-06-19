@@ -3,8 +3,8 @@ package handlers
 import (
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/imroc/req"
-	"log"
 	"github.com/qiangxue/fasthttp-routing"
+	"log"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -48,7 +48,7 @@ func GetBalance(c *routing.Context) error {
 
 	response.Balance = stellarBalanceString
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 

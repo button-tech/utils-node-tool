@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/button-tech/utils-node-tool/ethBlockChains/handlers"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
-	"github.com/button-tech/utils-node-tool/ethBlockChains/handlers"
-	"os"
 	"log"
+	"os"
 )
 
 func main() {

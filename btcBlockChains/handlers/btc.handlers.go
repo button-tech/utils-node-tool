@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/button-tech/utils-node-tool/shared/btcUtils"
+	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/qiangxue/fasthttp-routing"
 )
 
@@ -12,26 +12,26 @@ func GetBalance(c *routing.Context) error {
 
 	response := new(responses.BalanceResponse)
 
-	balance, err :=  btcUtils.GetBtcBlockChainBalance(address)
-	if err != nil{
+	balance, err := btcUtils.GetBtcBlockChainBalance(address)
+	if err != nil {
 		return err
 	}
 
 	response.Balance = balance
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func GetUTXO(c *routing.Context) error{
+func GetUTXO(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	utxoArray, err  := btcUtils.GetUTXO(address)
-	if err != nil{
+	utxoArray, err := btcUtils.GetUTXO(address)
+	if err != nil {
 		return err
 	}
 
@@ -39,7 +39,7 @@ func GetUTXO(c *routing.Context) error{
 
 	response.Utxo = utxoArray
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 

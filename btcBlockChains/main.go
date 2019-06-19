@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/button-tech/utils-node-tool/btcBlockChains/handlers"
-	"log"
-	"os"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
+	"log"
+	"os"
 )
 
 func main() {

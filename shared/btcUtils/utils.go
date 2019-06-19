@@ -1,13 +1,13 @@
 package btcUtils
 
 import (
+	"errors"
+	"fmt"
+	"github.com/button-tech/utils-node-tool/shared/db"
+	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/imroc/req"
 	"os"
-	"github.com/button-tech/utils-node-tool/shared/db"
-	"fmt"
 	"strconv"
-	"errors"
-	"github.com/button-tech/utils-node-tool/shared/responseModels"
 )
 
 func GetBtcBlockChainBalance(address string) (string, error) {
@@ -37,7 +37,7 @@ func GetBtcBlockChainBalance(address string) (string, error) {
 
 	if err != nil || responseOfMainApi.Response().StatusCode != 200 {
 		endpoint, err := db.GetEndpoint(currency)
-		if err != nil{
+		if err != nil {
 			return "", err
 		}
 
@@ -46,7 +46,7 @@ func GetBtcBlockChainBalance(address string) (string, error) {
 			return "", err
 		}
 
-		if responseOfReserveApi.Response().StatusCode != 200{
+		if responseOfReserveApi.Response().StatusCode != 200 {
 			return "", errors.New("Bad request")
 		}
 
@@ -66,7 +66,7 @@ func GetBtcBlockChainBalance(address string) (string, error) {
 
 		balanceFloat *= 0.00000001
 
-		return  fmt.Sprintf("%f", balanceFloat), nil
+		return fmt.Sprintf("%f", balanceFloat), nil
 	}
 
 	err = responseOfMainApi.ToJSON(&btc)
@@ -77,7 +77,7 @@ func GetBtcBlockChainBalance(address string) (string, error) {
 	return btc.Balance, nil
 }
 
-func GetUTXO(address string) ([]responses.UTXO, error){
+func GetUTXO(address string) ([]responses.UTXO, error) {
 
 	currency := os.Getenv("blockChain")
 
@@ -85,7 +85,7 @@ func GetUTXO(address string) ([]responses.UTXO, error){
 
 	var requestUrl string
 
-	if currency == "bch"{
+	if currency == "bch" {
 		endPoint = os.Getenv("reserve-api")
 	} else {
 		nodeFromDB, err := db.GetEndpoint(currency)

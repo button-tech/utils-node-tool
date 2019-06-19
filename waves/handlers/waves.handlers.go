@@ -5,11 +5,11 @@ import (
 	"strconv"
 	"sync"
 
+	"encoding/json"
 	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
-	"encoding/json"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -34,7 +34,7 @@ func GetBalance(c *routing.Context) error {
 
 	response.Balance = strconv.FormatInt(data.Balance, 10)
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 
@@ -51,7 +51,7 @@ func GetBalances(c *routing.Context) error {
 
 	balances := multiBalance.New()
 
-	if err := json.Unmarshal(c.PostBody(), &request); err != nil{
+	if err := json.Unmarshal(c.PostBody(), &request); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -68,7 +68,7 @@ func GetBalances(c *routing.Context) error {
 
 	response.Balances = balances.Result
 
-	if err := responses.JsonResponse(c, response);err != nil{
+	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
 
