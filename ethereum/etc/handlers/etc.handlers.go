@@ -76,6 +76,7 @@ func GetTxFee(c *gin.Context) {
 	fee := float64(gasPrice.Int64()*21000) / math.Pow(10, 18)
 
 	response := new(responses.TransactionFeeResponse)
+
 	response.Fee = fee
 
 	c.JSON(http.StatusOK, response)
@@ -100,6 +101,7 @@ func GetGasPrice(c *gin.Context) {
 	}
 
 	response := new(responses.GasPriceResponse)
+
 	response.GasPrice = gasPrice.Int64()
 
 	c.JSON(http.StatusOK, response)

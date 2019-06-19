@@ -36,7 +36,6 @@ func main() {
 	eth := r.Group("/eth")
 
 	{
-
 		eth.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 		eth.GET("/balance/:address", handlers.GetBalance)
@@ -46,6 +45,8 @@ func main() {
 		eth.GET("/gasPrice", handlers.GetGasPrice)
 
 		eth.GET("/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
+
+		eth.POST("/estimateGas", handlers.GetEstimateGas)
 
 		eth.POST("/balances", handlers.GetBalances)
 
