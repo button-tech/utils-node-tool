@@ -181,13 +181,7 @@ func LtcWorker(wg *sync.WaitGroup, addr string, r *Data) {
 func WavesWorker(wg *sync.WaitGroup, addr string, r *Data) {
 	defer wg.Done()
 
-	endPoint, err := db.GetEndpoint("ltc")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	balance, err := req.Get(endPoint + "/addresses/balance/" + addr)
+	balance, err := req.Get("https://nodes.wavesplatform.com/addresses/balance/" + addr)
 	if err != nil {
 		log.Println(err)
 		return

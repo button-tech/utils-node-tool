@@ -2,13 +2,12 @@ package handlers
 
 import (
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
-	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 	"log"
-	"net/http"
+	"github.com/qiangxue/fasthttp-routing"
 )
 
-func GetBalance(c *gin.Context) {
+func GetBalance(c *routing.Context) error {
 
 	type StellarBalance struct {
 		Balances []struct {
@@ -24,15 +23,13 @@ func GetBalance(c *gin.Context) {
 	balanceReq, err := req.Get("https://horizon.stellar.org/accounts/" + c.Param("address"))
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	err = balanceReq.ToJSON(&balance)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	var stellarBalanceString string
@@ -51,5 +48,9 @@ func GetBalance(c *gin.Context) {
 
 	response.Balance = stellarBalanceString
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }

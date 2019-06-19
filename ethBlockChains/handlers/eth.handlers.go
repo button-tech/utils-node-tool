@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"math"
-	"net/http"
 	"log"
 
 	"context"
@@ -15,12 +14,13 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
 	"golang.org/x/crypto/sha3"
+	"github.com/qiangxue/fasthttp-routing"
+	"encoding/json"
 )
 
-func GetBalance(c *gin.Context) {
+func GetBalance(c *routing.Context) error {
 
 	var ethClient = ethrpc.New(os.Getenv("main-api"))
 
@@ -29,8 +29,7 @@ func GetBalance(c *gin.Context) {
 		reserveNode, err := db.GetEndpoint("blockChain")
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 
 		ethClient = ethrpc.New(reserveNode)
@@ -38,8 +37,7 @@ func GetBalance(c *gin.Context) {
 		result, err := ethClient.EthGetBalance(c.Param("address"), "latest")
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 
 		balance = result
@@ -49,10 +47,14 @@ func GetBalance(c *gin.Context) {
 
 	response.Balance = balance.String()
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }
 
-func GetTxFee(c *gin.Context) {
+func GetTxFee(c *routing.Context) error {
 
 	ethClient := ethrpc.New(os.Getenv("main-api"))
 
@@ -60,8 +62,7 @@ func GetTxFee(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	fee := float64(gasPrice.Int64()*21000) / math.Pow(10, 18)
@@ -70,10 +71,14 @@ func GetTxFee(c *gin.Context) {
 
 	response.Fee = fee
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }
 
-func GetGasPrice(c *gin.Context) {
+func GetGasPrice(c *routing.Context) error {
 
 	ethClient := ethrpc.New(os.Getenv("main-api"))
 
@@ -81,18 +86,21 @@ func GetGasPrice(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	response := new(responses.GasPriceResponse)
 
 	response.GasPrice = gasPrice.Int64()
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }
 
-func GetTokenBalance(c *gin.Context) {
+func GetTokenBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
@@ -103,23 +111,20 @@ func GetTokenBalance(c *gin.Context) {
 		endPoint, err := db.GetEndpoint("blockChain")
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 
 		ethClient, err = ethclient.Dial(endPoint)
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 	}
 
 	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	balance, err := instance.BalanceOf(nil, common.HexToAddress(address))
@@ -127,29 +132,25 @@ func GetTokenBalance(c *gin.Context) {
 		endPoint, err := db.GetEndpoint("main-api")
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 
 		ethClient, err = ethclient.Dial(endPoint)
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 
 		instance, err = abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 
 		balance, err = instance.BalanceOf(nil, common.HexToAddress(address))
 		if err != nil {
 			log.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-			return
+			return err
 		}
 	}
 
@@ -157,10 +158,14 @@ func GetTokenBalance(c *gin.Context) {
 
 	response.Balance = balance.String()
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }
 
-func GetEstimateGas(c *gin.Context) {
+func GetEstimateGas(c *routing.Context) error  {
 
 	txData := struct {
 		ToAddress    string `json:"toAddress"`
@@ -168,11 +173,9 @@ func GetEstimateGas(c *gin.Context) {
 		Amount       string `json:"amount"`
 	}{}
 
-	err := c.BindJSON(&txData)
-	if err != nil {
+	if err := json.Unmarshal(c.PostBody(), &txData); err != nil{
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	toAddress := common.HexToAddress(txData.ToAddress)
@@ -183,11 +186,10 @@ func GetEstimateGas(c *gin.Context) {
 
 	transferFnSignature := []byte("transfer(address,uint256)")
 	hash := sha3.NewLegacyKeccak256()
-	_, err = hash.Write(transferFnSignature)
+	_, err := hash.Write(transferFnSignature)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 	methodID := hash.Sum(nil)[:4]
 
@@ -203,8 +205,7 @@ func GetEstimateGas(c *gin.Context) {
 	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	gasLimit, err := ethClient.EstimateGas(context.Background(), ethereum.CallMsg{
@@ -214,11 +215,18 @@ func GetEstimateGas(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
-	c.JSON(http.StatusOK, gin.H{"gasLimit": gasLimit})
+
+	response := new(responses.GasLimitResponse)
+	response.GasLimit = gasLimit
+
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }
 
 //func GetBalances(c *gin.Context) {

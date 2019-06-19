@@ -1,5 +1,10 @@
 package responses
 
+import (
+	"github.com/qiangxue/fasthttp-routing"
+	"encoding/json"
+)
+
 type UTXO struct {
 	Address       string  `json:"address,omitempty"`
 	Txid          string  `json:"txid"`
@@ -36,4 +41,17 @@ type GasPriceResponse struct {
 // for waves
 type BalanceData struct {
 	Balance int64 `json:"balance"`
+}
+
+type GasLimitResponse struct {
+	GasLimit uint64 `json:"gasLimit"`
+}
+
+func JsonResponse(ctx *routing.Context, data interface{}) error {
+	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
+	ctx.Response.SetStatusCode(200)
+	if err := json.NewEncoder(ctx).Encode(data); err != nil {
+		return err
+	}
+	return nil
 }

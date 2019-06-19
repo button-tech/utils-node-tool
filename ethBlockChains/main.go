@@ -1,40 +1,34 @@
 package main
 
 import (
+	"github.com/qiangxue/fasthttp-routing"
+	"github.com/valyala/fasthttp"
 	"github.com/button-tech/utils-node-tool/ethBlockChains/handlers"
-	"github.com/gin-gonic/contrib/cors"
-	"github.com/gin-gonic/gin"
-	"log"
 	"os"
+	"log"
 )
 
 func main() {
 
-	r := gin.New()
-	r.Use(gin.Recovery())
-	r.Use(cors.Default())
+	r := routing.New()
 
-	gin.SetMode(gin.ReleaseMode)
+	eth := r.Group("/" + os.Getenv("blockChain"))
 
-	group := r.Group("/" + os.Getenv("blockChain"))
+	eth.Get("/balance/<address>", handlers.GetBalance)
 
-	{
-		group.GET("/balance/:address", handlers.GetBalance)
+	eth.Get("/transactionFee", handlers.GetTxFee)
 
-		group.GET("/transactionFee", handlers.GetTxFee)
+	eth.Get("/gasPrice", handlers.GetGasPrice)
 
-		group.GET("/gasPrice", handlers.GetGasPrice)
+	eth.Get("/tokenBalance/<sc-address>/<address>", handlers.GetTokenBalance)
 
-		group.GET("/tokenBalance/:sc-address/:address", handlers.GetTokenBalance)
+	eth.Post("/estimateGas", handlers.GetEstimateGas)
 
-		group.POST("/estimateGas", handlers.GetEstimateGas)
+	//eth.POST("/balances", handlers.GetBalances)
+	//
+	//eth.POST("/tokenBalances", handlers.GetTokenBalances)
 
-		//eth.POST("/balances", handlers.GetBalances)
-		//
-		//eth.POST("/tokenBalances", handlers.GetTokenBalances)
-	}
-
-	if err := r.Run(":8080"); err != nil {
+	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}

@@ -1,14 +1,12 @@
 package handlers
 
 import (
-	"log"
-	"net/http"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
-	"github.com/gin-gonic/gin"
 	"github.com/button-tech/utils-node-tool/shared/btcUtils"
+	"github.com/qiangxue/fasthttp-routing"
 )
 
-func GetBalance(c *gin.Context) {
+func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
@@ -16,33 +14,36 @@ func GetBalance(c *gin.Context) {
 
 	balance, err :=  btcUtils.GetBtcBlockChainBalance(address)
 	if err != nil{
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
+		return err
 	}
 
 	response.Balance = balance
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
 
+	return nil
 }
 
-func GetUTXO(c *gin.Context) {
+func GetUTXO(c *routing.Context) error{
 
 	address := c.Param("address")
 
 	utxoArray, err  := btcUtils.GetUTXO(address)
 	if err != nil{
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
+		return err
 	}
 
 	response := new(responses.UTXOResponse)
 
 	response.Utxo = utxoArray
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }
 
 //func GetBalances(c *gin.Context) {

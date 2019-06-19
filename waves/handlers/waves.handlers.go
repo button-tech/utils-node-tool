@@ -2,25 +2,24 @@ package handlers
 
 import (
 	"log"
-	"net/http"
 	"strconv"
 	"sync"
 
 	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
-	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
+	"github.com/qiangxue/fasthttp-routing"
+	"encoding/json"
 )
 
-func GetBalance(c *gin.Context) {
+func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
 	res, err := req.Get("https://nodes.wavesplatform.com/addresses/balance/" + address)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	var data responses.BalanceData
@@ -28,18 +27,21 @@ func GetBalance(c *gin.Context) {
 	err = res.ToJSON(&data)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	response := new(responses.BalanceResponse)
 
 	response.Balance = strconv.FormatInt(data.Balance, 10)
 
-	c.JSON(http.StatusOK, response)
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
+
+	return nil
 }
 
-func GetBalances(c *gin.Context) {
+func GetBalances(c *routing.Context) error {
 
 	type Request struct {
 		AddressesArray []string `json:"addressesArray"`
@@ -49,11 +51,9 @@ func GetBalances(c *gin.Context) {
 
 	balances := multiBalance.New()
 
-	err := c.BindJSON(&request)
-	if err != nil {
+	if err := json.Unmarshal(c.PostBody(), &request); err != nil{
 		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
+		return err
 	}
 
 	var wg sync.WaitGroup
@@ -68,14 +68,9 @@ func GetBalances(c *gin.Context) {
 
 	response.Balances = balances.Result
 
-	c.JSON(http.StatusOK, response)
-}
+	if err := responses.JsonResponse(c, response);err != nil{
+		return err
+	}
 
-func GetTxFee(c *gin.Context) {
-
-	resp := new(responses.TransactionFeeResponse)
-
-	resp.Fee = 0.001
-
-	c.JSON(http.StatusOK, resp)
+	return nil
 }
