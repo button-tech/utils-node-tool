@@ -3,8 +3,6 @@ package handlers
 import (
 	"math"
 	"net/http"
-	"sync"
-
 	"log"
 
 	"context"
@@ -13,7 +11,6 @@ import (
 
 	"github.com/button-tech/utils-node-tool/shared/abi"
 	"github.com/button-tech/utils-node-tool/shared/db"
-	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -25,11 +22,11 @@ import (
 
 func GetBalance(c *gin.Context) {
 
-	var ethClient = ethrpc.New(os.Getenv("eth-api"))
+	var ethClient = ethrpc.New(os.Getenv("main-api"))
 
 	balance, err := ethClient.EthGetBalance(c.Param("address"), "latest")
 	if err != nil {
-		reserveNode, err := db.GetEndpoint("eth")
+		reserveNode, err := db.GetEndpoint("blockChain")
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -44,6 +41,7 @@ func GetBalance(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			return
 		}
+
 		balance = result
 	}
 
@@ -56,7 +54,7 @@ func GetBalance(c *gin.Context) {
 
 func GetTxFee(c *gin.Context) {
 
-	ethClient := ethrpc.New(os.Getenv("eth-api"))
+	ethClient := ethrpc.New(os.Getenv("main-api"))
 
 	gasPrice, err := ethClient.EthGasPrice()
 
@@ -69,6 +67,7 @@ func GetTxFee(c *gin.Context) {
 	fee := float64(gasPrice.Int64()*21000) / math.Pow(10, 18)
 
 	response := new(responses.TransactionFeeResponse)
+
 	response.Fee = fee
 
 	c.JSON(http.StatusOK, response)
@@ -76,7 +75,7 @@ func GetTxFee(c *gin.Context) {
 
 func GetGasPrice(c *gin.Context) {
 
-	ethClient := ethrpc.New(os.Getenv("eth-api"))
+	ethClient := ethrpc.New(os.Getenv("main-api"))
 
 	gasPrice, err := ethClient.EthGasPrice()
 
@@ -99,9 +98,9 @@ func GetTokenBalance(c *gin.Context) {
 
 	smartContractAddress := c.Param("sc-address")
 
-	ethClient, err := ethclient.Dial(os.Getenv("eth-api"))
+	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
 	if err != nil {
-		endPoint, err := db.GetEndpoint("eth")
+		endPoint, err := db.GetEndpoint("blockChain")
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -125,7 +124,7 @@ func GetTokenBalance(c *gin.Context) {
 
 	balance, err := instance.BalanceOf(nil, common.HexToAddress(address))
 	if err != nil {
-		endPoint, err := db.GetEndpoint("eth")
+		endPoint, err := db.GetEndpoint("main-api")
 		if err != nil {
 			log.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -201,7 +200,7 @@ func GetEstimateGas(c *gin.Context) {
 	data = append(data, paddedAddress...)
 	data = append(data, paddedAmount...)
 
-	ethClient, err := ethclient.Dial(os.Getenv("eth-api"))
+	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -222,65 +221,65 @@ func GetEstimateGas(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"gasLimit": gasLimit})
 }
 
-func GetBalances(c *gin.Context) {
-
-	type Request struct {
-		AddressesArray []string `json:"addressesArray"`
-	}
-
-	req := new(Request)
-
-	balances := multiBalance.New()
-
-	err := c.BindJSON(&req)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
-
-	var wg sync.WaitGroup
-
-	for i := 0; i < len(req.AddressesArray); i++ {
-		wg.Add(1)
-		go multiBalance.EthWorker(&wg, req.AddressesArray[i], balances)
-	}
-	wg.Wait()
-
-	response := new(responses.BalancesResponse)
-	response.Balances = balances.Result
-
-	c.JSON(http.StatusOK, response)
-}
-
-func GetTokenBalances(c *gin.Context) {
-
-	type Request struct {
-		OwnerAddress   string   `json:"ownerAddress"`
-		SmartAddresses []string `json:"smartAddresses"`
-	}
-
-	req := new(Request)
-
-	balances := multiBalance.New()
-
-	err := c.BindJSON(&req)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
-
-	var wg sync.WaitGroup
-
-	for i := 0; i < len(req.SmartAddresses); i++ {
-		wg.Add(1)
-		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], balances)
-	}
-	wg.Wait()
-
-	response := new(responses.BalancesResponse)
-	response.Balances = balances.Result
-
-	c.JSON(http.StatusOK, response)
-}
+//func GetBalances(c *gin.Context) {
+//
+//	type Request struct {
+//		AddressesArray []string `json:"addressesArray"`
+//	}
+//
+//	req := new(Request)
+//
+//	balances := multiBalance.New()
+//
+//	err := c.BindJSON(&req)
+//	if err != nil {
+//		log.Println(err)
+//		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+//		return
+//	}
+//
+//	var wg sync.WaitGroup
+//
+//	for i := 0; i < len(req.AddressesArray); i++ {
+//		wg.Add(1)
+//		go multiBalance.EthWorker(&wg, req.AddressesArray[i], balances)
+//	}
+//	wg.Wait()
+//
+//	response := new(responses.BalancesResponse)
+//	response.Balances = balances.Result
+//
+//	c.JSON(http.StatusOK, response)
+//}
+//
+//func GetTokenBalances(c *gin.Context) {
+//
+//	type Request struct {
+//		OwnerAddress   string   `json:"ownerAddress"`
+//		SmartAddresses []string `json:"smartAddresses"`
+//	}
+//
+//	req := new(Request)
+//
+//	balances := multiBalance.New()
+//
+//	err := c.BindJSON(&req)
+//	if err != nil {
+//		log.Println(err)
+//		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+//		return
+//	}
+//
+//	var wg sync.WaitGroup
+//
+//	for i := 0; i < len(req.SmartAddresses); i++ {
+//		wg.Add(1)
+//		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], balances)
+//	}
+//	wg.Wait()
+//
+//	response := new(responses.BalancesResponse)
+//	response.Balances = balances.Result
+//
+//	c.JSON(http.StatusOK, response)
+//}

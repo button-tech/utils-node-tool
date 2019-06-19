@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
-	"github.com/button-tech/utils-node-tool/shared/utils"
+	"github.com/button-tech/utils-node-tool/shared/btcUtils"
 )
 
 func GetBalance(c *gin.Context) {
@@ -14,7 +14,7 @@ func GetBalance(c *gin.Context) {
 
 	response := new(responses.BalanceResponse)
 
-	balance, err :=  utils.GetBtcBlockChainBalance(address)
+	balance, err :=  btcUtils.GetBtcBlockChainBalance(address)
 	if err != nil{
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -31,7 +31,7 @@ func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
 
-	utxoArray, err  := utils.GetUTXO(address)
+	utxoArray, err  := btcUtils.GetUTXO(address)
 	if err != nil{
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, err.Error())

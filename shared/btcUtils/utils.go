@@ -1,4 +1,4 @@
-package utils
+package btcUtils
 
 import (
 	"github.com/imroc/req"
@@ -33,7 +33,7 @@ func GetBtcBlockChainBalance(address string) (string, error) {
 		Balance float64 `json:"balance"`
 	}{}
 
-	responseOfMainApi, err := req.Get(os.Getenv("mainApi") + "/v1/address/" + address)
+	responseOfMainApi, err := req.Get(os.Getenv("main-api") + "/v1/address/" + address)
 
 	if err != nil || responseOfMainApi.Response().StatusCode != 200 {
 		endpoint, err := db.GetEndpoint(currency)
