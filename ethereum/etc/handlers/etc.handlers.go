@@ -14,13 +14,6 @@ import (
 	"os"
 )
 
-// @Summary ETC balance of account
-// @Description return balance of account in ETC for specific node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /etc/balance/{address} [get]
-// GetBalance return balance of account in ETC for specific node
 func GetBalance(c *gin.Context) {
 
 	var etcClient = ethrpc.New(os.Getenv("etc-api"))
@@ -55,12 +48,6 @@ func GetBalance(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary return Amount of ETC that you need to send a transaction
-// @Description return Amount of ETC that you need to send a transaction
-// @Produce  application/json
-// @Success 200 {array} responses.TransactionFeeResponse
-// @Router /etc/transactionFee [get]
-// GetTxFee return Amount of ETC that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
 	etcClient := ethrpc.New(os.Getenv("etc-api"))
@@ -82,12 +69,6 @@ func GetTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary return gas price of specific node
-// @Description return Amount of ETC that you need to send a transaction
-// @Produce  application/json
-// @Success 200 {array} responses.GasPriceResponse
-// @Router /etc/gasPrice [get]
-// GetGasPrice return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
 	etcClient := ethrpc.New(os.Getenv("etc-api"))
@@ -107,13 +88,6 @@ func GetGasPrice(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary ETC balance of accounts by list
-// @Description return balances of accounts in ETC
-// @Produce  application/json
-// @Param addressesArray     body string true "addressesArray"
-// @Success 200 {array} responses.BalancesResponse
-// @Router /etc/balances [post]
-// GetBalanceForMultipleAdresses return balances of accounts in ETC
 func GetBalances(c *gin.Context) {
 
 	type Request struct {

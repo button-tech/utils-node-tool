@@ -16,13 +16,6 @@ import (
 	"os"
 )
 
-// @Summary BTC balance of account
-// @Description return balance of account in BTC for specific node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /btc/balance/{address} [get]
-// GetBalance return balance of account in BTC for specific node
 func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
@@ -82,12 +75,6 @@ func GetBalance(c *gin.Context) {
 
 }
 
-// @Summary return Amount of BTC that you need to send a transaction
-// @Description return Amount of BTC that you need to send a transaction
-// @Produce  application/json
-// @Success 200 {array} responses.TransactionFeeResponse
-// @Router /btc/bestTransactionFee [get]
-// GetBalance return Amount of BTC that you need to send a transaction
 func GetBextTxFee(c *gin.Context) {
 
 	type BTCFee struct {
@@ -125,12 +112,6 @@ func GetBextTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary BTC fee
-// @Description return BTC fee
-// @Produce  application/json
-// @Success 200 {array} responses.TransactionFeeResponse
-// @Router /btc/transactionFee [get]
-// GetBalance return BTC fee
 func GetTxFee(c *gin.Context) {
 
 	resp := new(responses.TransactionFeeResponse)
@@ -141,13 +122,6 @@ func GetTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// @Summary BTC UTXO of account
-// @Description return UTXO of account
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.UTXOResponse
-// @Router /btc/utxo/{address} [get]
-// GetUTXO return UTXO of account
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
@@ -182,13 +156,6 @@ func GetUTXO(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary BTC balance of accounts by list
-// @Description return balances of accounts in BTC
-// @Produce  application/json
-// @Param addressesArray     body string true "addressesArray"
-// @Success 200 {array} responses.BalancesResponse
-// @Router /btc/balances [post]
-// GetBalanceForMultipleAdresses return balances of accounts in BTC
 func GetBalances(c *gin.Context) {
 
 	type Request struct {

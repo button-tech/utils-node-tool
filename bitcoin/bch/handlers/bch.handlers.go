@@ -13,13 +13,6 @@ import (
 	"os"
 )
 
-// @Summary BCH balance of account
-// @Description return balance of account in BCH for specific node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /bch/balance/{address} [get]
-// GetBalance return balance of account in BCH for specific node
 func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
@@ -76,12 +69,6 @@ func GetBalance(c *gin.Context) {
 
 }
 
-// @Summary BCH fee
-// @Description return BCH fee
-// @Produce  application/json
-// @Success 200 {array} responses.TransactionFeeResponse
-// @Router /bch/transactionFee [get]
-// GetBalance return BCH fee
 func GetTxFee(c *gin.Context) {
 
 	resp := new(responses.TransactionFeeResponse)
@@ -92,18 +79,11 @@ func GetTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// @Summary BCH UTXO of account
-// @Description return UTXO of account
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.UTXOResponse
-// @Router /bch/utxo/{address} [get]
-// GetUTXO return UTXO of account
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
 
-	utxos, err := req.Get(os.Getenv("reserve-api") + "/v1/address/utxo/" + address);
+	utxos, err := req.Get(os.Getenv("reserve-api") + "/v1/address/utxo/" + address)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -126,12 +106,6 @@ func GetUTXO(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Description return balances of accounts in BCH
-// @Produce  application/json
-// @Param addressesArray     body string true "addressesArray"
-// @Success 200 {array} responses.BalancesResponse
-// @Router /bch/balances [post]
-// GetBalanceForMultipleAdresses return balances of accounts in BCH
 func GetBalances(c *gin.Context) {
 
 	type Request struct {

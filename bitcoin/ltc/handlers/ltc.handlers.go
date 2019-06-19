@@ -15,13 +15,6 @@ import (
 	"strconv"
 )
 
-// @Summary LTC balance of account
-// @Description return balance of account in LTC for specific node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /ltc/balance/{address} [get]
-// GetBalance return balance of account in LTC for specific node
 func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
@@ -80,12 +73,6 @@ func GetBalance(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary LTC fee
-// @Description return LTC fee
-// @Produce  application/json
-// @Success 200 {array} responses.TransactionFeeResponse
-// @Router /ltc/transactionFee [get]
-// GetBalance return LTC fee
 func GetTxFee(c *gin.Context) {
 
 	resp := new(responses.TransactionFeeResponse)
@@ -96,13 +83,6 @@ func GetTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// @Summary LTC UTXO of account
-// @Description return UTXO of account
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.UTXOResponse
-// @Router /ltc/utxo/{address} [get]
-// GetUTXO return UTXO of account
 func GetUTXO(c *gin.Context) {
 
 	address := c.Param("address")
@@ -137,12 +117,6 @@ func GetUTXO(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Description return balances of accounts in LTC
-// @Produce  application/json
-// @Param addressesArray     body string true "addressesArray"
-// @Success 200 {array} responses.BalancesResponse
-// @Router /ltc/balances [post]
-// GetBalanceForMultipleAdresses return balances of accounts in LTC
 func GetBalances(c *gin.Context) {
 
 	type Request struct {

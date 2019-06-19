@@ -7,28 +7,22 @@ import (
 
 	"log"
 
+	"context"
+	"math/big"
+	"os"
+
 	"github.com/button-tech/utils-node-tool/shared/abi"
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"github.com/onrik/ethrpc"
-	"os"
-	"github.com/ethereum/go-ethereum"
-	"context"
-	"math/big"
 	"golang.org/x/crypto/sha3"
 )
 
-// @Summary ETH balance of account
-// @Description return balance of account in ETH for specific node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /eth/balance/{address} [get]
-// GetBalance return balance of account in ETH for specific node
 func GetBalance(c *gin.Context) {
 
 	var ethClient = ethrpc.New(os.Getenv("eth-api"))
@@ -60,12 +54,6 @@ func GetBalance(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary return Amount of ETH that you need to send a transaction
-// @Description return Amount of ETH that you need to send a transaction
-// @Produce  application/json
-// @Success 200 {array} responses.TransactionFeeResponse
-// @Router /eth/transactionFee [get]
-// GetTxFee return Amount of ETH that you need to send a transaction
 func GetTxFee(c *gin.Context) {
 
 	ethClient := ethrpc.New(os.Getenv("eth-api"))
@@ -86,12 +74,6 @@ func GetTxFee(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary return gas price of specific node
-// @Description return Amount of ETH that you need to send a transaction
-// @Produce  application/json
-// @Success 200 {array} responses.GasPriceResponse
-// @Router /eth/gasPrice [get]
-// GetGasPrice return gas price of specific node
 func GetGasPrice(c *gin.Context) {
 
 	ethClient := ethrpc.New(os.Getenv("eth-api"))
@@ -111,14 +93,6 @@ func GetGasPrice(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary return balance of specific token in ETH node
-// @Description return balance of specific token in ETH node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Param   sc-address        path    string     true        "sc-address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /eth/tokenBalance/{sc-address}/{address} [get]
-// GetTokenBalance return Amount of ETH ERC20 token
 func GetTokenBalance(c *gin.Context) {
 
 	address := c.Param("address")
@@ -187,31 +161,35 @@ func GetTokenBalance(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func GetEstimateGas(c *gin.Context){
+func GetEstimateGas(c *gin.Context) {
 
 	txData := struct {
-		ToAddress string `json:"toAddress"`
+		ToAddress    string `json:"toAddress"`
 		TokenAddress string `json:"tokenAddress"`
-		Amount string `json:"amount"`
+		Amount       string `json:"amount"`
 	}{}
 
-
 	err := c.BindJSON(&txData)
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	toAddress := common.HexToAddress(txData.ToAddress)
-	tokenAddress := common.HexToAddress(txData.TokenAddress	)
+	tokenAddress := common.HexToAddress(txData.TokenAddress)
 
 	amount := new(big.Int)
 	amount.SetString(txData.Amount, 10)
 
 	transferFnSignature := []byte("transfer(address,uint256)")
 	hash := sha3.NewLegacyKeccak256()
-	hash.Write(transferFnSignature)
+	_, err = hash.Write(transferFnSignature)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
 	methodID := hash.Sum(nil)[:4]
 
 	paddedAmount := common.LeftPadBytes(amount.Bytes(), 32)
@@ -223,20 +201,19 @@ func GetEstimateGas(c *gin.Context){
 	data = append(data, paddedAddress...)
 	data = append(data, paddedAmount...)
 
-
 	ethClient, err := ethclient.Dial(os.Getenv("eth-api"))
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	gasLimit, err := ethClient.EstimateGas(context.Background(), ethereum.CallMsg{
-		To:  &tokenAddress,
+		To:   &tokenAddress,
 		Data: data,
 	})
 
-	if err != nil{
+	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
@@ -245,13 +222,6 @@ func GetEstimateGas(c *gin.Context){
 	c.JSON(http.StatusOK, gin.H{"gasLimit": gasLimit})
 }
 
-// @Summary ETH balance of accounts by list
-// @Description return balances of accounts in ETH
-// @Produce  application/json
-// @Param addressesArray     body string true "addressesArray"
-// @Success 200 {array} responses.BalancesResponse
-// @Router /eth/balances [post]
-// GetBalanceForMultipleAdresses return balances of accounts in ETH
 func GetBalances(c *gin.Context) {
 
 	type Request struct {
@@ -283,13 +253,6 @@ func GetBalances(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary ETH ERC-20 tokens balance of account by list of smart contracts
-// @Description return tokens balances of account
-// @Produce  application/json
-// @Param addressesArray     body string true "addressesArray"
-// @Success 200 {array} responses.BalancesResponse
-// @Router /eth/tokenBalances [post]
-// GetBalanceForMultipleAdresses return tokens balances of account
 func GetTokenBalances(c *gin.Context) {
 
 	type Request struct {

@@ -8,13 +8,6 @@ import (
 	"net/http"
 )
 
-// @Summary Stellar balance of account
-// @Description return balance of account in Stellar for specific node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /stellar/balance/{address} [get]
-// GetBalance return balance of account in Stellar for specific node
 func GetBalance(c *gin.Context) {
 
 	type StellarBalance struct {

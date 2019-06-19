@@ -6,32 +6,17 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/multiBalance"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req"
 )
 
-// @Summary Waves balance of account
-// @Description return balance of account in Waves for specific node
-// @Produce  application/json
-// @Param   address        path    string     true        "address"
-// @Success 200 {array} responses.BalanceResponse
-// @Router /waves/balance/{address} [get]
-// GetBalance return balance of account in Waves
 func GetBalance(c *gin.Context) {
 
 	address := c.Param("address")
 
-	endPoint, err := db.GetEndpoint("waves")
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-		return
-	}
-
-	res, err := req.Get(endPoint + "/addresses/balance/" + address)
+	res, err := req.Get("https://nodes.wavesplatform.com/addresses/balance/" + address)
 	if err != nil {
 		log.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
@@ -54,13 +39,6 @@ func GetBalance(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary Waves balance of accounts by list
-// @Description return balances of accounts in Waves
-// @Produce  application/json
-// @Param addressesArray     body string true "addressesArray"
-// @Success 200 {array} responses.BalancesResponse
-// @Router /waves/balances [post]
-// GetBalanceForMultipleAdresses return balances of accounts in Waves
 func GetBalances(c *gin.Context) {
 
 	type Request struct {
@@ -93,12 +71,6 @@ func GetBalances(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// @Summary Waves fee
-// @Description return Waves fee
-// @Produce  application/json
-// @Success 200 {array} responses.TransactionFeeResponse
-// @Router /waves/transactionFee [get]
-// GetBalance return Waves fee
 func GetTxFee(c *gin.Context) {
 
 	resp := new(responses.TransactionFeeResponse)
