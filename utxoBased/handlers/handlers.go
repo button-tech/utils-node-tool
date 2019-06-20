@@ -12,7 +12,7 @@ func GetBalance(c *routing.Context) error {
 
 	response := new(responses.BalanceResponse)
 
-	balance, err := utils.GetBtcBlockChainBalance(address)
+	balance, err := utils.GetBalance(address)
 	if err != nil {
 		return err
 	}

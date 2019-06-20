@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func GetBtcBlockChainBalance(address string) (string, error) {
+func GetBalance(address string) (string, error) {
 
 	var reserveUrl string
 
@@ -107,6 +107,10 @@ func GetUTXO(address string) ([]responses.UTXO, error) {
 	utxos, err := req.Get(requestUrl)
 	if err != nil {
 		return nil, err
+	}
+
+	if utxos.Response().StatusCode != 200 {
+		return nil, errors.New("Bad request")
 	}
 
 	var utxoArray []responses.UTXO
