@@ -14,7 +14,7 @@ func GetBalance(address string) (string, error) {
 
 	var reserveUrl string
 
-	currency := os.Getenv("blockChain")
+	currency := os.Getenv("blockchain")
 
 	switch currency {
 	case "btc":
@@ -79,7 +79,7 @@ func GetBalance(address string) (string, error) {
 
 func GetUTXO(address string) ([]responses.UTXO, error) {
 
-	currency := os.Getenv("blockChain")
+	currency := os.Getenv("blockchain")
 
 	var endPoint string
 
