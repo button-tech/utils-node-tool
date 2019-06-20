@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/button-tech/utils-node-tool/eth/utils"
+	"github.com/button-tech/utils-node-tool/ethBased/utils"
 	"github.com/button-tech/utils-node-tool/shared/responseModels"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"

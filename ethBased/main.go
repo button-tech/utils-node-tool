@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/eth/handlers"
+	"github.com/button-tech/utils-node-tool/ethBased/handlers"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
