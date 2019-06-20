@@ -86,6 +86,7 @@ func AddToStoppedList(currency, address string) (bool, error) {
 	}
 
 	newAddresses := removeSliceElement(entry.Addresses, address)
+
 	stoppedList := append(entry.Stopped, address)
 
 	err = c.Update(bson.M{"currency": currency}, bson.M{"$set": bson.M{"stopped": stoppedList, "addresses": newAddresses}})
@@ -94,34 +95,6 @@ func AddToStoppedList(currency, address string) (bool, error) {
 	}
 
 	return true, nil
-}
-
-func removeSliceElement(s []string, r string) []string {
-	for i, v := range s {
-		if v == r {
-			return append(s[:i], s[i+1:]...)
-		}
-	}
-	return s
-}
-
-func GetReserveHost(currency string) (string, error) {
-	session, err := mgo.DialWithInfo(&info)
-	if err != nil {
-		return "", err
-	}
-	defer session.Close()
-
-	var entry schema.Endpoints
-
-	c := session.DB(database).C(collection)
-
-	err = c.Find(bson.M{"currency": currency}).One(&entry)
-	if err != nil {
-		return "", err
-	}
-
-	return entry.Reserve, nil
 }
 
 func GetAllNodes(currency string) ([]string, error) {
@@ -142,4 +115,13 @@ func GetAllNodes(currency string) ([]string, error) {
 	}
 
 	return entry.Addresses, nil
+}
+
+func removeSliceElement(s []string, r string) []string {
+	for i, v := range s {
+		if v == r {
+			return append(s[:i], s[i+1:]...)
+		}
+	}
+	return s
 }

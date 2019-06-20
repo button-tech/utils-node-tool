@@ -4,8 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/button-tech/utils-node-tool/shared/db"
-	"github.com/button-tech/utils-node-tool/shared/responseModels"
+	"github.com/button-tech/utils-node-tool/shared/responses"
 	"github.com/imroc/req"
+	"golang.org/x/sync/errgroup"
 	"os"
 	"strconv"
 )
@@ -25,11 +26,11 @@ func GetBalance(address string) (string, error) {
 		reserveUrl = "/api/addr/" + address + "/balance"
 	}
 
-	btc := struct {
+	data := struct {
 		Balance string `json:"balance"`
 	}{}
 
-	reserveBtc := struct {
+	reserveData := struct {
 		Balance float64 `json:"balance"`
 	}{}
 
@@ -51,11 +52,11 @@ func GetBalance(address string) (string, error) {
 		}
 
 		if currency == "bch" {
-			err = responseOfReserveApi.ToJSON(&reserveBtc)
+			err = responseOfReserveApi.ToJSON(&reserveData)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("%f", reserveBtc.Balance), nil
+			return fmt.Sprintf("%f", reserveData.Balance), nil
 
 		}
 
@@ -69,12 +70,12 @@ func GetBalance(address string) (string, error) {
 		return fmt.Sprintf("%f", balanceFloat), nil
 	}
 
-	err = responseOfMainApi.ToJSON(&btc)
+	err = responseOfMainApi.ToJSON(&data)
 	if err != nil {
 		return "", err
 	}
 
-	return btc.Balance, nil
+	return data.Balance, nil
 }
 
 func GetUTXO(address string) ([]responses.UTXO, error) {
@@ -86,7 +87,7 @@ func GetUTXO(address string) ([]responses.UTXO, error) {
 	var requestUrl string
 
 	if currency == "bch" {
-		endPoint = os.Getenv("reserve-api")
+		endPoint = "https://rest.bitbox.earth"
 	} else {
 		nodeFromDB, err := db.GetEndpoint(currency)
 		if err != nil {
@@ -121,4 +122,33 @@ func GetUTXO(address string) ([]responses.UTXO, error) {
 	}
 
 	return utxoArray, nil
+}
+
+func GetBalances(addresses []string) (map[string]string, error) {
+
+	result := responses.NewBalances()
+
+	var g errgroup.Group
+
+	for _, address := range addresses {
+
+		address := address
+
+		g.Go(func() error {
+
+			balance, err := GetBalance(address)
+			if err != nil {
+				return err
+			}
+
+			result.Set(address, balance)
+
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return result.AddressesAndBalances, nil
 }

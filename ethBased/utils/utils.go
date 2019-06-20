@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/button-tech/utils-node-tool/shared/abi"
 	"github.com/button-tech/utils-node-tool/shared/db"
+	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -13,19 +14,13 @@ import (
 	"os"
 )
 
-type TxData struct {
-	ToAddress    string `json:"toAddress"`
-	TokenAddress string `json:"tokenAddress"`
-	Amount       string `json:"amount"`
-}
-
 func GetBalance(address string) (string, error) {
 
 	var ethClient = ethrpc.New(os.Getenv("main-api"))
 
 	balance, err := ethClient.EthGetBalance(address, "latest")
 	if err != nil {
-		reserveNode, err := db.GetEndpoint("blockChain")
+		reserveNode, err := db.GetEndpoint("blockchain")
 		if err != nil {
 			return "", err
 		}
@@ -46,7 +41,7 @@ func GetBalance(address string) (string, error) {
 func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
 	if err != nil {
-		endPoint, err := db.GetEndpoint("blockChain")
+		endPoint, err := db.GetEndpoint("blockchain")
 		if err != nil {
 			return "", err
 		}
@@ -88,14 +83,14 @@ func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 	return balance.String(), nil
 }
 
-func GetEstimateGas(txData *TxData) (uint64, error) {
+func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
-	toAddress := common.HexToAddress(txData.ToAddress)
+	toAddress := common.HexToAddress(req.ToAddress)
 
-	tokenAddress := common.HexToAddress(txData.TokenAddress)
+	tokenAddress := common.HexToAddress(req.TokenAddress)
 
 	amount := new(big.Int)
-	amount.SetString(txData.Amount, 10)
+	amount.SetString(req.Amount, 10)
 
 	transferFnSignature := []byte("transfer(address,uint256)")
 	hash := sha3.NewLegacyKeccak256()

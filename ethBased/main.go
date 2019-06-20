@@ -12,21 +12,17 @@ func main() {
 
 	r := routing.New()
 
-	eth := r.Group("/" + os.Getenv("blockChain"))
+	g := r.Group("/" + os.Getenv("blockchain"))
 
-	eth.Get("/balance/<address>", handlers.GetBalance)
+	g.Get("/balance/<address>", handlers.GetBalance)
 
-	eth.Get("/transactionFee", handlers.GetTxFee)
+	g.Get("/transactionFee", handlers.GetTxFee)
 
-	eth.Get("/gasPrice", handlers.GetGasPrice)
+	g.Get("/gasPrice", handlers.GetGasPrice)
 
-	eth.Get("/tokenBalance/<smart-contract-address>/<user-address>", handlers.GetTokenBalance)
+	g.Get("/tokenBalance/<smart-contract-address>/<user-address>", handlers.GetTokenBalance)
 
-	eth.Post("/estimateGas", handlers.GetEstimateGas)
-
-	//eth.POST("/balances", handlers.GetBalances)
-	//
-	//eth.POST("/tokenBalances", handlers.GetTokenBalances)
+	g.Post("/estimateGas", handlers.GetEstimateGas)
 
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)

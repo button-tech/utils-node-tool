@@ -3,7 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/button-tech/utils-node-tool/ethBased/utils"
-	"github.com/button-tech/utils-node-tool/shared/responseModels"
+	"github.com/button-tech/utils-node-tool/shared/requests"
+	"github.com/button-tech/utils-node-tool/shared/responses"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"log"
@@ -101,14 +102,14 @@ func GetTokenBalance(c *routing.Context) error {
 
 func GetEstimateGas(c *routing.Context) error {
 
-	var txData utils.TxData
+	var data requests.EthEstimateGasRequest
 
-	if err := json.Unmarshal(c.PostBody(), &txData); err != nil {
+	if err := json.Unmarshal(c.PostBody(), &data); err != nil {
 		log.Println(err)
 		return err
 	}
 
-	gasLimit, err := utils.GetEstimateGas(&txData)
+	gasLimit, err := utils.GetEstimateGas(&data)
 	if err != nil {
 		return err
 	}
@@ -123,66 +124,3 @@ func GetEstimateGas(c *routing.Context) error {
 
 	return nil
 }
-
-//func GetBalances(c *gin.Context) {
-//
-//	type Request struct {
-//		AddressesArray []string `json:"addressesArray"`
-//	}
-//
-//	req := new(Request)
-//
-//	balances := multiBalance.New()
-//
-//	err := c.BindJSON(&req)
-//	if err != nil {
-//		log.Println(err)
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-//		return
-//	}
-//
-//	var wg sync.WaitGroup
-//
-//	for i := 0; i < len(req.AddressesArray); i++ {
-//		wg.Add(1)
-//		go multiBalance.EthWorker(&wg, req.AddressesArray[i], balances)
-//	}
-//	wg.Wait()
-//
-//	response := new(responses.BalancesResponse)
-//	response.Balances = balances.Result
-//
-//	c.JSON(http.StatusOK, response)
-//}
-//
-//func GetTokenBalances(c *gin.Context) {
-//
-//	type Request struct {
-//		OwnerAddress   string   `json:"ownerAddress"`
-//		SmartAddresses []string `json:"smartAddresses"`
-//	}
-//
-//	req := new(Request)
-//
-//	balances := multiBalance.New()
-//
-//	err := c.BindJSON(&req)
-//	if err != nil {
-//		log.Println(err)
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
-//		return
-//	}
-//
-//	var wg sync.WaitGroup
-//
-//	for i := 0; i < len(req.SmartAddresses); i++ {
-//		wg.Add(1)
-//		go multiBalance.TokenWorker(&wg, req.OwnerAddress, req.SmartAddresses[i], balances)
-//	}
-//	wg.Wait()
-//
-//	response := new(responses.BalancesResponse)
-//	response.Balances = balances.Result
-//
-//	c.JSON(http.StatusOK, response)
-//}

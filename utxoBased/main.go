@@ -12,11 +12,13 @@ func main() {
 
 	r := routing.New()
 
-	btc := r.Group("/" + os.Getenv("blockChain"))
+	g := r.Group("/" + os.Getenv("blockchain"))
 
-	btc.Get("/balance/<address>", handlers.GetBalance)
+	g.Get("/balance/<address>", handlers.GetBalance)
 
-	btc.Get("/utxo/<address>", handlers.GetUTXO)
+	g.Get("/utxo/<address>", handlers.GetUTXO)
+
+	g.Post("/balances", handlers.GetBalances)
 
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)
