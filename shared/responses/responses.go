@@ -3,7 +3,6 @@ package responses
 import (
 	"encoding/json"
 	"github.com/qiangxue/fasthttp-routing"
-	"sync"
 )
 
 type UTXO struct {
@@ -45,23 +44,6 @@ type BalanceData struct {
 
 type GasLimitResponse struct {
 	GasLimit uint64 `json:"gasLimit"`
-}
-
-type Balances struct {
-	sync.Mutex
-	AddressesAndBalances map[string]string
-}
-
-func NewBalances() *Balances {
-	return &Balances{
-		AddressesAndBalances: make(map[string]string),
-	}
-}
-
-func (ds *Balances) Set(address, balance string) {
-	ds.Lock()
-	ds.AddressesAndBalances[address] = balance
-	ds.Unlock()
 }
 
 func JsonResponse(ctx *routing.Context, data interface{}) error {

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/button-tech/utils-node-tool/ethBased/utils"
+	"github.com/button-tech/utils-node-tool/shared"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
 	"github.com/onrik/ethrpc"
@@ -16,7 +16,7 @@ func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	balance, err := utils.GetBalance(address)
+	balance, err := shared.GetEthBasedBalance(address)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func GetTokenBalance(c *routing.Context) error {
 
 	smartContractAddress := c.Param("smart-contract-address")
 
-	balance, err := utils.GetTokenBalance(userAddress, smartContractAddress)
+	balance, err := shared.GetTokenBalance(userAddress, smartContractAddress)
 	if err != nil {
 		return err
 	}
@@ -109,7 +109,7 @@ func GetEstimateGas(c *routing.Context) error {
 		return err
 	}
 
-	gasLimit, err := utils.GetEstimateGas(&data)
+	gasLimit, err := shared.GetEstimateGas(&data)
 	if err != nil {
 		return err
 	}

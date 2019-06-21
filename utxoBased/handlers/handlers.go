@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/button-tech/utils-node-tool/shared"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/utxoBased/utils"
 	"github.com/qiangxue/fasthttp-routing"
 )
 
@@ -12,7 +12,7 @@ func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	balance, err := utils.GetBalance(address)
+	balance, err := shared.GetUtxoBasedBalance(address)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func GetUTXO(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	utxoArray, err := utils.GetUTXO(address)
+	utxoArray, err := shared.GetUtxo(address)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func GetBalances(c *routing.Context) error {
 		return err
 	}
 
-	response, err := utils.GetBalances(request.Addresses)
+	response, err := shared.GetUtxoBasedBalancesByList(request.Addresses)
 	if err != nil {
 		return err
 	}
