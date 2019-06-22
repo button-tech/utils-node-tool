@@ -53,13 +53,11 @@ func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
 		g.Go(func() error {
 
 			balance, err := GetUtxoBasedBalance(address)
-			if err != nil {
-				return err
+			if err == nil {
+				result.Set(address, balance)
 			}
 
-			result.Set(address, balance)
-
-			return nil
+			return err
 		})
 	}
 	if err := g.Wait(); err != nil {
