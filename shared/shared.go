@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/big"
+	"os"
+	"sync"
+
 	"github.com/button-tech/utils-node-tool/shared/abi"
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/requests"
@@ -15,10 +19,6 @@ import (
 	"github.com/onrik/ethrpc"
 	"golang.org/x/crypto/sha3"
 	"golang.org/x/sync/errgroup"
-	"math/big"
-	"os"
-	"strconv"
-	"sync"
 )
 
 // Balances(by addresses list)
@@ -184,97 +184,91 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 }
 
 // UTXO based blockchain - BTC, LTC, BCH
-
 func GetUtxoBasedBalance(address string) (string, error) {
 
-	var reserveUrl string
+	var mainUrl, reserveUrl string
 
 	currency := os.Getenv("blockchain")
 
+	mainApi := os.Getenv("main-api")
+
 	switch currency {
+
 	case "btc":
-		reserveUrl = "/addr/" + address + "/balance"
+		mainUrl = mainApi + "/v1/address/" + address
+		reserveUrl = "/addr/" + address
+
 	case "bch":
-		reserveUrl = "/v1/address/details/" + address
+		mainUrl = mainApi + "/api/addr/" + address
+		reserveUrl = "https://rest.bitbox.earth/v1/address/details/" + address
+
 	case "ltc":
-		reserveUrl = "/api/addr/" + address + "/balance"
+		mainUrl = mainApi + "/v1/address/" + address
+		reserveUrl = "/api/addr/" + address
 	}
 
 	data := struct {
-		Balance string `json:"balance"`
+		Balance interface{} `json:"balance"`
 	}{}
 
-	reserveData := struct {
-		Balance float64 `json:"balance"`
-	}{}
+	responseFromMainApi, err := req.Get(mainUrl)
+	if err != nil || responseFromMainApi.Response().StatusCode != 200 {
 
-	responseOfMainApi, err := req.Get(os.Getenv("main-api") + "/v1/address/" + address)
-
-	if err != nil || responseOfMainApi.Response().StatusCode != 200 {
-		endpoint, err := db.GetEndpoint(currency)
-		if err != nil {
-			return "", err
-		}
-
-		responseOfReserveApi, err := req.Get(endpoint + reserveUrl)
-		if err != nil {
-			return "", err
-		}
-
-		if responseOfReserveApi.Response().StatusCode != 200 {
-			return "", errors.New("Bad request")
-		}
-
-		if currency == "bch" {
-			err = responseOfReserveApi.ToJSON(&reserveData)
+		if currency != "bch" {
+			endPoint, err := db.GetEndpoint(currency)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("%f", reserveData.Balance), nil
-
+			reserveUrl = endPoint + reserveUrl
 		}
 
-		balanceFloat, err := strconv.ParseFloat(responseOfReserveApi.String(), 64)
+		responseFromReserveApi, err := req.Get(reserveUrl)
 		if err != nil {
 			return "", err
 		}
 
-		balanceFloat *= 0.00000001
+		err = responseFromReserveApi.ToJSON(&data)
+		if err != nil {
+			return "", err
+		}
 
-		return fmt.Sprintf("%f", balanceFloat), nil
+		result, err := ParseUtxoApiResponse(data.Balance)
+		if err != nil {
+			return "", err
+		}
+
+		return result, nil
 	}
 
-	err = responseOfMainApi.ToJSON(&data)
+	err = responseFromMainApi.ToJSON(&data)
 	if err != nil {
 		return "", err
 	}
 
-	return data.Balance, nil
+	result, err := ParseUtxoApiResponse(data.Balance)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
 }
 
 func GetUtxo(address string) ([]responses.UTXO, error) {
 
 	currency := os.Getenv("blockchain")
 
-	var endPoint string
-
 	var requestUrl string
 
-	if currency == "bch" {
-		endPoint = "https://rest.bitbox.earth"
-	} else {
-		nodeFromDB, err := db.GetEndpoint(currency)
-		if err != nil {
-			return nil, err
-		}
-		endPoint = nodeFromDB
+	endPoint, err := db.GetEndpoint(currency)
+	if err != nil {
+		return nil, err
 	}
 
 	switch currency {
 	case "btc":
 		requestUrl = endPoint + "/addr/" + address + "/utxo"
 	case "bch":
-		requestUrl = endPoint + "/v1/address/utxo/" + address
+		requestUrl = "https://rest.bitbox.earth/v1/address/utxo/" + address
 	case "ltc":
 		requestUrl = endPoint + "/api/addr/" + address + "/utxo"
 	}
@@ -296,4 +290,14 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 	}
 
 	return utxoArray, nil
+}
+
+func ParseUtxoApiResponse(i interface{}) (string, error) {
+	switch i.(type) {
+	case string:
+		return i.(string), nil
+	default:
+		value := i.(float64)
+		return fmt.Sprintf("%f", value), nil
+	}
 }
