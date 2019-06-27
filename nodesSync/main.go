@@ -36,12 +36,12 @@ func SyncCheck(currency string, addresses []string) error {
 	for _, addr := range addresses {
 		addr := addr
 		g.Go(func() error {
-			intNumber, err := getBlockNumber(currency, addr)
+			blockNumber, err := getBlockNumber(currency, addr)
 			if err != nil {
 				return err
 			}
-			results = append(results, SyncStatus{intNumber, addr})
-			numbers = append(numbers, intNumber)
+			results = append(results, SyncStatus{blockNumber, addr})
+			numbers = append(numbers, blockNumber)
 
 			return nil
 		})
@@ -67,7 +67,6 @@ func SyncCheck(currency string, addresses []string) error {
 	fmt.Println("All " + currency + " nodes checked!")
 
 	return nil
-
 }
 
 func main() {
