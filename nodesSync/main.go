@@ -12,20 +12,20 @@ import (
 	"time"
 )
 
-type SyncStatus struct {
+type NodeInfo struct {
 	BlockChainHeight int64
-	Address          string
+	EndPoint         string
 }
 
-type SyncStatuses struct {
+type Result struct {
 	sync.Mutex
-	Result       []SyncStatus
+	NodesInfo    []NodeInfo
 	BlockNumbers []int64
 }
 
-func (s *SyncStatuses) Add(address string, blockNumber int64) {
+func (s *Result) Add(address string, blockNumber int64) {
 	s.Lock()
-	s.Result = append(s.Result, SyncStatus{blockNumber, address})
+	s.NodesInfo = append(s.NodesInfo, NodeInfo{blockNumber, address})
 	s.BlockNumbers = append(s.BlockNumbers, blockNumber)
 	s.Unlock()
 }
@@ -37,7 +37,7 @@ func SyncCheck(currency string, addresses []string) error {
 	var (
 		getBlockNumber  Req
 		blockDifference int64
-		result          SyncStatuses
+		result          Result
 	)
 
 	if currency == "btc" || currency == "ltc" {
@@ -70,16 +70,16 @@ func SyncCheck(currency string, addresses []string) error {
 
 	maxNumber := shared.Max(result.BlockNumbers)
 
-	for _, j := range result.Result {
+	for _, j := range result.NodesInfo {
 		if j.BlockChainHeight < maxNumber-blockDifference {
-			err := shared.DeleteEntry(currency, j.Address)
+			err := shared.DeleteEntry(currency, j.EndPoint)
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.Result)))
+	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.NodesInfo)))
 
 	return nil
 }
