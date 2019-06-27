@@ -7,6 +7,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
+	"strconv"
+	"sync"
 	"time"
 )
 
@@ -15,16 +17,28 @@ type SyncStatus struct {
 	Address          string
 }
 
+type SyncStatuses struct {
+	sync.Mutex
+	Result       []SyncStatus
+	BlockNumbers []int64
+}
+
+func (s *SyncStatuses) Add(address string, blockNumber int64) {
+	s.Lock()
+	s.Result = append(s.Result, SyncStatus{blockNumber, address})
+	s.BlockNumbers = append(s.BlockNumbers, blockNumber)
+	s.Unlock()
+}
+
 type Req func(address, currency string) (int64, error)
 
 func SyncCheck(currency string, addresses []string) error {
 
-	var results []SyncStatus
-
-	var numbers []int64
-
-	var getBlockNumber Req
-	var blockDifference int64
+	var (
+		getBlockNumber  Req
+		blockDifference int64
+		result          SyncStatuses
+	)
 
 	if currency == "btc" || currency == "ltc" {
 		blockDifference = 1
@@ -43,8 +57,8 @@ func SyncCheck(currency string, addresses []string) error {
 			if err != nil {
 				return err
 			}
-			results = append(results, SyncStatus{blockNumber, addr})
-			numbers = append(numbers, blockNumber)
+
+			result.Add(addr, blockNumber)
 
 			return nil
 		})
@@ -54,10 +68,10 @@ func SyncCheck(currency string, addresses []string) error {
 		return err
 	}
 
-	maxNumber := shared.Max(numbers)
+	maxNumber := shared.Max(result.BlockNumbers)
 
-	for _, j := range results {
-		if j.BlockChainHeight < maxNumber - blockDifference {
+	for _, j := range result.Result {
+		if j.BlockChainHeight < maxNumber-blockDifference {
 			err := shared.DeleteEntry(currency, j.Address)
 			if err != nil {
 				return err
@@ -65,7 +79,7 @@ func SyncCheck(currency string, addresses []string) error {
 		}
 	}
 
-	fmt.Println("All " + currency + " nodes checked!")
+	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.Result)))
 
 	return nil
 }
