@@ -24,10 +24,13 @@ func SyncCheck(currency string, addresses []string) error {
 	var numbers []int64
 
 	var getBlockNumber Req
+	var blockDifference int64
 
 	if currency == "btc" || currency == "ltc" {
+		blockDifference = 1
 		getBlockNumber = shared.GetUtxoBasedBlockNumber
 	} else {
+		blockDifference = 5
 		getBlockNumber = shared.GetEthBasedBlockNumber
 	}
 
@@ -53,10 +56,8 @@ func SyncCheck(currency string, addresses []string) error {
 
 	maxNumber := shared.Max(numbers)
 
-	fmt.Println(results)
-
 	for _, j := range results {
-		if j.BlockChainHeight < maxNumber-3 {
+		if j.BlockChainHeight < maxNumber - blockDifference {
 			err := shared.DeleteEntry(currency, j.Address)
 			if err != nil {
 				return err
@@ -97,7 +98,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 30)
 	}
 
 }
