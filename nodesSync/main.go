@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/button-tech/utils-node-tool/shared"
-	"github.com/button-tech/utils-node-tool/shared/db"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/button-tech/utils-node-tool/shared"
+	"github.com/button-tech/utils-node-tool/shared/db"
+	"golang.org/x/sync/errgroup"
 )
 
 type NodeInfo struct {
@@ -36,15 +37,13 @@ func SyncCheck(currency string, addresses []string) error {
 
 	var (
 		getBlockNumber  Req
-		blockDifference int64
+		blockDifference int64 = 5
 		result          Result
 	)
 
 	if currency == "btc" || currency == "ltc" {
-		blockDifference = 1
 		getBlockNumber = shared.GetUtxoBasedBlockNumber
 	} else {
-		blockDifference = 5
 		getBlockNumber = shared.GetEthBasedBlockNumber
 	}
 
