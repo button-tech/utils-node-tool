@@ -87,7 +87,7 @@ func main() {
 
 	for {
 
-		entrys, err := db.GetAll()
+		entries, err := db.GetAll()
 		if err != nil {
 			log.Println(err)
 			os.Exit(1)
@@ -95,7 +95,7 @@ func main() {
 
 		var g errgroup.Group
 
-		for _, j := range entrys {
+		for _, j := range entries {
 			j := j
 			g.Go(func() error {
 				err := SyncCheck(j.Currency, j.Addresses)

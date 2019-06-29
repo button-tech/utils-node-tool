@@ -22,6 +22,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"github.com/button-tech/utils-node-tool/nodes_utils/endpoints_store"
 )
 
 // Balances(by addresses list)
@@ -71,14 +72,16 @@ func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
 }
 
 // ETH based
-
 func GetEthBasedBalance(address string) (string, error) {
 
 	var ethClient = ethrpc.New(os.Getenv("main-api"))
 
+	currency := os.Getenv("blockchain")
+
 	balance, err := ethClient.EthGetBalance(address, "latest")
-	if err != nil {
-		reserveNode, err := db.GetEndpoint("blockchain")
+	if err == nil {
+		fmt.Println("111")
+		reserveNode, err := endpoints_store.GetEndpoint(currency)
 		if err != nil {
 			return "", err
 		}
@@ -97,9 +100,11 @@ func GetEthBasedBalance(address string) (string, error) {
 }
 
 func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
+	currency := os.Getenv("blockchain")
+
 	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
 	if err != nil {
-		endPoint, err := db.GetEndpoint("blockchain")
+		endPoint, err := endpoints_store.GetEndpoint(currency)
 		if err != nil {
 			return "", err
 		}
@@ -117,7 +122,7 @@ func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 
 	balance, err := instance.BalanceOf(nil, common.HexToAddress(userAddress))
 	if err != nil {
-		endPoint, err := db.GetEndpoint("main-api")
+		endPoint, err := endpoints_store.GetEndpoint(currency)
 		if err != nil {
 			return "", err
 		}
@@ -142,6 +147,8 @@ func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 }
 
 func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
+
+	currency := os.Getenv("blockchain")
 
 	toAddress := common.HexToAddress(req.ToAddress)
 
@@ -169,8 +176,13 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 	data = append(data, paddedAddress...)
 	data = append(data, paddedAmount...)
 
-	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
+	endPoint, err := endpoints_store.GetEndpoint(currency)
 	if err != nil {
+		return 0, err
+	}
+
+	ethClient, err := ethclient.Dial(endPoint)
+	if err != nil{
 		return 0, err
 	}
 
@@ -189,25 +201,29 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 // UTXO based blockchain - BTC, LTC, BCH
 func GetUtxoBasedBalance(address string) (string, error) {
 
-	var mainUrl, reserveUrl string
+	var reserveUrl string
 
 	currency := os.Getenv("blockchain")
 
 	mainApi := os.Getenv("main-api")
 
+	mainUrl := mainApi + "/v1/address/" + address
+
+	if currency != "bch"{
+		endPoint, err := endpoints_store.GetEndpoint(currency)
+		if err != nil{
+			return "", err
+		}
+		reserveUrl = endPoint
+	}
+
 	switch currency {
-
 	case "btc":
-		mainUrl = mainApi + "/v1/address/" + address
-		reserveUrl = "/addr/" + address
-
+		reserveUrl = reserveUrl + "/addr/" + address
 	case "bch":
-		mainUrl = mainApi + "/api/addr/" + address
-		reserveUrl = "https://rest.bitbox.earth/v1/address/details/" + address
-
+		reserveUrl = "https://blockdozer.com/api/addr/" + address
 	case "ltc":
-		mainUrl = mainApi + "/v1/address/" + address
-		reserveUrl = "/api/addr/" + address
+		reserveUrl = reserveUrl + "/api/addr/" + address
 	}
 
 	data := struct {
@@ -216,14 +232,6 @@ func GetUtxoBasedBalance(address string) (string, error) {
 
 	responseFromMainApi, err := req.Get(mainUrl)
 	if err != nil || responseFromMainApi.Response().StatusCode != 200 {
-
-		if currency != "bch" {
-			endPoint, err := db.GetEndpoint(currency)
-			if err != nil {
-				return "", err
-			}
-			reserveUrl = endPoint + reserveUrl
-		}
 
 		responseFromReserveApi, err := req.Get(reserveUrl)
 		if err != nil {
@@ -262,7 +270,7 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 
 	var requestUrl string
 
-	endPoint, err := db.GetEndpoint(currency)
+	endPoint, err := endpoints_store.GetEndpoint(currency)
 	if err != nil {
 		return nil, err
 	}
@@ -293,16 +301,6 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 	}
 
 	return utxoArray, nil
-}
-
-func ParseUtxoApiResponse(i interface{}) (string, error) {
-	switch i.(type) {
-	case string:
-		return i.(string), nil
-	default:
-		value := i.(float64)
-		return fmt.Sprintf("%f", value), nil
-	}
 }
 
 func GetEthBasedBlockNumber(currency, addr string) (int64, error) {
@@ -387,6 +385,17 @@ func Max(array []int64) int64 {
 	return max
 }
 
+func ParseUtxoApiResponse(i interface{}) (string, error) {
+	switch i.(type) {
+	case string:
+		return i.(string), nil
+	case float64:
+		return strconv.FormatFloat(i.(float64), 'f', 8, 64) , nil
+	}
+	return "", errors.New("Bad request")
+}
+
+
 func DeleteEntry(currency, address string) error {
 	isDel, err := db.AddToStoppedList(currency, address)
 	if err != nil {
@@ -399,3 +408,5 @@ func DeleteEntry(currency, address string) error {
 	}
 	return nil
 }
+
+
