@@ -3,7 +3,6 @@ package shared
 import (
 	"context"
 	"errors"
-	"fmt"
 	"math/big"
 	"os"
 	"sync"
@@ -12,6 +11,7 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
+	"github.com/button-tech/utils-node-tool/utils_for_nodes/endpoints_store"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -22,7 +22,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"github.com/button-tech/utils-node-tool/nodes_utils/endpoints_store"
 )
 
 // Balances(by addresses list)
@@ -79,8 +78,7 @@ func GetEthBasedBalance(address string) (string, error) {
 	currency := os.Getenv("blockchain")
 
 	balance, err := ethClient.EthGetBalance(address, "latest")
-	if err == nil {
-		fmt.Println("111")
+	if err != nil {
 		reserveNode, err := endpoints_store.GetEndpoint(currency)
 		if err != nil {
 			return "", err
@@ -182,7 +180,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 	}
 
 	ethClient, err := ethclient.Dial(endPoint)
-	if err != nil{
+	if err != nil {
 		return 0, err
 	}
 
@@ -209,9 +207,9 @@ func GetUtxoBasedBalance(address string) (string, error) {
 
 	mainUrl := mainApi + "/v1/address/" + address
 
-	if currency != "bch"{
+	if currency != "bch" {
 		endPoint, err := endpoints_store.GetEndpoint(currency)
-		if err != nil{
+		if err != nil {
 			return "", err
 		}
 		reserveUrl = endPoint
@@ -390,11 +388,10 @@ func ParseUtxoApiResponse(i interface{}) (string, error) {
 	case string:
 		return i.(string), nil
 	case float64:
-		return strconv.FormatFloat(i.(float64), 'f', 8, 64) , nil
+		return strconv.FormatFloat(i.(float64), 'f', 8, 64), nil
 	}
 	return "", errors.New("Bad request")
 }
-
 
 func DeleteEntry(currency, address string) error {
 	isDel, err := db.AddToStoppedList(currency, address)
@@ -408,5 +405,3 @@ func DeleteEntry(currency, address string) error {
 	}
 	return nil
 }
-
-

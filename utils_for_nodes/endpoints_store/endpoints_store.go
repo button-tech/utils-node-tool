@@ -1,13 +1,13 @@
 package endpoints_store
 
 import (
-	"github.com/button-tech/utils-node-tool/shared/db/schema"
-	"sync"
+	"errors"
 	"github.com/button-tech/utils-node-tool/shared/db"
-	"time"
+	"github.com/button-tech/utils-node-tool/shared/db/schema"
 	"log"
 	"math/rand"
-	"errors"
+	"sync"
+	"time"
 )
 
 type StoredEndpoints struct {
@@ -20,7 +20,7 @@ type StoredEndpoints struct {
 
 var EndpointsFromDB StoredEndpoints
 
-func(s *StoredEndpoints) Add(entry schema.Endpoints){
+func (s *StoredEndpoints) Add(entry schema.Endpoints) {
 	s.Lock()
 	switch entry.Currency {
 	case "btc":
@@ -35,7 +35,7 @@ func(s *StoredEndpoints) Add(entry schema.Endpoints){
 	s.Unlock()
 }
 
-func(s *StoredEndpoints) Get(currency string) *schema.Endpoints {
+func (s *StoredEndpoints) Get(currency string) *schema.Endpoints {
 	s.RLock()
 	defer s.RUnlock()
 	switch currency {
@@ -54,12 +54,12 @@ func(s *StoredEndpoints) Get(currency string) *schema.Endpoints {
 func StoreEndpoints() {
 	for {
 		entries, err := db.GetAll()
-		if err != nil{
+		if err != nil {
 			log.Println(err)
 			continue
 		}
 
-		for _, j := range entries{
+		for _, j := range entries {
 			EndpointsFromDB.Add(j)
 		}
 		time.Sleep(time.Minute * 3)
@@ -68,7 +68,7 @@ func StoreEndpoints() {
 
 func GetEndpoint(currency string) (string, error) {
 	endpoints := EndpointsFromDB.Get(currency)
-	if endpoints == nil{
+	if endpoints == nil {
 		return "", errors.New("Not found")
 	}
 

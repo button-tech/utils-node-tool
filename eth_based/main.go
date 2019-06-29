@@ -2,15 +2,14 @@ package main
 
 import (
 	"github.com/button-tech/utils-node-tool/eth_based/handlers"
+	"github.com/button-tech/utils-node-tool/utils_for_nodes/endpoints_store"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
-	"github.com/button-tech/utils-node-tool/nodes_utils/endpoints_store"
 )
 
-
-func init(){
+func init() {
 	go endpoints_store.StoreEndpoints()
 }
 
