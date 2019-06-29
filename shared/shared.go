@@ -122,48 +122,60 @@ LOOP:
 func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 	currency := os.Getenv("blockchain")
 
-	ethClient, err := ethclient.Dial(os.Getenv("main-api"))
-	if err != nil {
-		endPoint, err := endpoints_store.GetEndpoint(currency)
-		if err != nil {
-			return "", err
-		}
+	var counter int32
 
-		ethClient, err = ethclient.Dial(endPoint)
-		if err != nil {
-			return "", err
+	endpoints := endpoints_store.EndpointsFromDB.Get(currency).Addresses
+	endpoints = append(endpoints, os.Getenv("main-api"))
+
+	var balance string
+	result := make(chan string)
+
+	ctx, finish := context.WithCancel(context.Background())
+
+	for _, addr := range endpoints {
+		addr := addr
+		go func(ctx context.Context) {
+			ethClient, err := ethclient.Dial(addr)
+			if err != nil {
+				log.Println(err)
+				atomic.AddInt32(&counter, 1)
+				return
+			}
+
+			instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
+			if err != nil {
+				log.Println(err)
+				atomic.AddInt32(&counter, 1)
+				return
+			}
+
+			res, err := instance.BalanceOf(nil, common.HexToAddress(userAddress))
+			if err != nil {
+				log.Println(err)
+				atomic.AddInt32(&counter, 1)
+				return
+			}
+
+			result <- res.String()
+			ctx.Done()
+		}(ctx)
+	}
+
+LOOP:
+	for {
+		select {
+		case balance = <-result:
+			break LOOP
+		case <-ctx.Done():
+			finish()
+		default:
+			if int(counter) == len(endpoints) {
+				return "", errors.New("Bad request")
+			}
 		}
 	}
 
-	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
-	if err != nil {
-		return "", err
-	}
-
-	balance, err := instance.BalanceOf(nil, common.HexToAddress(userAddress))
-	if err != nil {
-		endPoint, err := endpoints_store.GetEndpoint(currency)
-		if err != nil {
-			return "", err
-		}
-
-		ethClient, err = ethclient.Dial(endPoint)
-		if err != nil {
-			return "", err
-		}
-
-		instance, err = abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
-		if err != nil {
-			return "", err
-		}
-
-		balance, err = instance.BalanceOf(nil, common.HexToAddress(userAddress))
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return balance.String(), nil
+	return balance, nil
 }
 
 func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {

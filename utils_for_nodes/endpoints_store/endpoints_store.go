@@ -52,6 +52,7 @@ func (s *StoredEndpoints) Get(currency string) *schema.Endpoints {
 }
 
 func StoreEndpoints() {
+	log.Println("Start storing!")
 	for {
 		entries, err := db.GetAll()
 		if err != nil {
