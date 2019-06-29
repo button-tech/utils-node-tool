@@ -359,6 +359,7 @@ func GetUtxoBasedBlockNumber(currency, addr string) (int64, error) {
 		if err != nil {
 			return 0, err
 		}
+		log.Println("Status code:" + strconv.Itoa(res.Response().StatusCode))
 	}
 
 	info := struct {

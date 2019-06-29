@@ -75,6 +75,8 @@ func SyncCheck(currency string, addresses []string) error {
 			if err != nil {
 				return err
 			}
+			log.Println("BlockChainHeight:" + strconv.Itoa(int(j.BlockChainHeight)))
+			log.Println("Sync now:" + strconv.Itoa(int(maxNumber)))
 		}
 	}
 
@@ -111,7 +113,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		time.Sleep(time.Second * 30)
+		time.Sleep(time.Minute * 10)
 	}
 
 }
