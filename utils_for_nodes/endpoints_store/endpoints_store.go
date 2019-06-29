@@ -62,7 +62,7 @@ func StoreEndpoints() {
 		for _, j := range entries {
 			EndpointsFromDB.Add(j)
 		}
-		time.Sleep(time.Minute * 3)
+		time.Sleep(time.Minute * 10)
 	}
 }
 

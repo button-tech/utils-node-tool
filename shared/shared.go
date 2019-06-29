@@ -22,6 +22,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"sync/atomic"
 )
 
 // Balances(by addresses list)
@@ -73,28 +74,49 @@ func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
 // ETH based
 func GetEthBasedBalance(address string) (string, error) {
 
-	var ethClient = ethrpc.New(os.Getenv("main-api"))
-
 	currency := os.Getenv("blockchain")
 
-	balance, err := ethClient.EthGetBalance(address, "latest")
-	if err != nil {
-		reserveNode, err := endpoints_store.GetEndpoint(currency)
-		if err != nil {
-			return "", err
-		}
+	var counter int32
 
-		ethClient = ethrpc.New(reserveNode)
+	endpoints := endpoints_store.EndpointsFromDB.Get(currency).Addresses
+	endpoints = append(endpoints, os.Getenv("main-api"))
 
-		result, err := ethClient.EthGetBalance(address, "latest")
-		if err != nil {
-			return "", err
-		}
+	var balance string
+	result := make(chan string)
 
-		balance = result
+	ctx, finish := context.WithCancel(context.Background())
+
+	for _, addr := range endpoints {
+		addr := addr
+		go func(ctx context.Context) {
+			ethClient := ethrpc.New(addr)
+			res, err := ethClient.EthGetBalance(address, "latest")
+			if err != nil {
+				log.Println(err)
+				atomic.AddInt32(&counter, 1)
+				return
+			}
+
+			result <- res.String()
+			ctx.Done()
+		}(ctx)
 	}
 
-	return balance.String(), nil
+LOOP:
+	for {
+		select {
+		case balance = <-result:
+			break LOOP
+		case <-ctx.Done():
+			finish()
+		default:
+			if int(counter) == len(endpoints) {
+				return "", errors.New("Bad request")
+			}
+		}
+	}
+
+	return balance, nil
 }
 
 func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
@@ -199,7 +221,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 // UTXO based blockchain - BTC, LTC, BCH
 func GetUtxoBasedBalance(address string) (string, error) {
 
-	var reserveUrl string
+	var endpoints []string
 
 	currency := os.Getenv("blockchain")
 
@@ -207,59 +229,89 @@ func GetUtxoBasedBalance(address string) (string, error) {
 
 	mainUrl := mainApi + "/v1/address/" + address
 
-	if currency != "bch" {
-		endPoint, err := endpoints_store.GetEndpoint(currency)
-		if err != nil {
-			return "", err
-		}
-		reserveUrl = endPoint
-	}
-
 	switch currency {
 	case "btc":
-		reserveUrl = reserveUrl + "/addr/" + address
-	case "bch":
-		reserveUrl = "https://blockdozer.com/api/addr/" + address
+		dbEndpoints := endpoints_store.EndpointsFromDB.BtcEndpoints.Addresses
+		for _, j := range dbEndpoints {
+			j = j + "/addr/" + address
+			endpoints = append(endpoints, j)
+		}
+		endpoints = append(endpoints, mainUrl)
 	case "ltc":
-		reserveUrl = reserveUrl + "/api/addr/" + address
+		dbEndpoints := endpoints_store.EndpointsFromDB.LtcEndpoints.Addresses
+		for _, j := range dbEndpoints {
+			j = j + "/api/addr/" + address
+			endpoints = append(endpoints, j)
+		}
+		endpoints = append(endpoints, mainUrl)
+	case "bch":
+		endpoints = append(endpoints, mainUrl)
+		endpoints = append(endpoints, "https://rest.bitbox.earth/v1/address/details/"+address)
 	}
 
-	data := struct {
-		Balance interface{} `json:"balance"`
-	}{}
-
-	responseFromMainApi, err := req.Get(mainUrl)
-	if err != nil || responseFromMainApi.Response().StatusCode != 200 {
-
-		responseFromReserveApi, err := req.Get(reserveUrl)
-		if err != nil {
-			return "", err
-		}
-
-		err = responseFromReserveApi.ToJSON(&data)
-		if err != nil {
-			return "", err
-		}
-
-		result, err := ParseUtxoApiResponse(data.Balance)
-		if err != nil {
-			return "", err
-		}
-
-		return result, nil
-	}
-
-	err = responseFromMainApi.ToJSON(&data)
+	balance, err := FastUxoBasedReq(endpoints)
 	if err != nil {
 		return "", err
 	}
 
-	result, err := ParseUtxoApiResponse(data.Balance)
-	if err != nil {
-		return "", err
+	return balance, nil
+}
+
+func FastUxoBasedReq(endpoints []string) (string, error) {
+	result := make(chan string)
+
+	var counter int32
+
+	var balance string
+
+	ctx, finish := context.WithCancel(context.Background())
+
+	for _, addr := range endpoints {
+		addr := addr
+		go func(ctx context.Context) {
+			s := struct {
+				Balance interface{} `json:"balance"`
+			}{}
+			res, err := req.Get(addr)
+			if err != nil || res.Response().StatusCode != 200 {
+				log.Println(err)
+				atomic.AddInt32(&counter, 1)
+				return
+			}
+
+			err = res.ToJSON(&s)
+			if err != nil {
+				log.Println(err)
+				atomic.AddInt32(&counter, 1)
+				return
+			}
+
+			balance, err := ParseUtxoApiResponse(s.Balance)
+			if err != nil {
+				log.Println(err)
+				atomic.AddInt32(&counter, 1)
+				return
+			}
+			result <- balance
+			ctx.Done()
+		}(ctx)
 	}
 
-	return result, nil
+LOOP:
+	for {
+		select {
+		case balance = <-result:
+			break LOOP
+		case <-ctx.Done():
+			finish()
+		default:
+			if int(counter) == len(endpoints) {
+				return "", errors.New("Bad request")
+			}
+		}
+	}
+
+	return balance, nil
 }
 
 func GetUtxo(address string) ([]responses.UTXO, error) {
