@@ -87,6 +87,8 @@ func SyncCheck(currency string, addresses []string) error {
 
 func main() {
 
+	log.Println("Start!")
+
 	for {
 
 		entries, err := db.GetAll()
