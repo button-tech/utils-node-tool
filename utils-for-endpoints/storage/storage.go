@@ -1,4 +1,4 @@
-package endpoints_store
+package storage
 
 import (
 	"errors"

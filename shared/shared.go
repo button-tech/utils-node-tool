@@ -11,7 +11,7 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/utils_for_nodes/endpoints_store"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -78,28 +78,24 @@ func GetEthBasedBalance(address string) (string, error) {
 
 	var counter int32
 
-	endpoints := endpoints_store.EndpointsFromDB.Get(currency).Addresses
+	endpoints := storage.EndpointsFromDB.Get(currency).Addresses
 	endpoints = append(endpoints, os.Getenv("main-api"))
 
 	var balance string
 	result := make(chan string)
 
-	ctx, finish := context.WithCancel(context.Background())
-
 	for _, addr := range endpoints {
 		addr := addr
-		go func(ctx context.Context) {
+		go func() {
 			ethClient := ethrpc.New(addr)
 			res, err := ethClient.EthGetBalance(address, "latest")
 			if err != nil {
-				log.Println(err)
 				atomic.AddInt32(&counter, 1)
 				return
 			}
 
 			result <- res.String()
-			ctx.Done()
-		}(ctx)
+		}()
 	}
 
 LOOP:
@@ -107,8 +103,6 @@ LOOP:
 		select {
 		case balance = <-result:
 			break LOOP
-		case <-ctx.Done():
-			finish()
 		default:
 			if int(counter) == len(endpoints) {
 				return "", errors.New("Bad request")
@@ -124,41 +118,35 @@ func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 
 	var counter int32
 
-	endpoints := endpoints_store.EndpointsFromDB.Get(currency).Addresses
+	endpoints := storage.EndpointsFromDB.Get(currency).Addresses
 	endpoints = append(endpoints, os.Getenv("main-api"))
 
 	var balance string
 	result := make(chan string)
 
-	ctx, finish := context.WithCancel(context.Background())
-
 	for _, addr := range endpoints {
 		addr := addr
-		go func(ctx context.Context) {
+		go func() {
 			ethClient, err := ethclient.Dial(addr)
 			if err != nil {
-				log.Println(err)
 				atomic.AddInt32(&counter, 1)
 				return
 			}
 
 			instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
 			if err != nil {
-				log.Println(err)
 				atomic.AddInt32(&counter, 1)
 				return
 			}
 
 			res, err := instance.BalanceOf(nil, common.HexToAddress(userAddress))
 			if err != nil {
-				log.Println(err)
 				atomic.AddInt32(&counter, 1)
 				return
 			}
 
 			result <- res.String()
-			ctx.Done()
-		}(ctx)
+		}()
 	}
 
 LOOP:
@@ -166,8 +154,6 @@ LOOP:
 		select {
 		case balance = <-result:
 			break LOOP
-		case <-ctx.Done():
-			finish()
 		default:
 			if int(counter) == len(endpoints) {
 				return "", errors.New("Bad request")
@@ -208,7 +194,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 	data = append(data, paddedAddress...)
 	data = append(data, paddedAmount...)
 
-	endPoint, err := endpoints_store.GetEndpoint(currency)
+	endPoint, err := storage.GetEndpoint(currency)
 	if err != nil {
 		return 0, err
 	}
@@ -243,14 +229,14 @@ func GetUtxoBasedBalance(address string) (string, error) {
 
 	switch currency {
 	case "btc":
-		dbEndpoints := endpoints_store.EndpointsFromDB.BtcEndpoints.Addresses
+		dbEndpoints := storage.EndpointsFromDB.BtcEndpoints.Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/addr/" + address
 			endpoints = append(endpoints, j)
 		}
 		endpoints = append(endpoints, mainUrl)
 	case "ltc":
-		dbEndpoints := endpoints_store.EndpointsFromDB.LtcEndpoints.Addresses
+		dbEndpoints := storage.EndpointsFromDB.LtcEndpoints.Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/api/addr/" + address
 			endpoints = append(endpoints, j)
@@ -276,37 +262,31 @@ func FastUxoBasedReq(endpoints []string) (string, error) {
 
 	var balance string
 
-	ctx, finish := context.WithCancel(context.Background())
-
 	for _, addr := range endpoints {
 		addr := addr
-		go func(ctx context.Context) {
+		go func() {
 			s := struct {
 				Balance interface{} `json:"balance"`
 			}{}
 			res, err := req.Get(addr)
 			if err != nil || res.Response().StatusCode != 200 {
-				log.Println(err)
 				atomic.AddInt32(&counter, 1)
 				return
 			}
 
 			err = res.ToJSON(&s)
 			if err != nil {
-				log.Println(err)
 				atomic.AddInt32(&counter, 1)
 				return
 			}
 
 			balance, err := ParseUtxoApiResponse(s.Balance)
 			if err != nil {
-				log.Println(err)
 				atomic.AddInt32(&counter, 1)
 				return
 			}
 			result <- balance
-			ctx.Done()
-		}(ctx)
+		}()
 	}
 
 LOOP:
@@ -314,8 +294,6 @@ LOOP:
 		select {
 		case balance = <-result:
 			break LOOP
-		case <-ctx.Done():
-			finish()
 		default:
 			if int(counter) == len(endpoints) {
 				return "", errors.New("Bad request")
@@ -332,7 +310,7 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 
 	var requestUrl string
 
-	endPoint, err := endpoints_store.GetEndpoint(currency)
+	endPoint, err := storage.GetEndpoint(currency)
 	if err != nil {
 		return nil, err
 	}
