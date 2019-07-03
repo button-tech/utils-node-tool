@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
-	"github.com/button-tech/utils-node-tool/utxo_based/handlers"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
+	"github.com/button-tech/utils-node-tool/utxo-based/handlers"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	go storage.StoreEndpoints()
+	go estorage.StoreEndpoints()
 }
 
 func main() {

@@ -11,7 +11,7 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -78,7 +78,7 @@ func GetEthBasedBalance(address string) (string, error) {
 
 	var counter int32
 
-	endpoints := storage.EndpointsFromDB.Get(currency).Addresses
+	endpoints := estorage.EndpointsFromDB.Get(currency).Addresses
 	endpoints = append(endpoints, os.Getenv("main-api"))
 
 	var balance string
@@ -118,7 +118,7 @@ func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 
 	var counter int32
 
-	endpoints := storage.EndpointsFromDB.Get(currency).Addresses
+	endpoints := estorage.EndpointsFromDB.Get(currency).Addresses
 	endpoints = append(endpoints, os.Getenv("main-api"))
 
 	var balance string
@@ -194,7 +194,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 	data = append(data, paddedAddress...)
 	data = append(data, paddedAmount...)
 
-	endPoint, err := storage.GetEndpoint(currency)
+	endPoint, err := estorage.GetEndpoint(currency)
 	if err != nil {
 		return 0, err
 	}
@@ -229,14 +229,14 @@ func GetUtxoBasedBalance(address string) (string, error) {
 
 	switch currency {
 	case "btc":
-		dbEndpoints := storage.EndpointsFromDB.BtcEndpoints.Addresses
+		dbEndpoints := estorage.EndpointsFromDB.BtcEndpoints.Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/addr/" + address
 			endpoints = append(endpoints, j)
 		}
 		endpoints = append(endpoints, mainUrl)
 	case "ltc":
-		dbEndpoints := storage.EndpointsFromDB.LtcEndpoints.Addresses
+		dbEndpoints := estorage.EndpointsFromDB.LtcEndpoints.Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/api/addr/" + address
 			endpoints = append(endpoints, j)
@@ -310,7 +310,7 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 
 	var requestUrl string
 
-	endPoint, err := storage.GetEndpoint(currency)
+	endPoint, err := estorage.GetEndpoint(currency)
 	if err != nil {
 		return nil, err
 	}
