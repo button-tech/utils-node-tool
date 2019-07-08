@@ -5,12 +5,12 @@ import (
 	"github.com/button-tech/utils-node-tool/shared"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"log"
 	"math"
 	"os"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -66,7 +66,7 @@ func GetGasPrice(c *routing.Context) error {
 		ethClient = ethrpc.New(os.Getenv("main-api"))
 	case "etc":
 		endPoint, err := estorage.GetEndpoint("etc")
-		if err != nil{
+		if err != nil {
 			return err
 		}
 		ethClient = ethrpc.New(endPoint)

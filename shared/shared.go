@@ -312,7 +312,7 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 
 	var err error
 
-	if currency != "bch"{
+	if currency != "bch" {
 		endPoint, err = estorage.GetEndpoint(currency)
 		if err != nil {
 			return nil, err

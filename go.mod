@@ -2,7 +2,6 @@ module github.com/button-tech/utils-node-tool
 
 require (
 	github.com/allegro/bigcache v1.2.1 // indirect
-	github.com/anvie/port-scanner v0.0.0-20180225151059-8159197d3770
 	github.com/aristanetworks/goarista v0.0.0-20190607111240-52c2a7864a08 // indirect
 	github.com/btcsuite/btcd v0.0.0-20190614013741-962a206e94e9 // indirect
 	github.com/cespare/cp v1.1.1 // indirect
@@ -37,6 +36,7 @@ require (
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.3.0
 	golang.org/x/crypto v0.0.0-20190618222545-ea8f1a30c443
+	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
