@@ -308,11 +308,15 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 
 	currency := os.Getenv("blockchain")
 
-	var requestUrl string
+	var requestUrl, endPoint string
 
-	endPoint, err := estorage.GetEndpoint(currency)
-	if err != nil {
-		return nil, err
+	var err error
+
+	if currency != "bch"{
+		endPoint, err = estorage.GetEndpoint(currency)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	switch currency {

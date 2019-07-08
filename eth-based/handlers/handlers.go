@@ -10,6 +10,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -58,10 +59,20 @@ func GetTxFee(c *routing.Context) error {
 
 func GetGasPrice(c *routing.Context) error {
 
-	ethClient := ethrpc.New(os.Getenv("main-api"))
+	var ethClient *ethrpc.EthRPC
+
+	switch os.Getenv("blockchain") {
+	case "eth":
+		ethClient = ethrpc.New(os.Getenv("main-api"))
+	case "etc":
+		endPoint, err := estorage.GetEndpoint("etc")
+		if err != nil{
+			return err
+		}
+		ethClient = ethrpc.New(endPoint)
+	}
 
 	gasPrice, err := ethClient.EthGasPrice()
-
 	if err != nil {
 		log.Println(err)
 		return err
