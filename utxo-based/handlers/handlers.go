@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/button-tech/utils-node-tool/shared"
+	b "github.com/button-tech/utils-node-tool/shared/balance"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
 	"github.com/qiangxue/fasthttp-routing"
@@ -12,7 +13,7 @@ func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	balance, err := shared.GetUtxoBasedBalance(address)
+	balance, err := b.GetUtxoBasedBalance(address)
 	if err != nil {
 		return err
 	}
@@ -52,7 +53,7 @@ func GetBalances(c *routing.Context) error {
 		return err
 	}
 
-	response, err := shared.GetUtxoBasedBalancesByList(request.Addresses)
+	response, err := b.GetUtxoBasedBalancesByList(request.Addresses)
 	if err != nil {
 		return err
 	}
