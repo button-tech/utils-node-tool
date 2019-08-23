@@ -198,14 +198,12 @@ func Max(array []int64) int64 {
 }
 
 func DeleteEntry(currency, address string) error {
-	isDel, err := db.AddToStoppedList(currency, address)
+	err := db.AddToStoppedList(currency, address)
 	if err != nil {
 		return err
 	}
-	if !isDel {
-		return errors.New("Can't del!\n")
-	} else {
-		log.Printf("Add to stopped list %s: %s", currency, address)
-	}
+
+	log.Printf("Add to stopped list %s: %s", currency, address)
+
 	return nil
 }
