@@ -101,7 +101,7 @@ func GetUtxoBasedBalance(address string) (string, error) {
 
 func UtxoBasedBalanceReq(endpoints []string) (string, error) {
 
-	balanceChan := make(chan string)
+	balanceChan := make(chan string, len(endpoints))
 
 	for _, addr := range endpoints {
 		go func(addr string) {
@@ -172,7 +172,7 @@ func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
 
 func TokenBalanceReq(endpoints []string, userAddress, smartContractAddress string) (string, error) {
 
-	balanceChan := make(chan string)
+	balanceChan := make(chan string, len(endpoints))
 
 	for _, e := range endpoints {
 		go func(e string) {
