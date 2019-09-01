@@ -12,6 +12,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"runtime"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -30,6 +31,8 @@ func GetBalance(c *routing.Context) error {
 	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
+
+	log.Println(runtime.NumGoroutine())
 
 	return nil
 }

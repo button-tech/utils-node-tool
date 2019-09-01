@@ -206,7 +206,7 @@ func TokenBalanceReq(endpoints []string, userAddress, smartContractAddress strin
 
 func EtherBalanceReq(endpoints []string, address string) (string, error) {
 
-	balanceChan := make(chan string)
+	balanceChan := make(chan string, len(endpoints))
 
 	for _, e := range endpoints {
 		go func(e string) {
