@@ -1,6 +1,6 @@
 package schema
 
-type Endpoints struct {
+type EndpointsData struct {
 	Currency  string   `json:"currency"`
 	Addresses []string `json:"addresses"`
 	Port      int      `json:"port"`

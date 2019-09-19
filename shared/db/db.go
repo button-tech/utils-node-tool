@@ -9,6 +9,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"os"
+	"strings"
 )
 
 var (
@@ -33,7 +34,7 @@ func GetEndpoint(currency string) (string, error) {
 	}
 	defer session.Close()
 
-	var addrs schema.Endpoints
+	var addrs schema.EndpointsData
 
 	c := session.DB(database).C(collection)
 
@@ -51,14 +52,14 @@ func GetEndpoint(currency string) (string, error) {
 	return result, nil
 }
 
-func GetAll() ([]schema.Endpoints, error) {
+func GetAll() ([]schema.EndpointsData, error) {
 	session, err := mgo.DialWithInfo(&info)
 	if err != nil {
 		return nil, err
 	}
 	defer session.Close()
 
-	var addresses []schema.Endpoints
+	var addresses []schema.EndpointsData
 
 	c := session.DB(database).C(collection)
 	err = c.Find(nil).All(&addresses)
@@ -76,7 +77,7 @@ func AddToStoppedList(currency, address string) error {
 	}
 	defer session.Close()
 
-	var entry schema.Endpoints
+	var entry schema.EndpointsData
 
 	c := session.DB(database).C(collection)
 
@@ -105,7 +106,7 @@ func GetAllNodes(currency string) ([]string, error) {
 
 	defer session.Close()
 
-	var entry schema.Endpoints
+	var entry schema.EndpointsData
 
 	c := session.DB(database).C(collection)
 
@@ -115,6 +116,26 @@ func GetAllNodes(currency string) ([]string, error) {
 	}
 
 	return entry.Addresses, nil
+}
+
+func GetEntry() (*schema.EndpointsData, error) {
+	session, err := mgo.DialWithInfo(&info)
+	if err != nil {
+		return nil, err
+	}
+
+	defer session.Close()
+
+	var entry schema.EndpointsData
+
+	c := session.DB(database).C(collection)
+
+	err = c.Find(bson.M{"currency": strings.ToLower(os.Getenv("BLOCKCHAIN"))}).One(&entry)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entry, nil
 }
 
 func removeSliceElement(s []string, r string) []string {

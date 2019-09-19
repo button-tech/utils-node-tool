@@ -12,112 +12,52 @@ import (
 
 type StoredEndpoints struct {
 	sync.RWMutex
-	BtcEndpoints,
-	LtcEndpoints,
-	EthEndpoints,
-	EtcEndpoints schema.Endpoints
+	Entry schema.EndpointsData
 }
 
-func (s *StoredEndpoints) Add(entry schema.Endpoints) {
+func (s *StoredEndpoints) Set(entry schema.EndpointsData) {
 	s.Lock()
-	switch entry.Currency {
-	case "btc":
-		s.BtcEndpoints = entry
-	case "ltc":
-		s.LtcEndpoints = entry
-	case "eth":
-		s.EthEndpoints = entry
-	case "etc":
-		s.EtcEndpoints = entry
-	}
+	s.Entry = entry
 	s.Unlock()
 }
 
-func (s *StoredEndpoints) GetByCurrency(currency string) *schema.Endpoints {
+func (s *StoredEndpoints) Get() *schema.EndpointsData {
 	s.RLock()
 	defer s.RUnlock()
-	switch currency {
-	case "btc":
-		return &s.BtcEndpoints
-	case "ltc":
-		return &s.LtcEndpoints
-	case "eth":
-		return &s.EthEndpoints
-	case "etc":
-		return &s.EtcEndpoints
-	default:
-		return nil
-	}
+	return &s.Entry
 }
 
-func (s *StoredEndpoints) GetListOfAllEndpoints() [4]*schema.Endpoints {
-	s.RLock()
-	defer s.RUnlock()
-	return [4]*schema.Endpoints{
-		&s.EthEndpoints,
-		&s.EtcEndpoints,
-		&s.BtcEndpoints,
-		&s.LtcEndpoints,
-	}
-}
-
-type FastestEndpoints struct {
+type FastestEndpoint struct {
 	sync.RWMutex
-	BtcEndpoint,
-	LtcEndpoint,
-	EthEndpoint,
-	EtcEndpoint string
+	Address string
 }
 
-func (f *FastestEndpoints) Add(c, e string) {
+func (f *FastestEndpoint) Set(addr string) {
 	f.Lock()
-	switch c {
-	case "btc":
-		f.BtcEndpoint = e
-	case "ltc":
-		f.LtcEndpoint = e
-	case "eth":
-		f.EthEndpoint = e
-	case "etc":
-		f.EtcEndpoint = e
-	}
+	f.Address = addr
 	f.Unlock()
 }
 
-func (f *FastestEndpoints) Get(c string) string {
+func (f *FastestEndpoint) Get() string {
 	f.RLock()
 	defer f.RUnlock()
-	switch c {
-	case "btc":
-		return f.BtcEndpoint
-	case "ltc":
-		return f.LtcEndpoint
-	case "eth":
-		return f.EthEndpoint
-	case "etc":
-		return f.EtcEndpoint
-	default:
-		return ""
-	}
+	return f.Address
 }
 
 var (
 	EndpointsFromDB StoredEndpoints
-	//EndpointsForReq FastestEndpoints
+	//EndpointsForReq FastestEndpoint
 )
 
 func StoreEndpointsFromDB() {
 	log.Println("Started storing!")
 	for {
-		entries, err := db.GetAll()
+		entry, err := db.GetEntry()
 		if err != nil {
-			log.Println(err)
-			continue
+			log.Fatal(err)
 		}
 
-		for _, j := range entries {
-			EndpointsFromDB.Add(j)
-		}
+		EndpointsFromDB.Set(*entry)
 
 		time.Sleep(time.Minute * 10)
 	}
@@ -129,9 +69,84 @@ func StoreEndpointsFromDB() {
 //		time.Sleep(time.Minute * 10)
 //	}
 //}
+//
+//func GetFastestUtxoBasedEndpoint(currency string, endpoints []string) string {
+//	currency := os.Getenv("BLOCKCHAIN")
+//
+//	mainApi := os.Getenv("MAIN_API")
+//
+//	mainUrl := mainApi + "/v1/address/" + address
+//
+//	switch currency {
+//	case "btc":
+//		dbEndpoints := estorage.EndpointsFromDB.BtcEndpoints.Addresses
+//		for _, j := range dbEndpoints {
+//			j = j + "/addr/" + address
+//			endpoints = append(endpoints, j)
+//		}
+//		endpoints = append(endpoints, mainUrl)
+//	case "ltc":
+//		dbEndpoints := estorage.EndpointsFromDB.LtcEndpoints.Addresses
+//		for _, j := range dbEndpoints {
+//			j = j + "/api/addr/" + address
+//			endpoints = append(endpoints, j)
+//		}
+//		endpoints = append(endpoints, mainUrl)
+//	case "bch":
+//		endpoints = append(endpoints, mainUrl)
+//		endpoints = append(endpoints, "https://rest.bitbox.earth/v1/address/details/"+address)
+//	}
+//
+//	fastestEndpoint := make(chan string, len(endpoints))
+//
+//	for _, addr := range endpoints {
+//		go func(addr string) {
+//			res, err := req.Get(addr + "/" + os.Getenv(strings.ToUpper(currency) + "_ADDRESS") + "/")
+//			if err != nil || res.Response().StatusCode != 200 {
+//				return
+//			}
+//
+//			if res.Response().StatusCode == 200{
+//				fastestEndpoint <- addr
+//			}
+//		}(addr)
+//	}
+//
+//	select {
+//	case result := <-fastestEndpoint:
+//		return result
+//	}
+//}
+//
+//func GetFastestEthBasedEndpoint(endpoints []string){
+//	balanceChan := make(chan string, len(endpoints))
+//
+//	for _, e := range endpoints {
+//		go func(e string) {
+//			ethClient := ethrpc.New(e)
+//			res, err := ethClient.EthGetBalance(os.Getenv("ETH_ADDRESS"), "latest")
+//			if err != nil {
+//				return
+//			}
+//
+//			balanceChan <- res.String()
+//		}(e)
+//	}
+//
+//	select {
+//	case result := <-balanceChan:
+//		return result, nil
+//	case <-time.After(2 * time.Second):
+//		return "", errors.New("Bad request")
+//	}
+//}
+//
+//func EtherBalanceReq(endpoints []string, address string) (string, error) {
+//
+//}
 
 func GetEndpoint(currency string) (string, error) {
-	endpoints := EndpointsFromDB.GetByCurrency(currency)
+	endpoints := EndpointsFromDB.Get()
 	if endpoints == nil {
 		return "", errors.New("Not found")
 	}

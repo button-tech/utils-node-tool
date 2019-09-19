@@ -67,20 +67,20 @@ func GetUtxoBasedBalance(address string) (string, error) {
 
 	currency := os.Getenv("BLOCKCHAIN")
 
-	mainApi := os.Getenv("MAIN-API")
+	mainApi := os.Getenv("MAIN_API")
 
 	mainUrl := mainApi + "/v1/address/" + address
 
 	switch currency {
 	case "btc":
-		dbEndpoints := estorage.EndpointsFromDB.BtcEndpoints.Addresses
+		dbEndpoints := estorage.EndpointsFromDB.Get().Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/addr/" + address
 			endpoints = append(endpoints, j)
 		}
 		endpoints = append(endpoints, mainUrl)
 	case "ltc":
-		dbEndpoints := estorage.EndpointsFromDB.LtcEndpoints.Addresses
+		dbEndpoints := estorage.EndpointsFromDB.Get().Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/api/addr/" + address
 			endpoints = append(endpoints, j)
@@ -139,10 +139,9 @@ func UtxoBasedBalanceReq(endpoints []string) (string, error) {
 // ETH based
 func GetEtherBalance(address string) (string, error) {
 
-	currency := os.Getenv("BLOCKCHAIN")
+	endpoints := estorage.EndpointsFromDB.Get().Addresses
 
-	endpoints := estorage.EndpointsFromDB.GetByCurrency(currency).Addresses
-	endpoints = append(endpoints, os.Getenv("MAIN-API"))
+	endpoints = append(endpoints, os.Getenv("MAIN_API"))
 
 	result, err := EtherBalanceReq(endpoints, address)
 	if err != nil {
@@ -154,10 +153,10 @@ func GetEtherBalance(address string) (string, error) {
 }
 
 func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
-	currency := os.Getenv("BLOCKCHAIN")
 
-	endpoints := estorage.EndpointsFromDB.GetByCurrency(currency).Addresses
-	endpoints = append(endpoints, os.Getenv("MAIN-API"))
+	endpoints := estorage.EndpointsFromDB.Get().Addresses
+
+	endpoints = append(endpoints, os.Getenv("MAIN_API"))
 
 	var balance string
 
