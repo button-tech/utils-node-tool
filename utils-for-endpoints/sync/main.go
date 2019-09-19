@@ -42,7 +42,7 @@ func SyncCheck(currency string, addresses []string) error {
 
 	var (
 		getBlockNumber  Req
-		blockDifference int64 = 5
+		blockDifference int64 = 10
 		result          Result
 	)
 
