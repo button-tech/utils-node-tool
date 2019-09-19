@@ -36,7 +36,7 @@ type Req func(address, currency string) (int64, error)
 func SyncCheck(currency string, addresses []string) error {
 
 	if currency == "bch" {
-		log.Println("bch")
+		log.Println(addresses)
 		return nil
 	}
 

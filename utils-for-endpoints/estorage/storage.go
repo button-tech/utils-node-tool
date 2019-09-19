@@ -11,6 +11,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"runtime"
 )
 
 type StoredEndpoints struct {
@@ -96,6 +97,10 @@ func SetFastestEndpoint() {
 		result := getEndpoint(mainUrl)
 
 		EndpointForReq.Set(result)
+
+		log.Println(EndpointForReq.Get())
+
+		log.Println(runtime.NumGoroutine())
 
 		time.Sleep(time.Minute * 1)
 	}
