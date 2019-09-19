@@ -21,7 +21,7 @@ import (
 
 func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
-	currency := os.Getenv("blockchain")
+	currency := os.Getenv("BLOCKCHAIN")
 
 	toAddress := common.HexToAddress(req.ToAddress)
 
@@ -73,7 +73,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
 func GetUtxo(address string) ([]responses.UTXO, error) {
 
-	currency := os.Getenv("blockchain")
+	currency := os.Getenv("BLOCKCHAIN")
 
 	var requestUrl, endPoint string
 

@@ -14,11 +14,9 @@ type StoredEndpoints struct {
 	sync.RWMutex
 	BtcEndpoints,
 	LtcEndpoints,
-	EthEdnpoints,
+	EthEndpoints,
 	EtcEndpoints schema.Endpoints
 }
-
-var EndpointsFromDB StoredEndpoints
 
 func (s *StoredEndpoints) Add(entry schema.Endpoints) {
 	s.Lock()
@@ -28,14 +26,14 @@ func (s *StoredEndpoints) Add(entry schema.Endpoints) {
 	case "ltc":
 		s.LtcEndpoints = entry
 	case "eth":
-		s.EthEdnpoints = entry
+		s.EthEndpoints = entry
 	case "etc":
 		s.EtcEndpoints = entry
 	}
 	s.Unlock()
 }
 
-func (s *StoredEndpoints) Get(currency string) *schema.Endpoints {
+func (s *StoredEndpoints) GetByCurrency(currency string) *schema.Endpoints {
 	s.RLock()
 	defer s.RUnlock()
 	switch currency {
@@ -44,15 +42,72 @@ func (s *StoredEndpoints) Get(currency string) *schema.Endpoints {
 	case "ltc":
 		return &s.LtcEndpoints
 	case "eth":
-		return &s.EthEdnpoints
+		return &s.EthEndpoints
 	case "etc":
 		return &s.EtcEndpoints
+	default:
+		return nil
 	}
-	return nil
 }
 
-func StoreEndpoints() {
-	log.Println("Start storing!")
+func (s *StoredEndpoints) GetListOfAllEndpoints() [4]*schema.Endpoints {
+	s.RLock()
+	defer s.RUnlock()
+	return [4]*schema.Endpoints{
+		&s.EthEndpoints,
+		&s.EtcEndpoints,
+		&s.BtcEndpoints,
+		&s.LtcEndpoints,
+	}
+}
+
+type FastestEndpoints struct {
+	sync.RWMutex
+	BtcEndpoint,
+	LtcEndpoint,
+	EthEndpoint,
+	EtcEndpoint string
+}
+
+func (f *FastestEndpoints) Add(c, e string) {
+	f.Lock()
+	switch c {
+	case "btc":
+		f.BtcEndpoint = e
+	case "ltc":
+		f.LtcEndpoint = e
+	case "eth":
+		f.EthEndpoint = e
+	case "etc":
+		f.EtcEndpoint = e
+	}
+	f.Unlock()
+}
+
+func (f *FastestEndpoints) Get(c string) string {
+	f.RLock()
+	defer f.RUnlock()
+	switch c {
+	case "btc":
+		return f.BtcEndpoint
+	case "ltc":
+		return f.LtcEndpoint
+	case "eth":
+		return f.EthEndpoint
+	case "etc":
+		return f.EtcEndpoint
+	default:
+		return ""
+	}
+}
+
+var (
+	EndpointsFromDB StoredEndpoints
+	//EndpointsForReq FastestEndpoints
+)
+
+func StoreEndpointsFromDB() {
+	log.Println("Started storing!")
 	for {
 		entries, err := db.GetAll()
 		if err != nil {
@@ -63,12 +118,20 @@ func StoreEndpoints() {
 		for _, j := range entries {
 			EndpointsFromDB.Add(j)
 		}
+
 		time.Sleep(time.Minute * 10)
 	}
 }
 
+//func SetFastestEndpoints(){
+//	log.Println("Started set fastest endpoints!")
+//	for {
+//		time.Sleep(time.Minute * 10)
+//	}
+//}
+
 func GetEndpoint(currency string) (string, error) {
-	endpoints := EndpointsFromDB.Get(currency)
+	endpoints := EndpointsFromDB.GetByCurrency(currency)
 	if endpoints == nil {
 		return "", errors.New("Not found")
 	}

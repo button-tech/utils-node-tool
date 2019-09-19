@@ -10,14 +10,14 @@ import (
 )
 
 func init() {
-	go estorage.StoreEndpoints()
+	go estorage.StoreEndpointsFromDB()
 }
 
 func main() {
 
 	r := routing.New()
 
-	g := r.Group("/" + os.Getenv("blockchain"))
+	g := r.Group("/" + os.Getenv("BLOCKCHAIN"))
 
 	g.Get("/balance/<address>", handlers.GetBalance)
 

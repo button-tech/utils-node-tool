@@ -39,7 +39,7 @@ func GetBalance(c *routing.Context) error {
 
 func GetTxFee(c *routing.Context) error {
 
-	ethClient := ethrpc.New(os.Getenv("main-api"))
+	ethClient := ethrpc.New(os.Getenv("MAIN-API"))
 
 	gasPrice, err := ethClient.EthGasPrice()
 
@@ -65,9 +65,9 @@ func GetGasPrice(c *routing.Context) error {
 
 	var ethClient *ethrpc.EthRPC
 
-	switch os.Getenv("blockchain") {
+	switch os.Getenv("BLOCKCHAIN") {
 	case "eth":
-		ethClient = ethrpc.New(os.Getenv("main-api"))
+		ethClient = ethrpc.New(os.Getenv("MAIN-API"))
 	case "etc":
 		endPoint, err := estorage.GetEndpoint("etc")
 		if err != nil {
