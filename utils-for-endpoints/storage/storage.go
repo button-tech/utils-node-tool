@@ -1,4 +1,4 @@
-package estorage
+package storage
 
 import (
 	"errors"
@@ -9,9 +9,9 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"sync"
 	"time"
-	"runtime"
 )
 
 type StoredEndpoints struct {
@@ -109,10 +109,11 @@ func SetFastestEndpoint() {
 func GetFastestUtxoBasedEndpoint(mainUrl string) string {
 	currency := os.Getenv("BLOCKCHAIN")
 
+	var dbEndpoints = EndpointsFromDB.Get().Addresses
+
 	var endpoints []string
 	switch currency {
 	case "btc":
-		dbEndpoints := EndpointsFromDB.Get().Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/addr/"
 			endpoints = append(endpoints, j)
@@ -120,7 +121,6 @@ func GetFastestUtxoBasedEndpoint(mainUrl string) string {
 		endpoints = append(endpoints, mainUrl)
 
 	case "ltc":
-		dbEndpoints := EndpointsFromDB.Get().Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/api/addr/"
 			endpoints = append(endpoints, j)
@@ -128,7 +128,6 @@ func GetFastestUtxoBasedEndpoint(mainUrl string) string {
 		endpoints = append(endpoints, mainUrl)
 
 	case "bch":
-		dbEndpoints := EndpointsFromDB.Get().Addresses
 		endpoints = append(endpoints, dbEndpoints...)
 		endpoints = append(endpoints, mainUrl)
 	}
@@ -154,6 +153,7 @@ func GetFastestUtxoBasedEndpoint(mainUrl string) string {
 func GetFastestEthBasedEndpoint(mainUrl string) string {
 
 	endpoints := EndpointsFromDB.Get().Addresses
+
 	endpoints = append(endpoints, mainUrl)
 
 	fastestEndpoint := make(chan string, len(endpoints))

@@ -6,7 +6,7 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -49,7 +49,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 	data = append(data, paddedAddress...)
 	data = append(data, paddedAmount...)
 
-	endPoint, err := estorage.GetEndpoint(currency)
+	endPoint, err := storage.GetEndpoint(currency)
 	if err != nil {
 		return 0, err
 	}
@@ -80,7 +80,7 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 	var err error
 
 	if currency != "bch" {
-		endPoint, err = estorage.GetEndpoint(currency)
+		endPoint, err = storage.GetEndpoint(currency)
 		if err != nil {
 			return nil, err
 		}
