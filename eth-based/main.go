@@ -11,6 +11,7 @@ import (
 
 func init() {
 	go estorage.StoreEndpointsFromDB()
+	go estorage.SetFastestEndpoint()
 }
 
 func main() {

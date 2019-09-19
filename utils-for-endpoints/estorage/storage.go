@@ -4,8 +4,11 @@ import (
 	"errors"
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"github.com/button-tech/utils-node-tool/shared/db/schema"
+	"github.com/imroc/req"
+	"github.com/onrik/ethrpc"
 	"log"
 	"math/rand"
+	"os"
 	"sync"
 	"time"
 )
@@ -44,9 +47,11 @@ func (f *FastestEndpoint) Get() string {
 	return f.Address
 }
 
+type GetFastestEndpoint func(string) string
+
 var (
 	EndpointsFromDB StoredEndpoints
-	//EndpointsForReq FastestEndpoint
+	EndpointForReq  FastestEndpoint
 )
 
 func StoreEndpointsFromDB() {
@@ -63,87 +68,106 @@ func StoreEndpointsFromDB() {
 	}
 }
 
-//func SetFastestEndpoints(){
-//	log.Println("Started set fastest endpoints!")
-//	for {
-//		time.Sleep(time.Minute * 10)
-//	}
-//}
-//
-//func GetFastestUtxoBasedEndpoint(currency string, endpoints []string) string {
-//	currency := os.Getenv("BLOCKCHAIN")
-//
-//	mainApi := os.Getenv("MAIN_API")
-//
-//	mainUrl := mainApi + "/v1/address/" + address
-//
-//	switch currency {
-//	case "btc":
-//		dbEndpoints := estorage.EndpointsFromDB.BtcEndpoints.Addresses
-//		for _, j := range dbEndpoints {
-//			j = j + "/addr/" + address
-//			endpoints = append(endpoints, j)
-//		}
-//		endpoints = append(endpoints, mainUrl)
-//	case "ltc":
-//		dbEndpoints := estorage.EndpointsFromDB.LtcEndpoints.Addresses
-//		for _, j := range dbEndpoints {
-//			j = j + "/api/addr/" + address
-//			endpoints = append(endpoints, j)
-//		}
-//		endpoints = append(endpoints, mainUrl)
-//	case "bch":
-//		endpoints = append(endpoints, mainUrl)
-//		endpoints = append(endpoints, "https://rest.bitbox.earth/v1/address/details/"+address)
-//	}
-//
-//	fastestEndpoint := make(chan string, len(endpoints))
-//
-//	for _, addr := range endpoints {
-//		go func(addr string) {
-//			res, err := req.Get(addr + "/" + os.Getenv(strings.ToUpper(currency) + "_ADDRESS") + "/")
-//			if err != nil || res.Response().StatusCode != 200 {
-//				return
-//			}
-//
-//			if res.Response().StatusCode == 200{
-//				fastestEndpoint <- addr
-//			}
-//		}(addr)
-//	}
-//
-//	select {
-//	case result := <-fastestEndpoint:
-//		return result
-//	}
-//}
-//
-//func GetFastestEthBasedEndpoint(endpoints []string){
-//	balanceChan := make(chan string, len(endpoints))
-//
-//	for _, e := range endpoints {
-//		go func(e string) {
-//			ethClient := ethrpc.New(e)
-//			res, err := ethClient.EthGetBalance(os.Getenv("ETH_ADDRESS"), "latest")
-//			if err != nil {
-//				return
-//			}
-//
-//			balanceChan <- res.String()
-//		}(e)
-//	}
-//
-//	select {
-//	case result := <-balanceChan:
-//		return result, nil
-//	case <-time.After(2 * time.Second):
-//		return "", errors.New("Bad request")
-//	}
-//}
-//
-//func EtherBalanceReq(endpoints []string, address string) (string, error) {
-//
-//}
+func SetFastestEndpoint() {
+	log.Println("Started set fastest endpoint!")
+
+	var (
+		getEndpoint GetFastestEndpoint
+		mainUrl     string
+	)
+
+	switch os.Getenv("BLOCKCHAIN") {
+	case "eth":
+		getEndpoint = GetFastestEthBasedEndpoint
+		mainUrl = os.Getenv("MAIN_API")
+	case "etc":
+		getEndpoint = GetFastestEthBasedEndpoint
+		mainUrl = os.Getenv("MAIN_API")
+	default:
+		getEndpoint = GetFastestUtxoBasedEndpoint
+		mainUrl = os.Getenv("MAIN_API") + "/v1/address/"
+	}
+
+	if len(os.Getenv("ADDRESS")) == 0 {
+		log.Fatal(errors.New("Not set ADDRESS env!"))
+	}
+
+	for {
+		result := getEndpoint(mainUrl)
+
+		EndpointForReq.Set(result)
+
+		time.Sleep(time.Minute * 1)
+	}
+}
+
+func GetFastestUtxoBasedEndpoint(mainUrl string) string {
+	currency := os.Getenv("BLOCKCHAIN")
+
+	var endpoints []string
+	switch currency {
+	case "btc":
+		dbEndpoints := EndpointsFromDB.Get().Addresses
+		for _, j := range dbEndpoints {
+			j = j + "/addr/"
+			endpoints = append(endpoints, j)
+		}
+		endpoints = append(endpoints, mainUrl)
+
+	case "ltc":
+		dbEndpoints := EndpointsFromDB.Get().Addresses
+		for _, j := range dbEndpoints {
+			j = j + "/api/addr/"
+			endpoints = append(endpoints, j)
+		}
+		endpoints = append(endpoints, mainUrl)
+
+	case "bch":
+		dbEndpoints := EndpointsFromDB.Get().Addresses
+		endpoints = append(endpoints, dbEndpoints...)
+		endpoints = append(endpoints, mainUrl)
+	}
+
+	fastestEndpoint := make(chan string, len(endpoints))
+
+	for _, addr := range endpoints {
+		go func(addr string) {
+			res, err := req.Get(addr + os.Getenv("ADDRESS"))
+			if err != nil || res.Response().StatusCode != 200 {
+				return
+			}
+
+			if res.Response().StatusCode == 200 {
+				fastestEndpoint <- addr
+			}
+		}(addr)
+	}
+
+	return <-fastestEndpoint
+}
+
+func GetFastestEthBasedEndpoint(mainUrl string) string {
+
+	endpoints := EndpointsFromDB.Get().Addresses
+	endpoints = append(endpoints, mainUrl)
+
+	fastestEndpoint := make(chan string, len(endpoints))
+
+	for _, e := range endpoints {
+		go func(e string) {
+			ethClient := ethrpc.New(e)
+
+			_, err := ethClient.EthGetBalance(os.Getenv("ADDRESS"), "latest")
+			if err != nil {
+				return
+			}
+
+			fastestEndpoint <- e
+		}(e)
+	}
+
+	return <-fastestEndpoint
+}
 
 func GetEndpoint(currency string) (string, error) {
 	endpoints := EndpointsFromDB.Get()

@@ -35,6 +35,11 @@ type Req func(address, currency string) (int64, error)
 
 func SyncCheck(currency string, addresses []string) error {
 
+	if currency == "bch" {
+		log.Println("bch")
+		return nil
+	}
+
 	var (
 		getBlockNumber  Req
 		blockDifference int64 = 5
@@ -102,11 +107,7 @@ func main() {
 		for _, j := range entries {
 			j := j
 			g.Go(func() error {
-				err := SyncCheck(j.Currency, j.Addresses)
-				if err != nil {
-					return err
-				}
-				return nil
+				return SyncCheck(j.Currency, j.Addresses)
 			})
 
 		}
@@ -115,7 +116,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		time.Sleep(time.Minute * 10)
+		time.Sleep(time.Second * 10)
 	}
 
 }
