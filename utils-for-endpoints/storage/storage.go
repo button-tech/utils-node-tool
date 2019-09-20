@@ -94,9 +94,8 @@ func SetFastestEndpoint() {
 	}
 
 	for {
-		result := getEndpoint(mainUrl)
 
-		EndpointForReq.Set(result)
+		EndpointForReq.Set(getEndpoint(mainUrl))
 
 		log.Println(EndpointForReq.Get())
 
