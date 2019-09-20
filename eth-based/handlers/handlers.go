@@ -6,13 +6,12 @@ import (
 	b "github.com/button-tech/utils-node-tool/shared/balance"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"log"
 	"math"
 	"os"
-	"runtime"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -32,14 +31,12 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
-	log.Println(runtime.NumGoroutine())
-
 	return nil
 }
 
 func GetTxFee(c *routing.Context) error {
 
-	ethClient := ethrpc.New(os.Getenv("main-api"))
+	ethClient := ethrpc.New(os.Getenv("MAIN_API"))
 
 	gasPrice, err := ethClient.EthGasPrice()
 
@@ -65,11 +62,11 @@ func GetGasPrice(c *routing.Context) error {
 
 	var ethClient *ethrpc.EthRPC
 
-	switch os.Getenv("blockchain") {
+	switch os.Getenv("BLOCKCHAIN") {
 	case "eth":
-		ethClient = ethrpc.New(os.Getenv("main-api"))
+		ethClient = ethrpc.New(os.Getenv("MAIN_API"))
 	case "etc":
-		endPoint, err := estorage.GetEndpoint("etc")
+		endPoint, err := storage.GetEndpoint("etc")
 		if err != nil {
 			return err
 		}

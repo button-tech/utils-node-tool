@@ -3,7 +3,7 @@ package balance
 import (
 	"errors"
 	"github.com/button-tech/utils-node-tool/shared/abi"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/estorage"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/imroc/req"
@@ -63,43 +63,68 @@ func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
 // UTXO based blockchain - BTC, LTC, BCH
 func GetUtxoBasedBalance(address string) (string, error) {
 
+	s := struct {
+		Balance interface{} `json:"balance"`
+	}{}
+
+	var result string
+
+	res, err := req.Get(storage.EndpointForReq.Get() + address)
+	if err != nil || res.Response().StatusCode != 200 {
+		result, err = UtxoBasedBalanceReq(address)
+		if err != nil {
+			return "", err
+		}
+
+		return result, nil
+	}
+
+	err = res.ToJSON(&s)
+	if err != nil {
+		return "", err
+	}
+
+	result, err = ParseUtxoApiResponse(s.Balance)
+	if err != nil {
+		return "", err
+	}
+
+	return result, nil
+}
+
+func UtxoBasedBalanceReq(address string) (string, error) {
+
 	var endpoints []string
 
-	currency := os.Getenv("blockchain")
+	currency := os.Getenv("BLOCKCHAIN")
 
-	mainApi := os.Getenv("main-api")
+	mainApi := os.Getenv("MAIN_API")
 
 	mainUrl := mainApi + "/v1/address/" + address
 
 	switch currency {
 	case "btc":
-		dbEndpoints := estorage.EndpointsFromDB.BtcEndpoints.Addresses
+		dbEndpoints := storage.EndpointsFromDB.Get().Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/addr/" + address
 			endpoints = append(endpoints, j)
 		}
 		endpoints = append(endpoints, mainUrl)
 	case "ltc":
-		dbEndpoints := estorage.EndpointsFromDB.LtcEndpoints.Addresses
+		dbEndpoints := storage.EndpointsFromDB.Get().Addresses
 		for _, j := range dbEndpoints {
 			j = j + "/api/addr/" + address
 			endpoints = append(endpoints, j)
 		}
 		endpoints = append(endpoints, mainUrl)
 	case "bch":
+		dbEndpoints := storage.EndpointsFromDB.Get().Addresses
+		for _, j := range dbEndpoints {
+			j = j + address
+			endpoints = append(endpoints, j)
+		}
 		endpoints = append(endpoints, mainUrl)
-		endpoints = append(endpoints, "https://rest.bitbox.earth/v1/address/details/"+address)
 	}
-
-	balance, err := UtxoBasedBalanceReq(endpoints)
-	if err != nil {
-		return "", err
-	}
-
-	return balance, nil
-}
-
-func UtxoBasedBalanceReq(endpoints []string) (string, error) {
 
 	balanceChan := make(chan string, len(endpoints))
 
@@ -134,43 +159,57 @@ func UtxoBasedBalanceReq(endpoints []string) (string, error) {
 	case <-time.After(2 * time.Second):
 		return "", errors.New("Bad request")
 	}
-
 }
 
 // ETH based
 func GetEtherBalance(address string) (string, error) {
 
-	currency := os.Getenv("blockchain")
+	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
-	endpoints := estorage.EndpointsFromDB.Get(currency).Addresses
-	endpoints = append(endpoints, os.Getenv("main-api"))
-
-	result, err := EtherBalanceReq(endpoints, address)
+	res, err := ethClient.EthGetBalance(address, "latest")
 	if err != nil {
-		return "", err
+		balance, err := EtherBalanceReq(address)
+		if err != nil {
+			return "", err
+		}
+
+		return balance, nil
 	}
 
-	return result, nil
+	return res.String(), nil
 
 }
 
 func GetTokenBalance(userAddress, smartContractAddress string) (string, error) {
-	currency := os.Getenv("blockchain")
 
-	endpoints := estorage.EndpointsFromDB.Get(currency).Addresses
-	endpoints = append(endpoints, os.Getenv("main-api"))
-
-	var balance string
-
-	balance, err := TokenBalanceReq(endpoints, userAddress, smartContractAddress)
+	ethClient, err := ethclient.Dial(storage.EndpointForReq.Get())
 	if err != nil {
 		return "", err
 	}
 
-	return balance, nil
+	instance, err := abi.NewToken(common.HexToAddress(smartContractAddress), ethClient)
+	if err != nil {
+		return "", err
+	}
+
+	res, err := instance.BalanceOf(nil, common.HexToAddress(userAddress))
+	if err != nil {
+		balance, err := TokenBalanceReq(userAddress, smartContractAddress)
+		if err != nil {
+			return "", err
+		}
+
+		return balance, nil
+	}
+
+	return res.String(), nil
 }
 
-func TokenBalanceReq(endpoints []string, userAddress, smartContractAddress string) (string, error) {
+func TokenBalanceReq(userAddress, smartContractAddress string) (string, error) {
+
+	endpoints := storage.EndpointsFromDB.Get().Addresses
+
+	endpoints = append(endpoints, os.Getenv("MAIN_API"))
 
 	balanceChan := make(chan string, len(endpoints))
 
@@ -204,7 +243,11 @@ func TokenBalanceReq(endpoints []string, userAddress, smartContractAddress strin
 	}
 }
 
-func EtherBalanceReq(endpoints []string, address string) (string, error) {
+func EtherBalanceReq(address string) (string, error) {
+
+	endpoints := storage.EndpointsFromDB.Get().Addresses
+
+	endpoints = append(endpoints, os.Getenv("MAIN_API"))
 
 	balanceChan := make(chan string, len(endpoints))
 
