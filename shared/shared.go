@@ -21,8 +21,6 @@ import (
 
 func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
-	currency := os.Getenv("BLOCKCHAIN")
-
 	toAddress := common.HexToAddress(req.ToAddress)
 
 	tokenAddress := common.HexToAddress(req.TokenAddress)
@@ -49,12 +47,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 	data = append(data, paddedAddress...)
 	data = append(data, paddedAmount...)
 
-	endPoint, err := storage.GetEndpoint(currency)
-	if err != nil {
-		return 0, err
-	}
-
-	ethClient, err := ethclient.Dial(endPoint)
+	ethClient, err := ethclient.Dial(storage.EndpointForReq.Get())
 	if err != nil {
 		return 0, err
 	}
@@ -80,10 +73,7 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 	var err error
 
 	if currency != "bch" {
-		endPoint, err = storage.GetEndpoint(currency)
-		if err != nil {
-			return nil, err
-		}
+		endPoint = storage.EndpointForReq.Get()
 	}
 
 	switch currency {

@@ -26,6 +26,8 @@ func main() {
 
 	g.Get("/gasPrice", handlers.GetGasPrice)
 
+	g.Get("/getNonce/<address>", handlers.GetNonce)
+
 	g.Get("/tokenBalance/<smart-contract-address>/<user-address>", handlers.GetTokenBalance)
 
 	g.Post("/estimateGas", handlers.GetEstimateGas)

@@ -6,12 +6,14 @@ import (
 	b "github.com/button-tech/utils-node-tool/shared/balance"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"log"
 	"math"
-	"os"
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
+	"context"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -36,7 +38,7 @@ func GetBalance(c *routing.Context) error {
 
 func GetTxFee(c *routing.Context) error {
 
-	ethClient := ethrpc.New(os.Getenv("MAIN_API"))
+	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
 	gasPrice, err := ethClient.EthGasPrice()
 
@@ -60,18 +62,7 @@ func GetTxFee(c *routing.Context) error {
 
 func GetGasPrice(c *routing.Context) error {
 
-	var ethClient *ethrpc.EthRPC
-
-	switch os.Getenv("BLOCKCHAIN") {
-	case "eth":
-		ethClient = ethrpc.New(os.Getenv("MAIN_API"))
-	case "etc":
-		endPoint, err := storage.GetEndpoint("etc")
-		if err != nil {
-			return err
-		}
-		ethClient = ethrpc.New(endPoint)
-	}
+	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
 	gasPrice, err := ethClient.EthGasPrice()
 	if err != nil {
@@ -131,6 +122,33 @@ func GetEstimateGas(c *routing.Context) error {
 	response.GasLimit = gasLimit
 
 	if err := responses.JsonResponse(c, response); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetNonce(c *routing.Context) error {
+
+	userAddress := c.Param("address")
+
+	client, err := ethclient.Dial(storage.EndpointForReq.Get())
+	if err != nil {
+		return err
+	}
+
+	nonce, err := client.PendingNonceAt(context.Background(), common.HexToAddress(userAddress))
+	if err != nil {
+		return err
+	}
+
+	result := struct {
+		Nonce uint64
+	}{
+		Nonce: nonce,
+	}
+
+	if err := responses.JsonResponse(c, result); err != nil {
 		return err
 	}
 
