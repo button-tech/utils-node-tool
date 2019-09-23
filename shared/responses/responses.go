@@ -47,7 +47,7 @@ type GasLimitResponse struct {
 }
 
 func JsonResponse(ctx *routing.Context, data interface{}) error {
-	ctx.Response.Header.Set("Access-Control-Allow-Origin", "https://client.buttonwallet.tech")
+	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
 	ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE, HEAD")
 	ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
