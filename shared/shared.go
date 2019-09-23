@@ -15,6 +15,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"encoding/hex"
 )
 
 func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
@@ -26,9 +27,14 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
 	address := common.HexToAddress(req.ContractAddress)
 
+	data, err := hex.DecodeString(req.Data)
+	if err != nil{
+		return 0, err
+	}
+
 	gasLimit, err := ethClient.EstimateGas(context.Background(), ethereum.CallMsg{
 		To:   &address,
-		Data: []byte(req.Data),
+		Data: data,
 	})
 
 	if err != nil {
