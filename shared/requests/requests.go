@@ -5,7 +5,6 @@ type BalancesRequest struct {
 }
 
 type EthEstimateGasRequest struct {
-	ToAddress    string `json:"toAddress"`
-	TokenAddress string `json:"tokenAddress"`
-	Amount       string `json:"amount"`
+	ContractAddress string `json:"contractAddress"`
+	Data            string `json:"data"`
 }

@@ -11,9 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/imroc/req"
-	"golang.org/x/crypto/sha3"
 	"log"
-	"math/big"
 	"os"
 	"strconv"
 	"strings"
@@ -21,40 +19,16 @@ import (
 
 func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
-	toAddress := common.HexToAddress(req.ToAddress)
-
-	tokenAddress := common.HexToAddress(req.TokenAddress)
-
-	amount := new(big.Int)
-	amount.SetString(req.Amount, 10)
-
-	transferFnSignature := []byte("transfer(address,uint256)")
-	hash := sha3.NewLegacyKeccak256()
-
-	_, err := hash.Write(transferFnSignature)
-	if err != nil {
-		return 0, err
-	}
-
-	methodID := hash.Sum(nil)[:4]
-
-	paddedAmount := common.LeftPadBytes(amount.Bytes(), 32)
-
-	paddedAddress := common.LeftPadBytes(toAddress.Bytes(), 32)
-
-	var data []byte
-	data = append(data, methodID...)
-	data = append(data, paddedAddress...)
-	data = append(data, paddedAmount...)
-
 	ethClient, err := ethclient.Dial(storage.EndpointForReq.Get())
 	if err != nil {
 		return 0, err
 	}
 
+	address := common.HexToAddress(req.ContractAddress)
+
 	gasLimit, err := ethClient.EstimateGas(context.Background(), ethereum.CallMsg{
-		To:   &tokenAddress,
-		Data: data,
+		To:   &address,
+		Data: []byte(req.Data),
 	})
 
 	if err != nil {
@@ -73,7 +47,10 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 	var err error
 
 	if currency != "bch" {
-		endPoint = storage.EndpointForReq.Get()
+		endPoint, err = storage.GetEndpoint(currency)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	switch currency {
