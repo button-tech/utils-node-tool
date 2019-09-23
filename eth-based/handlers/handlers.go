@@ -1,19 +1,19 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/button-tech/utils-node-tool/shared"
 	b "github.com/button-tech/utils-node-tool/shared/balance"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
+	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"log"
 	"math"
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
-	"context"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -143,7 +143,7 @@ func GetNonce(c *routing.Context) error {
 	}
 
 	result := struct {
-		Nonce uint64
+		Nonce uint64 `json:"nonce"`
 	}{
 		Nonce: nonce,
 	}
