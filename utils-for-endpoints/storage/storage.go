@@ -78,10 +78,7 @@ func SetFastestEndpoint() {
 	)
 
 	switch os.Getenv("BLOCKCHAIN") {
-	case "eth":
-		getEndpoint = GetFastestEthBasedEndpoint
-		mainUrl = os.Getenv("MAIN_API")
-	case "etc":
+	case "eth", "etc":
 		getEndpoint = GetFastestEthBasedEndpoint
 		mainUrl = os.Getenv("MAIN_API")
 	default:
