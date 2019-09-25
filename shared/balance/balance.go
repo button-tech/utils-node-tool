@@ -3,6 +3,7 @@ package balance
 import (
 	"errors"
 	"github.com/button-tech/utils-node-tool/shared/abi"
+	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -61,11 +62,10 @@ func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
 // UTXO based blockchain - BTC, LTC, BCH
 func GetUtxoBasedBalance(address string) (string, error) {
 
-	s := struct {
-		Balance string `json:"balance"`
-	}{}
-
-	var result string
+	var (
+		s      requests.UtxoBasedBalance
+		result string
+	)
 
 	res, err := req.Get(storage.EndpointForReq.Get() + "/address/" + address)
 	if err != nil || res.Response().StatusCode != 200 {
@@ -82,7 +82,6 @@ func GetUtxoBasedBalance(address string) (string, error) {
 		return "", err
 	}
 
-
 	return s.Balance, nil
 }
 
@@ -94,9 +93,8 @@ func UtxoBasedBalanceReq(address string) (string, error) {
 
 	for _, addr := range endpoints {
 		go func(addr string) {
-			s := struct {
-				Balance string `json:"balance"`
-			}{}
+
+			var s requests.UtxoBasedBalance
 
 			res, err := req.Get(addr + "/address/" + address)
 			if err != nil || res.Response().StatusCode != 200 {
@@ -107,7 +105,6 @@ func UtxoBasedBalanceReq(address string) (string, error) {
 			if err != nil {
 				return
 			}
-
 
 			balanceChan <- s.Balance
 
@@ -227,4 +224,3 @@ func EtherBalanceReq(address string) (string, error) {
 		return "", errors.New("Bad request")
 	}
 }
-

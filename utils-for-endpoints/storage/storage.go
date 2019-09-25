@@ -70,8 +70,6 @@ func StoreEndpointsFromDB() {
 }
 
 func SetFastestEndpoint() {
-	log.Println("Started set fastest endpoint!")
-
 	var (
 		getEndpoint GetFastestEndpoint
 	)
@@ -87,14 +85,9 @@ func SetFastestEndpoint() {
 		log.Fatal(errors.New("Not set ADDRESS env!"))
 	}
 
+	log.Println("Started set fastest endpoint!")
+
 	for {
-
-		fastestEndpoint := getEndpoint()
-
-		if fastestEndpoint == "" {
-			time.Sleep(time.Second * 5)
-			continue
-		}
 
 		EndpointForReq.Set(getEndpoint())
 
@@ -109,9 +102,6 @@ func SetFastestEndpoint() {
 func GetFastestUtxoBasedEndpoint() string {
 
 	endpoints := EndpointsFromDB.Get().Addresses
-	if len(endpoints) == 0 {
-		return ""
-	}
 
 	fastestEndpoint := make(chan string, len(endpoints))
 

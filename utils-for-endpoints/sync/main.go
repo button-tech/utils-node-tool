@@ -42,7 +42,7 @@ func SyncCheck(currency string, addresses []string) error {
 	)
 
 	switch currency {
-	case "eth","etc":
+	case "eth", "etc":
 		getBlockNumber = shared.GetEthBasedBlockNumber
 	default:
 		getBlockNumber = shared.GetUtxoBasedBlockNumber
