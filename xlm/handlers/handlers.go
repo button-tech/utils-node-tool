@@ -4,7 +4,6 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/responses"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
-	"log"
 )
 
 func GetBalance(c *routing.Context) error {
@@ -22,13 +21,11 @@ func GetBalance(c *routing.Context) error {
 
 	balanceReq, err := req.Get("https://horizon.stellar.org/accounts/" + c.Param("address"))
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
 	err = balanceReq.ToJSON(&balance)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 

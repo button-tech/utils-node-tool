@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
-	"log"
 	"math"
 )
 
@@ -43,7 +42,6 @@ func GetTxFee(c *routing.Context) error {
 	gasPrice, err := ethClient.EthGasPrice()
 
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
@@ -66,7 +64,6 @@ func GetGasPrice(c *routing.Context) error {
 
 	gasPrice, err := ethClient.EthGasPrice()
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
@@ -108,7 +105,6 @@ func GetEstimateGas(c *routing.Context) error {
 	var data requests.EthEstimateGasRequest
 
 	if err := json.Unmarshal(c.PostBody(), &data); err != nil {
-		log.Println(err)
 		return err
 	}
 
