@@ -9,8 +9,6 @@ import (
 	"github.com/imroc/req"
 	"github.com/onrik/ethrpc"
 	"golang.org/x/sync/errgroup"
-	"os"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -64,12 +62,12 @@ func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
 func GetUtxoBasedBalance(address string) (string, error) {
 
 	s := struct {
-		Balance interface{} `json:"balance"`
+		Balance string `json:"balance"`
 	}{}
 
 	var result string
 
-	res, err := req.Get(storage.EndpointForReq.Get() + address)
+	res, err := req.Get(storage.EndpointForReq.Get() + "/address/" + address)
 	if err != nil || res.Response().StatusCode != 200 {
 		result, err = UtxoBasedBalanceReq(address)
 		if err != nil {
@@ -84,57 +82,23 @@ func GetUtxoBasedBalance(address string) (string, error) {
 		return "", err
 	}
 
-	result, err = ParseUtxoApiResponse(s.Balance)
-	if err != nil {
-		return "", err
-	}
 
-	return result, nil
+	return s.Balance, nil
 }
 
 func UtxoBasedBalanceReq(address string) (string, error) {
 
-	var endpoints []string
-
-	currency := os.Getenv("BLOCKCHAIN")
-
-	mainApi := os.Getenv("MAIN_API")
-
-	mainUrl := mainApi + "/v1/address/" + address
-
-	switch currency {
-	case "btc":
-		dbEndpoints := storage.EndpointsFromDB.Get().Addresses
-		for _, j := range dbEndpoints {
-			j = j + "/addr/" + address
-			endpoints = append(endpoints, j)
-		}
-		endpoints = append(endpoints, mainUrl)
-	case "ltc":
-		dbEndpoints := storage.EndpointsFromDB.Get().Addresses
-		for _, j := range dbEndpoints {
-			j = j + "/api/addr/" + address
-			endpoints = append(endpoints, j)
-		}
-		endpoints = append(endpoints, mainUrl)
-	case "bch":
-		dbEndpoints := storage.EndpointsFromDB.Get().Addresses
-		for _, j := range dbEndpoints {
-			j = j + address
-			endpoints = append(endpoints, j)
-		}
-		endpoints = append(endpoints, mainUrl)
-	}
+	endpoints := storage.EndpointsFromDB.Get().Addresses
 
 	balanceChan := make(chan string, len(endpoints))
 
 	for _, addr := range endpoints {
 		go func(addr string) {
 			s := struct {
-				Balance interface{} `json:"balance"`
+				Balance string `json:"balance"`
 			}{}
 
-			res, err := req.Get(addr)
+			res, err := req.Get(addr + "/address/" + address)
 			if err != nil || res.Response().StatusCode != 200 {
 				return
 			}
@@ -144,12 +108,9 @@ func UtxoBasedBalanceReq(address string) (string, error) {
 				return
 			}
 
-			balance, err := ParseUtxoApiResponse(s.Balance)
-			if err != nil {
-				return
-			}
 
-			balanceChan <- balance
+			balanceChan <- s.Balance
+
 		}(addr)
 	}
 
@@ -209,8 +170,6 @@ func TokenBalanceReq(userAddress, smartContractAddress string) (string, error) {
 
 	endpoints := storage.EndpointsFromDB.Get().Addresses
 
-	endpoints = append(endpoints, os.Getenv("MAIN_API"))
-
 	balanceChan := make(chan string, len(endpoints))
 
 	for _, e := range endpoints {
@@ -247,8 +206,6 @@ func EtherBalanceReq(address string) (string, error) {
 
 	endpoints := storage.EndpointsFromDB.Get().Addresses
 
-	endpoints = append(endpoints, os.Getenv("MAIN_API"))
-
 	balanceChan := make(chan string, len(endpoints))
 
 	for _, e := range endpoints {
@@ -271,12 +228,3 @@ func EtherBalanceReq(address string) (string, error) {
 	}
 }
 
-func ParseUtxoApiResponse(i interface{}) (string, error) {
-	switch i.(type) {
-	case string:
-		return i.(string), nil
-	case float64:
-		return strconv.FormatFloat(i.(float64), 'f', 8, 64), nil
-	}
-	return "", errors.New("Bad request")
-}

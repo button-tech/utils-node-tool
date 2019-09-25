@@ -12,7 +12,6 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/imroc/req"
 	"log"
-	"os"
 	"strconv"
 	"strings"
 	"encoding/hex"
@@ -46,29 +45,8 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
 func GetUtxo(address string) ([]responses.UTXO, error) {
 
-	currency := os.Getenv("BLOCKCHAIN")
 
-	var requestUrl, endPoint string
-
-	var err error
-
-	if currency != "bch" {
-		endPoint, err = storage.GetEndpoint(currency)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	switch currency {
-	case "btc":
-		requestUrl = endPoint + "/addr/" + address + "/utxo"
-	case "bch":
-		requestUrl = "https://rest.bitbox.earth/v1/address/utxo/" + address
-	case "ltc":
-		requestUrl = endPoint + "/api/addr/" + address + "/utxo"
-	}
-
-	utxos, err := req.Get(requestUrl)
+	utxos, err := req.Get(storage.EndpointForReq.Get() + "/utxo/" + address)
 	if err != nil {
 		return nil, err
 	}
@@ -130,14 +108,8 @@ func GetEthBasedBlockNumber(currency, addr string) (int64, error) {
 }
 
 func GetUtxoBasedBlockNumber(currency, addr string) (int64, error) {
-	var url string
 
-	switch currency {
-	case "btc":
-		url = "/sync"
-	case "ltc":
-		url = "/api/sync"
-	}
+	var url string
 
 	res, err := req.Get(addr + url)
 	if err != nil || res.Response().StatusCode != 200 {
@@ -149,7 +121,9 @@ func GetUtxoBasedBlockNumber(currency, addr string) (int64, error) {
 	}
 
 	info := struct {
-		BlockChainHeight int64 `json:"blockChainHeight"`
+		Backend struct {
+			Blocks int64 `json:"blocks"`
+		}
 	}{}
 
 	err = res.ToJSON(&info)
@@ -157,7 +131,7 @@ func GetUtxoBasedBlockNumber(currency, addr string) (int64, error) {
 		return 0, err
 	}
 
-	return info.BlockChainHeight, nil
+	return info.Backend.Blocks, nil
 }
 
 func Max(array []int64) int64 {

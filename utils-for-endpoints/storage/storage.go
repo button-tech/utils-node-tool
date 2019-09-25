@@ -48,7 +48,7 @@ func (f *FastestEndpoint) Get() string {
 	return f.Address
 }
 
-type GetFastestEndpoint func(string) string
+type GetFastestEndpoint func() string
 
 var (
 	EndpointsFromDB StoredEndpoints
@@ -74,16 +74,13 @@ func SetFastestEndpoint() {
 
 	var (
 		getEndpoint GetFastestEndpoint
-		mainUrl     string
 	)
 
 	switch os.Getenv("BLOCKCHAIN") {
 	case "eth", "etc":
 		getEndpoint = GetFastestEthBasedEndpoint
-		mainUrl = os.Getenv("MAIN_API")
 	default:
 		getEndpoint = GetFastestUtxoBasedEndpoint
-		mainUrl = os.Getenv("MAIN_API") + "/v1/address/"
 	}
 
 	if len(os.Getenv("ADDRESS")) == 0 {
@@ -92,7 +89,14 @@ func SetFastestEndpoint() {
 
 	for {
 
-		EndpointForReq.Set(getEndpoint(mainUrl))
+		fastestEndpoint := getEndpoint()
+
+		if fastestEndpoint == "" {
+			time.Sleep(time.Second * 5)
+			continue
+		}
+
+		EndpointForReq.Set(getEndpoint())
 
 		log.Println(EndpointForReq.Get())
 
@@ -102,37 +106,18 @@ func SetFastestEndpoint() {
 	}
 }
 
-func GetFastestUtxoBasedEndpoint(mainUrl string) string {
-	currency := os.Getenv("BLOCKCHAIN")
+func GetFastestUtxoBasedEndpoint() string {
 
-	var dbEndpoints = EndpointsFromDB.Get().Addresses
-
-	var endpoints []string
-	switch currency {
-	case "btc":
-		for _, j := range dbEndpoints {
-			j = j + "/addr/"
-			endpoints = append(endpoints, j)
-		}
-		endpoints = append(endpoints, mainUrl)
-
-	case "ltc":
-		for _, j := range dbEndpoints {
-			j = j + "/api/addr/"
-			endpoints = append(endpoints, j)
-		}
-		endpoints = append(endpoints, mainUrl)
-
-	case "bch":
-		endpoints = append(endpoints, dbEndpoints...)
-		endpoints = append(endpoints, mainUrl)
+	endpoints := EndpointsFromDB.Get().Addresses
+	if len(endpoints) == 0 {
+		return ""
 	}
 
 	fastestEndpoint := make(chan string, len(endpoints))
 
 	for _, addr := range endpoints {
 		go func(addr string) {
-			res, err := req.Get(addr + os.Getenv("ADDRESS"))
+			res, err := req.Get(addr + "/address/" + os.Getenv("ADDRESS"))
 			if err != nil || res.Response().StatusCode != 200 {
 				return
 			}
@@ -146,11 +131,9 @@ func GetFastestUtxoBasedEndpoint(mainUrl string) string {
 	return <-fastestEndpoint
 }
 
-func GetFastestEthBasedEndpoint(mainUrl string) string {
+func GetFastestEthBasedEndpoint() string {
 
 	endpoints := EndpointsFromDB.Get().Addresses
-
-	endpoints = append(endpoints, mainUrl)
 
 	fastestEndpoint := make(chan string, len(endpoints))
 
@@ -170,7 +153,7 @@ func GetFastestEthBasedEndpoint(mainUrl string) string {
 	return <-fastestEndpoint
 }
 
-func GetEndpoint(currency string) (string, error) {
+func GetEndpoint() (string, error) {
 	endpoints := EndpointsFromDB.Get()
 	if endpoints == nil {
 		return "", errors.New("Not found")
