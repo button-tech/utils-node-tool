@@ -27,7 +27,7 @@ func GetBalance(c *routing.Context) error {
 	return nil
 }
 
-func GetUTXO(c *routing.Context) error {
+func GetUtxo(c *routing.Context) error {
 
 	address := c.Param("address")
 

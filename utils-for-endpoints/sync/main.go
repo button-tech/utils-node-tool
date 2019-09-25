@@ -35,21 +35,17 @@ type Req func(address, currency string) (int64, error)
 
 func SyncCheck(currency string, addresses []string) error {
 
-	if currency == "bch" {
-		log.Println(addresses)
-		return nil
-	}
-
 	var (
 		getBlockNumber  Req
 		blockDifference int64 = 10
 		result          Result
 	)
 
-	if currency == "btc" || currency == "ltc" {
-		getBlockNumber = shared.GetUtxoBasedBlockNumber
-	} else {
+	switch currency {
+	case "eth", "etc":
 		getBlockNumber = shared.GetEthBasedBlockNumber
+	default:
+		getBlockNumber = shared.GetUtxoBasedBlockNumber
 	}
 
 	var g errgroup.Group
@@ -86,7 +82,6 @@ func SyncCheck(currency string, addresses []string) error {
 	}
 
 	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.NodesInfo)))
-
 	return nil
 }
 

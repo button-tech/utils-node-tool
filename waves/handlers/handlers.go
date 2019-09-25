@@ -4,7 +4,6 @@ import (
 	"github.com/button-tech/utils-node-tool/shared/responses"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
-	"log"
 	"strconv"
 )
 
@@ -14,7 +13,6 @@ func GetBalance(c *routing.Context) error {
 
 	res, err := req.Get("https://nodes.wavesplatform.com/addresses/balance/" + address)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 
@@ -22,7 +20,6 @@ func GetBalance(c *routing.Context) error {
 
 	err = res.ToJSON(&data)
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 

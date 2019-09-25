@@ -7,10 +7,12 @@ import (
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
+	"time"
 )
 
 func init() {
 	go storage.StoreEndpointsFromDB()
+	time.Sleep(time.Second * 1)
 	go storage.SetFastestEndpoint()
 }
 

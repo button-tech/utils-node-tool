@@ -7,10 +7,12 @@ import (
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
+	"time"
 )
 
 func init() {
 	go storage.StoreEndpointsFromDB()
+	time.Sleep(time.Second * 1)
 	go storage.SetFastestEndpoint()
 }
 
@@ -22,7 +24,7 @@ func main() {
 
 	g.Get("/balance/<address>", handlers.GetBalance)
 
-	g.Get("/utxo/<address>", handlers.GetUTXO)
+	g.Get("/utxo/<address>", handlers.GetUtxo)
 
 	g.Post("/balances", handlers.GetBalances)
 
