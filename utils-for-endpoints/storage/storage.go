@@ -56,11 +56,15 @@ var (
 )
 
 func StoreEndpointsFromDB() {
+
 	log.Println("Started storing!")
+
 	for {
 		entry, err := db.GetEntry()
-		if err != nil {
-			log.Fatal(err)
+		if err != nil || entry == nil {
+			log.Println("Something wrong with entry or db!")
+			time.Sleep(time.Minute * 5)
+			continue
 		}
 
 		EndpointsFromDB.Set(*entry)

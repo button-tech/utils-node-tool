@@ -9,7 +9,6 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"os"
-	"strings"
 )
 
 var (
@@ -130,7 +129,7 @@ func GetEntry() (*schema.EndpointsData, error) {
 
 	c := session.DB(database).C(collection)
 
-	err = c.Find(bson.M{"currency": strings.ToLower(os.Getenv("BLOCKCHAIN"))}).One(&entry)
+	err = c.Find(bson.M{"currency": os.Getenv("BLOCKCHAIN")}).One(&entry)
 	if err != nil {
 		return nil, err
 	}
