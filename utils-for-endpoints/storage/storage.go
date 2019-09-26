@@ -60,6 +60,7 @@ func StoreEndpointsFromDB() {
 	log.Println("Started storing!")
 
 	for {
+		log.Println("Trying to update...")
 		entry, err := db.GetEntry()
 		if err != nil || entry == nil {
 			log.Println("Something wrong with entry or db!")
@@ -68,6 +69,8 @@ func StoreEndpointsFromDB() {
 		}
 
 		EndpointsFromDB.Set(*entry)
+
+		log.Println("Successfully updated")
 
 		time.Sleep(time.Minute * 10)
 	}
