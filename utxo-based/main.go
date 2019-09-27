@@ -3,17 +3,20 @@ package main
 import (
 	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/button-tech/utils-node-tool/utxo-based/handlers"
+	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
+	"net/http"
 	"os"
-	"time"
 )
 
 func init() {
-	go storage.StoreEndpointsFromDB()
-	time.Sleep(time.Second * 1)
-	go storage.SetFastestEndpoint()
+	startChan := make(chan struct{})
+	go storage.StoreEndpointsFromDB(startChan)
+	go storage.SetFastestEndpoint(startChan)
+
+	req.SetClient(&http.Client{})
 }
 
 func main() {

@@ -6,10 +6,10 @@ import (
 )
 
 type UTXO struct {
-	Address       string `json:"address,omitempty"`
+	Address       string `json:"address"`
 	Txid          string `json:"txid"`
 	Vout          int    `json:"vout"`
-	ScriptPubKey  string `json:"scriptPubKey,omitempty"`
+	ScriptPubKey  string `json:"scriptPubKey"`
 	Amount        string `json:"amount"`
 	Satoshis      int    `json:"satoshis"`
 	Height        int    `json:"height"`

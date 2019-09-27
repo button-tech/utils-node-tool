@@ -55,7 +55,26 @@ var (
 	EndpointForReq  FastestEndpoint
 )
 
-func StoreEndpointsFromDB() {
+func StoreEndpointsFromDB(startChan chan<- struct{}) {
+
+	// For first set
+	entry, err := db.GetEntry()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if entry == nil {
+		log.Fatal(errors.New("Something wrong with db entry!"))
+	}
+
+	EndpointsFromDB.Set(*entry)
+
+	// Send signal to start set fastest endpoint
+	startChan <- struct{}{}
+
+	log.Println("Successfully updated")
+
+	time.Sleep(time.Minute * 1)
 
 	log.Println("Started storing!")
 
@@ -76,7 +95,13 @@ func StoreEndpointsFromDB() {
 	}
 }
 
-func SetFastestEndpoint() {
+func SetFastestEndpoint(startChan chan struct{}) {
+
+	<-startChan
+
+	log.Println("Got signal from chan!")
+	close(startChan)
+
 	var (
 		getEndpoint GetFastestEndpoint
 	)
@@ -95,8 +120,13 @@ func SetFastestEndpoint() {
 	log.Println("Started set fastest endpoint!")
 
 	for {
+		endpoint := getEndpoint()
+		if len(endpoint) == 0 {
+			time.Sleep(time.Second * 1)
+			continue
+		}
 
-		EndpointForReq.Set(getEndpoint())
+		EndpointForReq.Set(endpoint)
 
 		log.Println(EndpointForReq.Get())
 
@@ -119,9 +149,12 @@ func GetFastestUtxoBasedEndpoint() string {
 				return
 			}
 
-			if res.Response().StatusCode == 200 {
-				fastestEndpoint <- addr
+			if err = res.Response().Body.Close(); err != nil {
+				return
 			}
+
+			fastestEndpoint <- addr
+
 		}(addr)
 	}
 
