@@ -19,7 +19,7 @@ type StoredEndpoints struct {
 	Entry schema.EndpointsData
 }
 
-func (s *StoredEndpoints) Set(entry schema.EndpointsData) {
+func (s *StoredEndpoints) set(entry schema.EndpointsData) {
 	s.Lock()
 	s.Entry = entry
 	s.Unlock()
@@ -36,7 +36,7 @@ type FastestEndpoint struct {
 	Address string
 }
 
-func (f *FastestEndpoint) Set(addr string) {
+func (f *FastestEndpoint) set(addr string) {
 	f.Lock()
 	f.Address = addr
 	f.Unlock()
@@ -67,12 +67,12 @@ func StoreEndpointsFromDB(startChan chan<- struct{}) {
 		log.Fatal(errors.New("Something wrong with db entry!"))
 	}
 
-	EndpointsFromDB.Set(*entry)
+	EndpointsFromDB.set(*entry)
 
 	// Send signal to start set fastest endpoint
 	startChan <- struct{}{}
 
-	log.Println("Successfully updated")
+	log.Println("Successfully updated!")
 
 	time.Sleep(time.Minute * 1)
 
@@ -87,7 +87,7 @@ func StoreEndpointsFromDB(startChan chan<- struct{}) {
 			continue
 		}
 
-		EndpointsFromDB.Set(*entry)
+		EndpointsFromDB.set(*entry)
 
 		log.Println("Successfully updated")
 
@@ -126,7 +126,7 @@ func SetFastestEndpoint(startChan chan struct{}) {
 			continue
 		}
 
-		EndpointForReq.Set(endpoint)
+		EndpointForReq.set(endpoint)
 
 		log.Println(EndpointForReq.Get())
 
