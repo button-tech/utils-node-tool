@@ -67,7 +67,7 @@ func GetUtxoBasedBalance(address string) (string, error) {
 		result string
 	)
 
-	res, err := req.Get("" + "/address/" + address)
+	res, err := req.Get(storage.EndpointForReq.Get() + "/address/" + address)
 	if err != nil || res.Response().StatusCode != 200 {
 		result, err = UtxoBasedBalanceReq(address)
 		if err != nil {
