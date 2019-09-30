@@ -40,7 +40,7 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 	return gasLimit, nil
 }
 
-func GetEthBasedBlockNumber(currency, addr string) (int64, error) {
+func GetEthBasedBlockNumber(addr string) (int64, error) {
 	header := req.Header{
 		"Content-Type": "application/json",
 	}
@@ -48,12 +48,12 @@ func GetEthBasedBlockNumber(currency, addr string) (int64, error) {
 	params := strings.NewReader("{\n\"jsonrpc\":\"2.0\",\n\"method\":\"eth_getBlockByNumber\",\n\"params\":[\"latest\", false],\n\"id\":1\n}")
 
 	resp, err := req.Post(addr, header, params)
-	if err != nil || resp.Response().StatusCode != 200 {
-		err := DeleteEntry(currency, addr)
-		if err != nil {
-			return 0, err
-		}
-		return 0, nil
+	if err != nil {
+		return 0, err
+	}
+
+	if resp.Response().StatusCode != 200 {
+		return 0, errors.New("Bad request")
 	}
 
 	var info requests.EthBasedBlocksHeight

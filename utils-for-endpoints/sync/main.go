@@ -10,8 +10,8 @@ import (
 
 	"github.com/button-tech/utils-node-tool/shared"
 	"github.com/button-tech/utils-node-tool/shared/db"
-	"golang.org/x/sync/errgroup"
 	"github.com/imroc/req"
+	"golang.org/x/sync/errgroup"
 	"net/http"
 )
 
@@ -24,16 +24,34 @@ type Result struct {
 	sync.Mutex
 	NodesInfo    []NodeInfo
 	BlockNumbers []int64
+	BadEndpoints []string
 }
 
-func (s *Result) Add(address string, blockNumber int64) {
+func (s *Result) AddToBlockNumbers(address string, blockNumber int64) {
 	s.Lock()
-	s.NodesInfo = append(s.NodesInfo, NodeInfo{blockNumber, address})
 	s.BlockNumbers = append(s.BlockNumbers, blockNumber)
 	s.Unlock()
 }
 
-type Req func(address, currency string) (int64, error)
+func (s *Result) AddToNodesInfo(address string, blockNumber int64) {
+	s.Lock()
+	s.NodesInfo = append(s.NodesInfo, NodeInfo{blockNumber, address})
+	s.Unlock()
+}
+
+func (s *Result) AddToBadEndpoints(address string) {
+	s.Lock()
+	s.BadEndpoints = append(s.BadEndpoints, address)
+	s.Unlock()
+}
+
+func (s *Result) ClearBadEndpoints() {
+	s.Lock()
+	s.BadEndpoints = s.BadEndpoints[:0]
+	s.Unlock()
+}
+
+type Req func(address string) (int64, error)
 
 func SyncCheck(currency string, addresses []string) error {
 
@@ -50,17 +68,21 @@ func SyncCheck(currency string, addresses []string) error {
 		getBlockNumber = shared.GetUtxoBasedBlockNumber
 	}
 
-	var g errgroup.Group
+	var (
+		g errgroup.Group
+	)
 
 	for _, addr := range addresses {
 		addr := addr
 		g.Go(func() error {
-			blockNumber, err := getBlockNumber(currency, addr)
+			blockNumber, err := getBlockNumber(addr)
 			if err != nil {
-				return err
+				result.AddToBadEndpoints(addr)
+				return nil
 			}
 
-			result.Add(addr, blockNumber)
+			result.AddToBlockNumbers(addr, blockNumber)
+			result.AddToNodesInfo(addr, blockNumber)
 
 			return nil
 		})
@@ -70,29 +92,52 @@ func SyncCheck(currency string, addresses []string) error {
 		return err
 	}
 
+	if len(result.BadEndpoints) > 0 {
+		err := DeleteEntries(result.BadEndpoints, currency)
+		if err != nil {
+			return err
+		}
+	}
+
+	result.ClearBadEndpoints()
+
 	maxNumber := shared.Max(result.BlockNumbers)
 
 	for _, j := range result.NodesInfo {
 		if j.BlockChainHeight < maxNumber-blockDifference {
-
-			err := shared.DeleteEntry(currency, j.EndPoint)
-			if err != nil {
-				return err
-			}
+			result.AddToBadEndpoints(j.EndPoint)
 			log.Println("BlockChainHeight:" + strconv.Itoa(int(j.BlockChainHeight)))
 			log.Println("Sync now:" + strconv.Itoa(int(maxNumber)))
 		}
 	}
 
-	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.NodesInfo)))
+	if len(result.BadEndpoints) > 0 {
+		err := DeleteEntries(result.BadEndpoints, currency)
+		if err != nil {
+			return err
+		}
+	}
+
+	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.NodesInfo)-len(result.BadEndpoints)))
+	return nil
+}
+
+func DeleteEntries(addresses []string, currency string) error {
+	for _, v := range addresses {
+		err := shared.DeleteEntry(currency, v)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
 	return nil
 }
 
 func main() {
-	
+
 	req.SetClient(&http.Client{})
 
-	log.Println("Start!")
+	log.Println("Started checking!")
 
 	for {
 

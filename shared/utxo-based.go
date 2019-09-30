@@ -7,8 +7,6 @@ import (
 	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
 	"github.com/imroc/req"
 	"golang.org/x/sync/errgroup"
-	"log"
-	"strconv"
 )
 
 func GetUtxo(address string) ([]responses.UTXO, error) {
@@ -72,7 +70,7 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 	return utxoArray, nil
 }
 
-func GetUtxoBasedBlockNumber(currency, addr string) (int64, error) {
+func GetUtxoBasedBlockNumber(addr string) (int64, error) {
 
 	var (
 		info requests.UtxoBasedBlocksHeight
@@ -80,12 +78,12 @@ func GetUtxoBasedBlockNumber(currency, addr string) (int64, error) {
 	)
 
 	res, err := req.Get(addr + url)
-	if err != nil || res.Response().StatusCode != 200 {
-		err := DeleteEntry(currency, addr)
-		if err != nil {
-			return 0, err
-		}
-		log.Println("Status code:" + strconv.Itoa(res.Response().StatusCode))
+	if err != nil {
+		return 0, err
+	}
+
+	if res.Response().StatusCode != 200 {
+		return 0, errors.New("Bad request")
 	}
 
 	err = res.ToJSON(&info)
