@@ -11,6 +11,8 @@ import (
 	"github.com/button-tech/utils-node-tool/shared"
 	"github.com/button-tech/utils-node-tool/shared/db"
 	"golang.org/x/sync/errgroup"
+	"github.com/imroc/req"
+	"net/http"
 )
 
 type NodeInfo struct {
@@ -72,6 +74,7 @@ func SyncCheck(currency string, addresses []string) error {
 
 	for _, j := range result.NodesInfo {
 		if j.BlockChainHeight < maxNumber-blockDifference {
+
 			err := shared.DeleteEntry(currency, j.EndPoint)
 			if err != nil {
 				return err
@@ -86,6 +89,8 @@ func SyncCheck(currency string, addresses []string) error {
 }
 
 func main() {
+	
+	req.SetClient(&http.Client{})
 
 	log.Println("Start!")
 
