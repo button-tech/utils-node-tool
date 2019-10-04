@@ -65,7 +65,9 @@ func SyncCheck(currency string, addresses []string) error {
 	case "eth", "etc":
 		getBlockNumber = shared.GetEthBasedBlockNumber
 	default:
-		getBlockNumber = shared.GetUtxoBasedBlockNumber
+		// Check only eth based endpoints
+		return nil
+		//getBlockNumber = shared.GetUtxoBasedBlockNumber
 	}
 
 	var (
