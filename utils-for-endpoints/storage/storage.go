@@ -122,7 +122,8 @@ func SetFastestEndpoint(startChan chan struct{}) {
 	for {
 		endpoint := getEndpoint()
 		if len(endpoint) == 0 {
-			time.Sleep(time.Second * 1)
+			log.Println("WARNING: All endpoints are not available now!")
+			time.Sleep(time.Minute * 1)
 			continue
 		}
 
@@ -158,7 +159,16 @@ func GetFastestUtxoBasedEndpoint() string {
 		}(addr)
 	}
 
-	return <-fastestEndpoint
+	var result string
+
+	select {
+	case dataFromChan := <- fastestEndpoint:
+		result = dataFromChan
+	case <-time.After(time.Second * 2):
+		result = ""
+	}
+
+	return result
 }
 
 func GetFastestEthBasedEndpoint() string {
@@ -180,7 +190,16 @@ func GetFastestEthBasedEndpoint() string {
 		}(e)
 	}
 
-	return <-fastestEndpoint
+	var result string
+
+	select {
+	case dataFromChan := <- fastestEndpoint:
+		result = dataFromChan
+	case <-time.After(time.Second * 2):
+		result = ""
+	}
+
+	return result
 }
 
 func GetEndpoint() (string, error) {
