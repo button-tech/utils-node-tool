@@ -159,16 +159,13 @@ func GetFastestUtxoBasedEndpoint() string {
 		}(addr)
 	}
 
-	var result string
 
 	select {
-	case dataFromChan := <- fastestEndpoint:
-		result = dataFromChan
+	case result := <- fastestEndpoint:
+		return result
 	case <-time.After(time.Second * 2):
-		result = ""
+		return ""
 	}
-
-	return result
 }
 
 func GetFastestEthBasedEndpoint() string {
@@ -190,16 +187,12 @@ func GetFastestEthBasedEndpoint() string {
 		}(e)
 	}
 
-	var result string
-
 	select {
-	case dataFromChan := <- fastestEndpoint:
-		result = dataFromChan
+	case result := <- fastestEndpoint:
+		return result
 	case <-time.After(time.Second * 2):
-		result = ""
+		return ""
 	}
-
-	return result
 }
 
 func GetEndpoint() (string, error) {
