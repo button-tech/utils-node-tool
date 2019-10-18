@@ -19,3 +19,10 @@ Other
 ```
 # docker run -p 8080:8080 -e HOST=db_host -e DB=database -e USER=db_user -e PASS=db_password -e COLLECTION=db_collection name_of_image
 ```
+
+### TON(testnet)
+
+```
+# docker build -f Dockerfile.ton -t name_of_image .
+# docker run -p 8080:8080 -e WORKDIR=/app/ name_of_image
+```
