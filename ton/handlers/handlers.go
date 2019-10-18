@@ -1,25 +1,24 @@
 package handlers
 
 import (
+	"github.com/button-tech/utils-node-tool/shared/responses"
 	"github.com/qiangxue/fasthttp-routing"
+	"os"
 	"os/exec"
 	"strings"
-	"errors"
-	"github.com/button-tech/utils-node-tool/shared/responses"
-	"os"
 )
 
 var workdir = os.Getenv("WORKDIR")
 
 func GetBalance(c *routing.Context) error {
 
-	stdout, err := exec.Command(workdir + "wrappers/get_balance.py", workdir, c.Param("address")).Output()
+	stdout, err := exec.Command(workdir+"wrappers/get_balance.py", workdir, c.Param("address")).Output()
 	if err != nil {
 		return err
 	}
 
 	if string(stdout) == "error\n" {
-		return errors.New("Bad address")
+		return routing.NewHTTPError(400, "Bad request")
 	}
 
 	balance := strings.TrimSuffix(string(stdout), "\n")

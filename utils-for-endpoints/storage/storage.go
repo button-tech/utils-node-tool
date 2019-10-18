@@ -159,9 +159,8 @@ func GetFastestUtxoBasedEndpoint() string {
 		}(addr)
 	}
 
-
 	select {
-	case result := <- fastestEndpoint:
+	case result := <-fastestEndpoint:
 		return result
 	case <-time.After(time.Second * 2):
 		return ""
@@ -188,7 +187,7 @@ func GetFastestEthBasedEndpoint() string {
 	}
 
 	select {
-	case result := <- fastestEndpoint:
+	case result := <-fastestEndpoint:
 		return result
 	case <-time.After(time.Second * 2):
 		return ""
