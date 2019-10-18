@@ -1,3 +1,6 @@
 .idea/
 .DS_Store
 .gitignore
+ton_linux_amd64
+Dockerfile.ton-dev
+dev_build.sh
