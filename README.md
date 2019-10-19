@@ -6,7 +6,7 @@ Database for blockchain nodes addresses - MongoDB
  
  - Build
 ```
-# docker build --build-arg DIR=dir_with_main.go -t name_of_image .
+# docker build --build-arg DIR=dir_in_cmd -t name_of_image .
 ```
 - Run examples
 
