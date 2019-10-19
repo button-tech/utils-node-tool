@@ -17,8 +17,6 @@ func main() {
 
 	g.Get("/balance/<address>", handlers.GetBalance)
 
-	// g.Post("/balances", handlers.GetBalances)
-
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)
 		os.Exit(1)
