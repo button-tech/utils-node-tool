@@ -28,9 +28,9 @@ func GetBalance(c *routing.Context) error {
 		if err := responses.JsonResponse(c, response); err != nil {
 			return err
 		}
+		return nil
 	}
 
-	
 	response.Balance = fmt.Sprintf("%v", balance.Result.(map[string]interface{})["balance"])
 
 	if err := responses.JsonResponse(c, response); err != nil {
