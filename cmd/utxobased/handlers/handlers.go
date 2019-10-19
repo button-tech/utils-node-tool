@@ -3,9 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"github.com/button-tech/utils-node-tool/nodetools"
-	b "github.com/button-tech/utils-node-tool/nodetools/balance"
-	"github.com/button-tech/utils-node-tool/requests"
-	"github.com/button-tech/utils-node-tool/responses"
+	b "github.com/button-tech/utils-node-tool/nodetools"
+	"github.com/button-tech/utils-node-tool/types/requests"
+	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/qiangxue/fasthttp-routing"
 )
 

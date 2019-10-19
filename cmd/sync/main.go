@@ -103,7 +103,7 @@ func SyncCheck(currency string, addresses []string) error {
 
 	result.ClearBadEndpoints()
 
-	maxNumber := nodetools.Max(result.BlockNumbers)
+	maxNumber := Max(result.BlockNumbers)
 
 	for _, j := range result.NodesInfo {
 		if j.BlockChainHeight < maxNumber-blockDifference {
@@ -126,7 +126,7 @@ func SyncCheck(currency string, addresses []string) error {
 
 func DeleteEntries(addresses []string, currency string) error {
 	for _, v := range addresses {
-		err := nodetools.DeleteEntry(currency, v)
+		err := db.DeleteEntry(currency, v)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -166,4 +166,14 @@ func main() {
 		time.Sleep(time.Minute * 10)
 	}
 
+}
+
+func Max(array []int64) int64 {
+	var max int64 = array[0]
+	for _, value := range array {
+		if max < value {
+			max = value
+		}
+	}
+	return max
 }

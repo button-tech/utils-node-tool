@@ -8,6 +8,7 @@ import (
 	"github.com/button-tech/utils-node-tool/db/schema"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"log"
 	"os"
 )
 
@@ -144,4 +145,15 @@ func removeSliceElement(s []string, r string) []string {
 		}
 	}
 	return s
+}
+
+func DeleteEntry(currency, address string) error {
+	err := AddToStoppedList(currency, address)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Add to stopped list %s: %s", currency, address)
+
+	return nil
 }

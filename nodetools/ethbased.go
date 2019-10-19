@@ -1,122 +1,83 @@
-package balance
+package nodetools
 
 import (
+	"context"
+	"encoding/hex"
 	"errors"
-	"github.com/button-tech/utils-node-tool/nodetools/abi"
 	"github.com/button-tech/utils-node-tool/nodetools/storage"
-	"github.com/button-tech/utils-node-tool/requests"
+	"github.com/button-tech/utils-node-tool/types/requests"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/button-tech/utils-node-tool/nodetools/abi"
 	"github.com/imroc/req"
 	"github.com/onrik/ethrpc"
-	"golang.org/x/sync/errgroup"
-	"sync"
+	"strconv"
+	"strings"
 	"time"
 )
 
-// Balances(by addresses list)
-type Balances struct {
-	sync.RWMutex
-	AddressesAndBalances map[string]string
-}
+func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 
-func NewBalances() *Balances {
-	return &Balances{
-		AddressesAndBalances: make(map[string]string),
-	}
-}
-
-func (ds *Balances) SetBalances(address, balance string) {
-	ds.Lock()
-	ds.AddressesAndBalances[address] = balance
-	ds.Unlock()
-}
-
-func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
-
-	result := NewBalances()
-
-	var g errgroup.Group
-
-	for _, address := range addresses {
-
-		address := address
-
-		g.Go(func() error {
-
-			balance, err := GetUtxoBasedBalance(address)
-			if err == nil {
-				result.SetBalances(address, balance)
-			}
-
-			return err
-		})
-	}
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	return result.AddressesAndBalances, nil
-}
-
-// UTXO based blockchain - BTC, LTC, BCH
-func GetUtxoBasedBalance(address string) (string, error) {
-
-	var (
-		s      requests.UtxoBasedBalance
-		result string
-	)
-
-	res, err := req.Get(storage.EndpointForReq.Get() + "/address/" + address)
-	if err != nil || res.Response().StatusCode != 200 {
-		result, err = UtxoBasedBalanceReq(address)
-		if err != nil {
-			return "", err
-		}
-
-		return result, nil
-	}
-
-	err = res.ToJSON(&s)
+	ethClient, err := ethclient.Dial(storage.EndpointForReq.Get())
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
-	return s.Balance, nil
+	address := common.HexToAddress(req.ContractAddress)
+
+	data, err := hex.DecodeString(req.Data)
+	if err != nil {
+		return 0, err
+	}
+
+	gasLimit, err := ethClient.EstimateGas(context.Background(), ethereum.CallMsg{
+		To:   &address,
+		Data: data,
+	})
+
+	if err != nil {
+		return 0, err
+	}
+
+	return gasLimit, nil
 }
 
-func UtxoBasedBalanceReq(address string) (string, error) {
-
-	endpoints := storage.EndpointsFromDB.Get().Addresses
-
-	balanceChan := make(chan string, len(endpoints))
-
-	for _, addr := range endpoints {
-		go func(addr string) {
-
-			var s requests.UtxoBasedBalance
-
-			res, err := req.Get(addr + "/address/" + address)
-			if err != nil || res.Response().StatusCode != 200 {
-				return
-			}
-
-			err = res.ToJSON(&s)
-			if err != nil {
-				return
-			}
-
-			balanceChan <- s.Balance
-
-		}(addr)
+func GetEthBasedBlockNumber(addr string) (int64, error) {
+	header := req.Header{
+		"Content-Type": "application/json",
 	}
 
-	select {
-	case result := <-balanceChan:
-		return result, nil
-	case <-time.After(2 * time.Second):
-		return "", errors.New("Bad request")
+	params := strings.NewReader("{\n\"jsonrpc\":\"2.0\",\n\"method\":\"eth_getBlockByNumber\",\n\"params\":[\"latest\", false],\n\"id\":1\n}")
+
+	resp, err := req.Post(addr, header, params)
+	if err != nil {
+		return 0, err
 	}
+
+	if resp.Response().StatusCode != 200 {
+		return 0, errors.New("Bad request")
+	}
+
+	var info requests.EthBasedBlocksHeight
+
+	err = resp.ToJSON(&info)
+	if err != nil {
+		return 0, err
+	}
+
+	if len(info.Result.Number) == 0 {
+		return 0, errors.New("Bad request")
+	}
+
+	hexNumber := []byte(info.Result.Number)
+
+	intNumber, err := strconv.ParseInt(string(hexNumber[2:]), 16, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	return intNumber, nil
 }
 
 // ETH based
