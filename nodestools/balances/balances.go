@@ -2,7 +2,7 @@ package balances
 
 import (
 	"errors"
-	"github.com/button-tech/utils-node-tool/abi"
+	"github.com/button-tech/utils-node-tool/nodestools/abi"
 	"github.com/button-tech/utils-node-tool/requests"
 	"github.com/button-tech/utils-node-tool/storage"
 	"github.com/ethereum/go-ethereum/common"
