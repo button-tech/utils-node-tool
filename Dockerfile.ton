@@ -32,7 +32,7 @@ RUN wget https://test.ton.org/ton-lite-client-test1.config.json
 
 WORKDIR /app
 
-COPY ton/wrappers /app/wrappers
+COPY cmd/ton/wrappers /app/wrappers
 
 EXPOSE 8080
 
