@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/button-tech/utils-node-tool/shared"
-	"github.com/button-tech/utils-node-tool/shared/db"
+	"github.com/button-tech/utils-node-tool/db"
+	"github.com/button-tech/utils-node-tool/nodestools"
 	"github.com/imroc/req"
 	"golang.org/x/sync/errgroup"
 	"net/http"
@@ -63,7 +63,7 @@ func SyncCheck(currency string, addresses []string) error {
 
 	switch currency {
 	case "eth", "etc":
-		getBlockNumber = shared.GetEthBasedBlockNumber
+		getBlockNumber = nodestools.GetEthBasedBlockNumber
 	default:
 		// Check only eth based endpoints
 		return nil
@@ -103,7 +103,7 @@ func SyncCheck(currency string, addresses []string) error {
 
 	result.ClearBadEndpoints()
 
-	maxNumber := shared.Max(result.BlockNumbers)
+	maxNumber := nodestools.Max(result.BlockNumbers)
 
 	for _, j := range result.NodesInfo {
 		if j.BlockChainHeight < maxNumber-blockDifference {
@@ -126,7 +126,7 @@ func SyncCheck(currency string, addresses []string) error {
 
 func DeleteEntries(addresses []string, currency string) error {
 	for _, v := range addresses {
-		err := shared.DeleteEntry(currency, v)
+		err := nodestools.DeleteEntry(currency, v)
 		if err != nil {
 			log.Println(err)
 			return err

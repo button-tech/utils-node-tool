@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/button-tech/utils-node-tool/shared/responses"
+	"github.com/button-tech/utils-node-tool/responses"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
 )

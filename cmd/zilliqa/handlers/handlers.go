@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/Zilliqa/gozilliqa-sdk/bech32"
 	"github.com/Zilliqa/gozilliqa-sdk/provider"
-	"github.com/button-tech/utils-node-tool/shared/responses"
+	"github.com/button-tech/utils-node-tool/responses"
 	"github.com/qiangxue/fasthttp-routing"
 )
 

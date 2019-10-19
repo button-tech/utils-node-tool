@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/button-tech/utils-node-tool/shared"
-	b "github.com/button-tech/utils-node-tool/shared/balance"
-	"github.com/button-tech/utils-node-tool/shared/requests"
-	"github.com/button-tech/utils-node-tool/shared/responses"
+	"github.com/button-tech/utils-node-tool/nodestools"
+	b "github.com/button-tech/utils-node-tool/nodestools/balances"
+	"github.com/button-tech/utils-node-tool/requests"
+	"github.com/button-tech/utils-node-tool/responses"
 	"github.com/qiangxue/fasthttp-routing"
 )
 
@@ -31,7 +31,7 @@ func GetUtxo(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	utxoArray, err := shared.GetUtxo(address)
+	utxoArray, err := nodestools.GetUtxo(address)
 	if err != nil {
 		return err
 	}

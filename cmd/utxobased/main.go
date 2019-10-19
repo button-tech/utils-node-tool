@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/button-tech/utils-node-tool/cmd/utxobased/handlers"
-	"github.com/button-tech/utils-node-tool/shared/storage"
+	"github.com/button-tech/utils-node-tool/storage"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"

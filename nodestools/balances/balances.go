@@ -1,10 +1,10 @@
-package balance
+package balances
 
 import (
 	"errors"
-	"github.com/button-tech/utils-node-tool/shared/abi"
-	"github.com/button-tech/utils-node-tool/shared/requests"
-	"github.com/button-tech/utils-node-tool/shared/storage"
+	"github.com/button-tech/utils-node-tool/abi"
+	"github.com/button-tech/utils-node-tool/requests"
+	"github.com/button-tech/utils-node-tool/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/imroc/req"

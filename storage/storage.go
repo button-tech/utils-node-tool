@@ -2,8 +2,8 @@ package storage
 
 import (
 	"errors"
-	"github.com/button-tech/utils-node-tool/shared/db"
-	"github.com/button-tech/utils-node-tool/shared/db/schema"
+	"github.com/button-tech/utils-node-tool/db"
+	"github.com/button-tech/utils-node-tool/db/schema"
 	"github.com/imroc/req"
 	"github.com/onrik/ethrpc"
 	"log"

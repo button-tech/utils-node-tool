@@ -1,7 +1,7 @@
-package shared
+package nodestools
 
 import (
-	"github.com/button-tech/utils-node-tool/shared/db"
+	"github.com/button-tech/utils-node-tool/db"
 	"log"
 )
 

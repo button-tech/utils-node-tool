@@ -3,11 +3,11 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"github.com/button-tech/utils-node-tool/shared"
-	b "github.com/button-tech/utils-node-tool/shared/balance"
-	"github.com/button-tech/utils-node-tool/shared/requests"
-	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/shared/storage"
+	"github.com/button-tech/utils-node-tool/nodestools"
+	b "github.com/button-tech/utils-node-tool/nodestools/balances"
+	"github.com/button-tech/utils-node-tool/requests"
+	"github.com/button-tech/utils-node-tool/responses"
+	"github.com/button-tech/utils-node-tool/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/onrik/ethrpc"
@@ -108,7 +108,7 @@ func GetEstimateGas(c *routing.Context) error {
 		return err
 	}
 
-	gasLimit, err := shared.GetEstimateGas(&data)
+	gasLimit, err := nodestools.GetEstimateGas(&data)
 	if err != nil {
 		return err
 	}
