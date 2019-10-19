@@ -6,7 +6,7 @@ RUN mkdir /build
 ADD . /build
 WORKDIR /build
 
-RUN go build -o bin/main $DIR
+RUN go build -o bin/main ./cmd/$DIR
 
 FROM debian:latest
 COPY --from=builder /build/bin /app

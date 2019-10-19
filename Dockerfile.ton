@@ -4,7 +4,7 @@ ADD . /build
 
 WORKDIR /build
 
-RUN go build -o bin/main ./ton
+RUN go build -o bin/main ./cmd/ton
 
 FROM python:3.7-stretch
 
