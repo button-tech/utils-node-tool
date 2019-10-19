@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/button-tech/utils-node-tool/shared/abi"
 	"github.com/button-tech/utils-node-tool/shared/requests"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
+	"github.com/button-tech/utils-node-tool/shared/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/imroc/req"

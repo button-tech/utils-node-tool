@@ -1,13 +1,11 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
-	"github.com/button-tech/utils-node-tool/utxo-based/handlers"
-	"github.com/imroc/req"
+	"github.com/button-tech/utils-node-tool/cmd/ethbased/handlers"
+	"github.com/button-tech/utils-node-tool/shared/storage"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
-	"net/http"
 	"os"
 )
 
@@ -15,8 +13,6 @@ func init() {
 	startChan := make(chan struct{})
 	go storage.StoreEndpointsFromDB(startChan)
 	go storage.SetFastestEndpoint(startChan)
-
-	req.SetClient(&http.Client{})
 }
 
 func main() {
@@ -27,9 +23,15 @@ func main() {
 
 	g.Get("/balance/<address>", handlers.GetBalance)
 
-	g.Get("/utxo/<address>", handlers.GetUtxo)
+	g.Get("/transactionFee", handlers.GetTxFee)
 
-	g.Post("/balances", handlers.GetBalances)
+	g.Get("/gasPrice", handlers.GetGasPrice)
+
+	g.Get("/nonce/<address>", handlers.GetNonce)
+
+	g.Get("/tokenBalance/<smart-contract-address>/<user-address>", handlers.GetTokenBalance)
+
+	g.Post("/estimateGas", handlers.GetEstimateGas)
 
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)

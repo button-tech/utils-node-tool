@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/button-tech/utils-node-tool/shared/requests"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
+	"github.com/button-tech/utils-node-tool/shared/storage"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"

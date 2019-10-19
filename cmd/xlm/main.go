@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/button-tech/utils-node-tool/zilliqa/handlers"
+	"github.com/button-tech/utils-node-tool/cmd/xlm/handlers"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
@@ -12,7 +12,7 @@ func main() {
 
 	r := routing.New()
 
-	g := r.Group("/zilliqa")
+	g := r.Group("/xlm")
 
 	g.Get("/balance/<address>", handlers.GetBalance)
 

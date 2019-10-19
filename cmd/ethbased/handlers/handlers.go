@@ -7,7 +7,7 @@ import (
 	b "github.com/button-tech/utils-node-tool/shared/balance"
 	"github.com/button-tech/utils-node-tool/shared/requests"
 	"github.com/button-tech/utils-node-tool/shared/responses"
-	"github.com/button-tech/utils-node-tool/utils-for-endpoints/storage"
+	"github.com/button-tech/utils-node-tool/shared/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/onrik/ethrpc"
