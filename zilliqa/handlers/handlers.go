@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/Zilliqa/gozilliqa-sdk/bech32"
 	"github.com/Zilliqa/gozilliqa-sdk/provider"
@@ -20,6 +21,10 @@ func GetBalance(c *routing.Context) error {
 	endpoint := provider.NewProvider("https://api.zilliqa.com/")
 
 	balance := endpoint.GetBalance(decodedAddress)
+
+	if balance.Result == nil {
+		return errors.New(balance.Error.Message)
+	}
 
 	response := new(responses.BalanceResponse)
 
