@@ -33,3 +33,5 @@ type EthEstimateGasRequest struct {
 	ContractAddress string `json:"contractAddress"`
 	Data            string `json:"data"`
 }
+
+type TezosBalance []string
