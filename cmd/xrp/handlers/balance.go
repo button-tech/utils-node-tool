@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+
 	"github.com/button-tech/utils-node-tool/types/requests"
 	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/imroc/req"
@@ -20,7 +21,9 @@ func GetBalance(ctx *routing.Context) error {
 	if err != nil {
 		return err
 	}
-	if err := responses.JsonResponse(ctx, balance); err != nil {
+	if err := responses.JsonResponse(ctx, &responses.BalanceResponse{
+		Balance: balance,
+	}); err != nil {
 		return err
 	}
 	return nil

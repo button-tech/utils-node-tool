@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
-	"strconv"
 )
 
 func GetBalance(c *routing.Context) error {

@@ -45,3 +45,15 @@ type XRPBalance struct {
 		Value    string `json:"value"`
 	} `json:"balances"`
 }
+
+type BnBBalance struct {
+	AccountNumber int    `json:"account_number"`
+	Address       string `json:"address"`
+	Balances      []struct {
+		Free   string `json:"free"`
+		Frozen string `json:"frozen"`
+		Locked string `json:"locked"`
+		Symbol string `json:"symbol"`
+	} `json:"balances"`
+	Sequence int `json:"sequence"`
+}
