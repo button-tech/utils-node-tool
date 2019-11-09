@@ -8,12 +8,14 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
+var R *routing.Router
+
 func main() {
-	r := routing.New()
-	g := r.Group("/xrp")
+	R = routing.New()
+	g := R.Group("/xrp")
 	g.Get("/balance/<address>", handlers.GetBalance)
 
-	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
+	if err := fasthttp.ListenAndServe(":8080", R.HandleRequest); err != nil {
 		log.Fatal(err)
 	}
 }
