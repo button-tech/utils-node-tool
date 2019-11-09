@@ -35,3 +35,13 @@ type EthEstimateGasRequest struct {
 }
 
 type TezosBalance []string
+
+type XRPBalance struct {
+	Result      string `json:"result"`
+	LedgerIndex int    `json:"ledger_index"`
+	Limit       int    `json:"limit"`
+	Balances    []struct {
+		Currency string `json:"currency"`
+		Value    string `json:"value"`
+	} `json:"balances"`
+}
