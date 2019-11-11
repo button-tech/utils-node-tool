@@ -47,7 +47,7 @@ func (f *fastestEndpoint) Get() string {
 	return f.address
 }
 
-type GetFastestEndpoint func() string
+type getFastestEndpoint func() string
 
 var (
 	EndpointsFromDB storedEndpoints
@@ -102,7 +102,7 @@ func SetFastestEndpoint(startChan chan struct{}) {
 	close(startChan)
 
 	var (
-		getEndpoint GetFastestEndpoint
+		getEndpoint getFastestEndpoint
 	)
 
 	switch os.Getenv("BLOCKCHAIN") {
