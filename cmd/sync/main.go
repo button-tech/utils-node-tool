@@ -15,50 +15,50 @@ import (
 	"net/http"
 )
 
-type NodeInfo struct {
-	BlockChainHeight int64
-	EndPoint         string
+type nodeInfo struct {
+	blockChainHeight int64
+	endPoint         string
 }
 
-type Result struct {
+type result struct {
 	sync.Mutex
-	NodesInfo    []NodeInfo
-	BlockNumbers []int64
-	BadEndpoints []string
+	nodesInfo    []nodeInfo
+	blockNumbers []int64
+	badEndpoints []string
 }
 
-func (s *Result) AddToBlockNumbers(address string, blockNumber int64) {
+func (s *result) addToBlockNumbers(address string, blockNumber int64) {
 	s.Lock()
-	s.BlockNumbers = append(s.BlockNumbers, blockNumber)
+	s.blockNumbers = append(s.blockNumbers, blockNumber)
 	s.Unlock()
 }
 
-func (s *Result) AddToNodesInfo(address string, blockNumber int64) {
+func (s *result) addToNodesInfo(address string, blockNumber int64) {
 	s.Lock()
-	s.NodesInfo = append(s.NodesInfo, NodeInfo{blockNumber, address})
+	s.nodesInfo = append(s.nodesInfo, nodeInfo{blockNumber, address})
 	s.Unlock()
 }
 
-func (s *Result) AddToBadEndpoints(address string) {
+func (s *result) addToBadEndpoints(address string) {
 	s.Lock()
-	s.BadEndpoints = append(s.BadEndpoints, address)
+	s.badEndpoints = append(s.badEndpoints, address)
 	s.Unlock()
 }
 
-func (s *Result) ClearBadEndpoints() {
+func (s *result) clearBadEndpoints() {
 	s.Lock()
-	s.BadEndpoints = s.BadEndpoints[:0]
+	s.badEndpoints = s.badEndpoints[:0]
 	s.Unlock()
 }
 
-type Req func(address string) (int64, error)
+type reqBlockNumber func(address string) (int64, error)
 
-func SyncCheck(currency string, addresses []string) error {
+func syncCheck(currency string, addresses []string) error {
 
 	var (
-		getBlockNumber  Req
+		getBlockNumber  reqBlockNumber
 		blockDifference int64 = 10
-		result          Result
+		result          result
 	)
 
 	switch currency {
@@ -79,12 +79,12 @@ func SyncCheck(currency string, addresses []string) error {
 		g.Go(func() error {
 			blockNumber, err := getBlockNumber(addr)
 			if err != nil {
-				result.AddToBadEndpoints(addr)
+				result.addToBadEndpoints(addr)
 				return nil
 			}
 
-			result.AddToBlockNumbers(addr, blockNumber)
-			result.AddToNodesInfo(addr, blockNumber)
+			result.addToBlockNumbers(addr, blockNumber)
+			result.addToNodesInfo(addr, blockNumber)
 
 			return nil
 		})
@@ -94,33 +94,33 @@ func SyncCheck(currency string, addresses []string) error {
 		return err
 	}
 
-	if len(result.BadEndpoints) > 0 {
-		err := DeleteEntries(result.BadEndpoints, currency)
+	if len(result.badEndpoints) > 0 {
+		err := DeleteEntries(result.badEndpoints, currency)
 		if err != nil {
 			return err
 		}
 	}
 
-	result.ClearBadEndpoints()
+	result.clearBadEndpoints()
 
-	maxNumber := Max(result.BlockNumbers)
+	maxNumber := max(result.blockNumbers)
 
-	for _, j := range result.NodesInfo {
-		if j.BlockChainHeight < maxNumber-blockDifference {
-			result.AddToBadEndpoints(j.EndPoint)
-			log.Println("BlockChainHeight:" + strconv.Itoa(int(j.BlockChainHeight)))
+	for _, j := range result.nodesInfo {
+		if j.blockChainHeight < maxNumber-blockDifference {
+			result.addToBadEndpoints(j.endPoint)
+			log.Println("BlockChainHeight:" + strconv.Itoa(int(j.blockChainHeight)))
 			log.Println("Sync now:" + strconv.Itoa(int(maxNumber)))
 		}
 	}
 
-	if len(result.BadEndpoints) > 0 {
-		err := DeleteEntries(result.BadEndpoints, currency)
+	if len(result.badEndpoints) > 0 {
+		err := DeleteEntries(result.badEndpoints, currency)
 		if err != nil {
 			return err
 		}
 	}
 
-	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.NodesInfo)-len(result.BadEndpoints)))
+	fmt.Println("All " + currency + " nodes checked! Alive nodes count - " + strconv.Itoa(len(result.nodesInfo)-len(result.badEndpoints)))
 	return nil
 }
 
@@ -154,7 +154,7 @@ func main() {
 		for _, j := range entries {
 			j := j
 			g.Go(func() error {
-				return SyncCheck(j.Currency, j.Addresses)
+				return syncCheck(j.Currency, j.Addresses)
 			})
 
 		}
@@ -168,7 +168,7 @@ func main() {
 
 }
 
-func Max(array []int64) int64 {
+func max(array []int64) int64 {
 	var max int64 = array[0]
 	for _, value := range array {
 		if max < value {
