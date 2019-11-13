@@ -57,3 +57,28 @@ type BnBBalance struct {
 	} `json:"balances"`
 	Sequence int `json:"sequence"`
 }
+
+type XRPTxData struct {
+	TxBlob string `json:"txBlob"`
+	Devnet bool   `json:"devnet"`
+}
+
+type XRPSentTxInfo struct {
+	Result struct {
+		EngineResult        string `json:"engine_result"`
+		EngineResultCode    int    `json:"engine_result_code"`
+		EngineResultMessage string `json:"engine_result_message"`
+		Status              string `json:"status"`
+		TxJSON              struct {
+			Fee  string `json:"Fee"`
+			Hash string `json:"hash"`
+		} `json:"tx_json"`
+	} `json:"result"`
+}
+
+type XRPTxToSubmit struct {
+	Method string `json:"method"`
+	Params []struct {
+		TxBlob string `json:"tx_blob"`
+	} `json:"params"`
+}

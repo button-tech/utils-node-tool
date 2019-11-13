@@ -47,6 +47,10 @@ type GasLimitResponse struct {
 	GasLimit uint64 `json:"gasLimit"`
 }
 
+type XRPTxHash struct {
+	TxHash string `json:"txHash"`
+}
+
 func JsonResponse(ctx *routing.Context, data interface{}) error {
 	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
 	ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE, HEAD")

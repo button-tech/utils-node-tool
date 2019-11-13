@@ -14,7 +14,9 @@ func main() {
 	R = routing.New()
 	g := R.Group("/xrp")
 	g.Get("/balance/<address>", handlers.GetBalance)
+	g.Post("/submit-tx", handlers.SubmitTransaction)
 
+	log.Println("start http server")
 	if err := fasthttp.ListenAndServe(":8080", R.HandleRequest); err != nil {
 		log.Fatal(err)
 	}
