@@ -1,0 +1,115 @@
+version: '3.7'
+services:
+  nginx:
+    container_name: nginx
+    build:
+        context: .
+        dockerfile: Dockerfile.nginx
+    ports:
+    - 8080:80
+    links:
+    - waves
+    - xlm
+    - eth
+    - etc
+    - btc
+    - ltc
+    - bch
+
+  waves:
+    container_name: waves
+    build:
+        context: .
+        dockerfile: Dockerfile
+        args:
+           - DIR=waves
+
+  xlm:
+    container_name: xlm
+    build:
+        context: .
+        dockerfile: Dockerfile
+        args:
+           - DIR=xlm
+
+  eth:
+    container_name: eth
+    build:
+        context: .
+        dockerfile: Dockerfile
+        args:
+           - DIR=ethbased
+
+    environment:
+           - BLOCKCHAIN=eth
+           - ADDRESS=0x08777cb1e80f45642752662b04886df2d271e049
+           - HOST=${HOST}
+           - DB=${DB}
+           - COLLECTION=${COLLECTION}
+           - USER=${DB_USER}
+           - PASS=${PASS}
+  etc:
+    container_name: etc
+    build:
+         context: .
+         dockerfile: Dockerfile
+         args:
+           - DIR=ethbased
+
+    environment:
+           - BLOCKCHAIN=etc
+           - ADDRESS=0xb46e669b64fee8093708dffc563755d6afce6463
+           - HOST=${HOST}
+           - DB=${DB}
+           - COLLECTION=${COLLECTION}
+           - USER=${DB_USER}
+           - PASS=${PASS}
+  btc:
+    container_name: btc
+    build:
+         context: .
+         dockerfile: Dockerfile
+         args:
+           - DIR=utxobased
+
+    environment:
+           - BLOCKCHAIN=btc
+           - ADDRESS=1JvPr67nmy4srZ1umSignApu1opRUse8uV
+           - HOST=${HOST}
+           - DB=${DB}
+           - COLLECTION=${COLLECTION}
+           - USER=${DB_USER}
+           - PASS=${PASS}
+  ltc:
+    container_name: ltc
+    build:
+         context: .
+         dockerfile: Dockerfile
+         args:
+           - DIR=utxobased
+
+    environment:
+           - BLOCKCHAIN=ltc
+           - ADDRESS=LfPJLBWKpCheVv9VSZrEJM3BWFRSG89iP8
+           - HOST=${HOST}
+           - DB=${DB}
+           - COLLECTION=${COLLECTION}
+           - USER=${DB_USER}
+           - PASS=${PASS}
+
+  bch:
+    container_name: bch
+    build:
+         context: .
+         dockerfile: Dockerfile
+         args:
+           - DIR=utxobased
+
+    environment:
+           - BLOCKCHAIN=bch
+           - ADDRESS=bitcoincash:qzmm95w4qkzv9rdpy4p5rapy9pq0vjasques9c7kur
+           - HOST=${HOST}
+           - DB=${DB}
+           - COLLECTION=${COLLECTION}
+           - USER=${DB_USER}
+           - PASS=${PASS}
