@@ -2,22 +2,24 @@ package main
 
 import (
 	"github.com/button-tech/utils-node-tool/cmd/zilliqa/handlers"
-	"github.com/qiangxue/fasthttp-routing"
-	"github.com/valyala/fasthttp"
 	"log"
-	"os"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
 
 func main() {
 
-	r := routing.New()
+	r := gin.New()
+
+	r.Use(cors.Default())
+
+	gin.SetMode(gin.ReleaseMode)
 
 	g := r.Group("/zilliqa")
 
-	g.Get("/balance/<address>", handlers.GetBalance)
+	g.GET("/balance/:address", handlers.GetBalance)
 
-	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
-		log.Println(err)
-		os.Exit(1)
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
 	}
 }

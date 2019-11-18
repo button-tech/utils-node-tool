@@ -6,44 +6,42 @@ import (
 	"github.com/Zilliqa/gozilliqa-sdk/bech32"
 	"github.com/Zilliqa/gozilliqa-sdk/provider"
 	"github.com/button-tech/utils-node-tool/types/responses"
-	"github.com/qiangxue/fasthttp-routing"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-func GetBalance(c *routing.Context) error {
+func GetBalance(c *gin.Context) {
 
 	zilliqaAddress := c.Param("address")
 
 	decodedAddress, err := bech32.FromBech32Addr(zilliqaAddress)
 	if err != nil {
-		return err
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	endpoint := provider.NewProvider("https://api.zilliqa.com/")
 	if endpoint == nil{
-		return errors.New("api.zilliqa.com isn't available now")
+		c.JSON(http.StatusInternalServerError, errors.New("api.zilliqa.com isn't available now"))
+		return
 	}
 
 	balance := endpoint.GetBalance(decodedAddress)
 	if balance == nil {
-		return errors.New("Problems with api.zilliqa.com")
+		c.JSON(http.StatusInternalServerError, errors.New("Problems with api.zilliqa.com"))
+		return
 	}
 
 	response := new(responses.BalanceResponse)
 
 	if balance.Result == nil {
 		response.Balance = "0"
-		if err := responses.JsonResponse(c, response); err != nil {
-			return err
-		}
-		return nil
+		c.JSON(http.StatusOK, response)
+		return
 	}
 
 	response.Balance = fmt.Sprintf("%v", balance.Result.(map[string]interface{})["balance"])
 
-	if err := responses.JsonResponse(c, response); err != nil {
-		return err
-	}
-
-	return nil
+	c.JSON(http.StatusOK, response)
 
 }

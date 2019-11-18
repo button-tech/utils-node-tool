@@ -13,6 +13,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.7
 	github.com/fjl/memsize v0.0.0-20190710130421-bcb5799ab5e5 // indirect
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
+	github.com/gin-gonic/gin v1.4.0
 	github.com/go-ozzo/ozzo-routing v2.1.4+incompatible // indirect
 	github.com/golang/gddo v0.0.0-20190904175337-72a348e765d2 // indirect
 	github.com/gorilla/websocket v1.4.1 // indirect
@@ -23,7 +24,6 @@ require (
 	github.com/jarcoal/httpmock v1.0.4 // indirect
 	github.com/karalabe/usb v0.0.0-20191104083709-911d15fe12a9 // indirect
 	github.com/mattn/go-colorable v0.1.4 // indirect
-	github.com/mattn/go-isatty v0.0.10 // indirect
 	github.com/olekukonko/tablewriter v0.0.2 // indirect
 	github.com/onrik/ethrpc v1.0.0
 	github.com/pborman/uuid v1.2.0 // indirect
