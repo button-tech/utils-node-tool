@@ -19,9 +19,11 @@ func GetBalance(c *routing.Context) error {
 	}
 
 	endpoint := provider.NewProvider("https://api.zilliqa.com/")
+	if endpoint == nil{
+		return errors.New("api.zilliqa.com isn't available now")
+	}
 
 	balance := endpoint.GetBalance(decodedAddress)
-
 	if balance == nil {
 		return errors.New("Problems with api.zilliqa.com")
 	}
