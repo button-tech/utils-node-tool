@@ -2,10 +2,18 @@ package main
 
 import (
 	"github.com/button-tech/utils-node-tool/cmd/zilliqa/handlers"
-	"log"
-	"github.com/gin-gonic/gin"
+	"github.com/button-tech/utils-node-tool/logger"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"log"
+	"os"
 )
+
+func init() {
+	if err := logger.InitLogger(os.Getenv("DSN")); err != nil {
+		log.Fatal(err)
+	}
+}
 
 func main() {
 
