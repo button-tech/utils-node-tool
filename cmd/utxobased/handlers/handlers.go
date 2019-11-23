@@ -20,6 +20,7 @@ func GetBalance(c *routing.Context) error {
 
 	balance, err := b.GetUtxoBasedBalance(address)
 	if err != nil {
+		logger.HandlerError("GetBalance", err)
 		return err
 	}
 
@@ -29,7 +30,7 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetBalance")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalance")
 
 	return nil
 }
@@ -42,6 +43,7 @@ func GetUtxo(c *routing.Context) error {
 
 	utxoArray, err := nodetools.GetUtxo(address)
 	if err != nil {
+		logger.HandlerError("GetUtxo", err)
 		return err
 	}
 
@@ -51,7 +53,7 @@ func GetUtxo(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetUtxo")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetUtxo")
 
 	return nil
 }
@@ -68,6 +70,7 @@ func GetBalances(c *routing.Context) error {
 
 	response, err := b.GetUtxoBasedBalancesByList(request.Addresses)
 	if err != nil {
+		logger.HandlerError("GetBalances", err)
 		return err
 	}
 
@@ -75,7 +78,7 @@ func GetBalances(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetBalances")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalances")
 
 	return nil
 }

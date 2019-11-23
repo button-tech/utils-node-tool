@@ -3,6 +3,7 @@ package logger
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"strings"
 )
 
@@ -77,4 +78,10 @@ func getError(args ...interface{}) *Err {
 		e.Message = strings.Join(message[:], ": ")
 	}
 	return e
+}
+
+func HandlerError(handlerName string, err error) {
+	Error(handlerName, err.Error(), Params{
+		"currency": os.Getenv("BLOCKCHAIN"),
+	})
 }

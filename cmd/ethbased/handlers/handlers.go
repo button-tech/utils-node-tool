@@ -26,6 +26,7 @@ func GetBalance(c *routing.Context) error {
 
 	balance, err := b.GetEtherBalance(address)
 	if err != nil {
+		logger.HandlerError("GetBalance", err)
 		return err
 	}
 
@@ -37,7 +38,7 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetBalance")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalance")
 
 	return nil
 }
@@ -49,8 +50,8 @@ func GetTxFee(c *routing.Context) error {
 	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
 	gasPrice, err := ethClient.EthGasPrice()
-
 	if err != nil {
+		logger.HandlerError("GetTxFee", err)
 		return err
 	}
 
@@ -64,7 +65,7 @@ func GetTxFee(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetTxFee")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTxFee")
 
 	return nil
 }
@@ -77,6 +78,7 @@ func GetGasPrice(c *routing.Context) error {
 
 	gasPrice, err := ethClient.EthGasPrice()
 	if err != nil {
+		logger.HandlerError("GetGasPrice", err)
 		return err
 	}
 
@@ -88,7 +90,7 @@ func GetGasPrice(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetGasPrice")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetGasPrice")
 
 	return nil
 }
@@ -103,6 +105,7 @@ func GetTokenBalance(c *routing.Context) error {
 
 	balance, err := b.GetTokenBalance(userAddress, smartContractAddress)
 	if err != nil {
+		logger.HandlerError("GetTokenBalance", err)
 		return err
 	}
 
@@ -114,7 +117,7 @@ func GetTokenBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetTokenBalance")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTokenBalance")
 
 	return nil
 }
@@ -131,6 +134,7 @@ func GetEstimateGas(c *routing.Context) error {
 
 	gasLimit, err := nodetools.GetEstimateGas(&data)
 	if err != nil {
+		logger.HandlerError("GetEstimateGas", err)
 		return err
 	}
 
@@ -142,7 +146,7 @@ func GetEstimateGas(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetEstimateGas")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetEstimateGas")
 
 	return nil
 }
@@ -160,6 +164,7 @@ func GetNonce(c *routing.Context) error {
 
 	nonce, err := client.PendingNonceAt(context.Background(), common.HexToAddress(userAddress))
 	if err != nil {
+		logger.HandlerError("GetNonce", err)
 		return err
 	}
 
@@ -173,7 +178,7 @@ func GetNonce(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetNonce")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetNonce")
 
 	return nil
 }
