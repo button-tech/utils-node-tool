@@ -4,11 +4,13 @@ import (
 	"errors"
 	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/db/schema"
+	"github.com/button-tech/utils-node-tool/logger"
 	"github.com/imroc/req"
 	"github.com/onrik/ethrpc"
 	"log"
 	"os"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -71,24 +73,34 @@ func StoreEndpointsFromDB(startChan chan<- struct{}) {
 	// Send signal to start set fastest endpoint
 	startChan <- struct{}{}
 
-	log.Println("Successfully updated!")
+	logger.Info("Successfully updated!")
 
 	time.Sleep(time.Minute * 1)
 
-	log.Println("Started storing!")
+	logger.Info("Started storing!")
 
 	for {
 		log.Println("Trying to update...")
 		entry, err := db.GetEntry()
-		if err != nil || entry == nil {
-			log.Println("Something wrong with entry or db!")
+		if err != nil {
+			logger.Error("StoreEndpointsFromDB", err.Error(), logger.Params{
+				"currency": os.Getenv("BLOCKCHAIN"),
+			})
+			time.Sleep(time.Minute * 5)
+			continue
+		}
+
+		if entry == nil {
+			logger.Error("StoreEndpointsFromDB", "entry == nil", logger.Params{
+				"currency": os.Getenv("BLOCKCHAIN"),
+			})
 			time.Sleep(time.Minute * 5)
 			continue
 		}
 
 		EndpointsFromDB.set(*entry)
 
-		log.Println("Successfully updated")
+		logger.Info("Successfully updated")
 
 		time.Sleep(time.Minute * 10)
 	}
@@ -98,7 +110,7 @@ func SetFastestEndpoint(startChan chan struct{}) {
 
 	<-startChan
 
-	log.Println("Got signal from chan!")
+	logger.Info("Got signal from chan!")
 	close(startChan)
 
 	var (
@@ -121,16 +133,18 @@ func SetFastestEndpoint(startChan chan struct{}) {
 	for {
 		endpoint := getEndpoint()
 		if len(endpoint) == 0 {
-			log.Println("WARNING: All endpoints are not available now!")
+			logger.Error("SetFastestEndpoint", "WARNING: All endpoints are not available now!", logger.Params{
+				"currency": os.Getenv("BLOCKCHAIN"),
+			})
 			time.Sleep(time.Minute * 1)
 			continue
 		}
 
 		EndpointForReq.set(endpoint)
 
-		log.Println(EndpointForReq.Get())
+		logger.Info("Fastest endpoint now: " + EndpointForReq.Get())
 
-		log.Println(runtime.NumGoroutine())
+		logger.Info("NumGoroutine: " + strconv.Itoa(runtime.NumGoroutine()))
 
 		time.Sleep(time.Minute * 1)
 	}
