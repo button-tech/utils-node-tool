@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/button-tech/utils-node-tool/logger"
 	"github.com/button-tech/utils-node-tool/nodetools"
 	b "github.com/button-tech/utils-node-tool/nodetools"
 	"github.com/button-tech/utils-node-tool/nodetools/storage"
@@ -13,9 +14,13 @@ import (
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"math"
+	"os"
+	"time"
 )
 
 func GetBalance(c *routing.Context) error {
+
+	start := time.Now()
 
 	address := c.Param("address")
 
@@ -32,10 +37,14 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetBalance")
+
 	return nil
 }
 
 func GetTxFee(c *routing.Context) error {
+
+	start := time.Now()
 
 	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
@@ -55,10 +64,14 @@ func GetTxFee(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetTxFee")
+
 	return nil
 }
 
 func GetGasPrice(c *routing.Context) error {
+
+	start := time.Now()
 
 	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
@@ -75,10 +88,14 @@ func GetGasPrice(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetGasPrice")
+
 	return nil
 }
 
 func GetTokenBalance(c *routing.Context) error {
+
+	start := time.Now()
 
 	userAddress := c.Param("user-address")
 
@@ -97,10 +114,14 @@ func GetTokenBalance(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetTokenBalance")
+
 	return nil
 }
 
 func GetEstimateGas(c *routing.Context) error {
+
+	start := time.Now()
 
 	var data requests.EthEstimateGasRequest
 
@@ -121,10 +142,14 @@ func GetEstimateGas(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetEstimateGas")
+
 	return nil
 }
 
 func GetNonce(c *routing.Context) error {
+
+	start := time.Now()
 
 	userAddress := c.Param("address")
 
@@ -147,6 +172,8 @@ func GetNonce(c *routing.Context) error {
 	if err := responses.JsonResponse(c, result); err != nil {
 		return err
 	}
+
+	logger.LogRequest(time.Since(start), os.Getenv("currency"), "GetNonce")
 
 	return nil
 }
