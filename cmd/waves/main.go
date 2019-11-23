@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/cmd/waves/handlers"
-	"github.com/button-tech/utils-node-tool/logger"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 )

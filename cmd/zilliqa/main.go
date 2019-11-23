@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/cmd/zilliqa/handlers"
-	"github.com/button-tech/utils-node-tool/logger"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"

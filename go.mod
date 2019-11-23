@@ -6,6 +6,7 @@ require (
 	github.com/Zilliqa/gozilliqa-sdk v0.0.0-20191120025912-34774891c8a3
 	github.com/allegro/bigcache v1.2.1 // indirect
 	github.com/aristanetworks/goarista v0.0.0-20191106175434-873d404c7f40 // indirect
+	github.com/button-tech/logger v0.0.0-20191123180143-e3bd29f60e52
 	github.com/cespare/cp v1.1.1 // indirect
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect

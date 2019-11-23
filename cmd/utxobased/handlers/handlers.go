@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/button-tech/utils-node-tool/logger"
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/nodetools"
 	b "github.com/button-tech/utils-node-tool/nodetools"
 	"github.com/button-tech/utils-node-tool/types/requests"
