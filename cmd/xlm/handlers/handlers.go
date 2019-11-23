@@ -53,7 +53,7 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), "XLM", "GetBalance")
+	logger.LogRequest(time.Since(start), "XLM", "GetBalance", false)
 
 	return nil
 }

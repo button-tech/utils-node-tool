@@ -35,7 +35,7 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), "WAVES", "GetBalance")
+	logger.LogRequest(time.Since(start), "WAVES", "GetBalance", false)
 
 	return nil
 }

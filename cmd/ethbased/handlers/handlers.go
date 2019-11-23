@@ -38,7 +38,7 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalance")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalance", false)
 
 	return nil
 }
@@ -65,7 +65,7 @@ func GetTxFee(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTxFee")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTxFee", false)
 
 	return nil
 }
@@ -90,7 +90,7 @@ func GetGasPrice(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetGasPrice")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetGasPrice", false)
 
 	return nil
 }
@@ -117,7 +117,7 @@ func GetTokenBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTokenBalance")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTokenBalance", false)
 
 	return nil
 }
@@ -146,7 +146,7 @@ func GetEstimateGas(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetEstimateGas")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetEstimateGas", false)
 
 	return nil
 }
@@ -178,7 +178,7 @@ func GetNonce(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetNonce")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetNonce", false)
 
 	return nil
 }

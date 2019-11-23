@@ -50,7 +50,7 @@ func GetBalance(c *gin.Context) {
 	if balance.Result == nil {
 		response.Balance = "0"
 		c.JSON(http.StatusOK, response)
-		logger.LogRequest(time.Since(start), "zilliqa", "GetBalance")
+		logger.LogRequest(time.Since(start), "zilliqa", "GetBalance", true)
 		return
 	}
 
@@ -58,6 +58,6 @@ func GetBalance(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 
-	logger.LogRequest(time.Since(start), "zilliqa", "GetBalance")
+	logger.LogRequest(time.Since(start), "zilliqa", "GetBalance", true)
 
 }

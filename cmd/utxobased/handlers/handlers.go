@@ -30,7 +30,7 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalance")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalance", false)
 
 	return nil
 }
@@ -53,7 +53,7 @@ func GetUtxo(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetUtxo")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetUtxo", false)
 
 	return nil
 }
@@ -78,7 +78,7 @@ func GetBalances(c *routing.Context) error {
 		return err
 	}
 
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalances")
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalances", false)
 
 	return nil
 }
