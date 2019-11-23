@@ -43,15 +43,13 @@ func getTezosBalance(address string) (string, error) {
 	}
 	balance := b[0]
 
-	if balanceExist(balance) {
-		return balance, nil
+	if isNoBalance(balance) {
+		return "", errors.New("balance doesn't exist")
 	}
-	return "", errors.New("balance doesn't exist")
+
+	return balance, nil
 }
 
-func balanceExist(s string) bool {
-	if s == "0" {
-		return false
-	}
-	return true
+func isNoBalance(s string) bool {
+	return s == "0"
 }
