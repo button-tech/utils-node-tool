@@ -35,7 +35,7 @@ func getBalance(url string) (string, error) {
 		return "", errors.Wrap(errors.New("responseStatusNotOk"), "CosmosGetBalance")
 	}
 
-	b := make([]requests.CosmosBalance, 1)
+	b := make(requests.CosmosBalance, 1)
 	if err = resp.ToJSON(&b); err != nil {
 		return "", errors.Wrap(err, "COSMOStoJSON")
 	}
