@@ -21,12 +21,8 @@ func GetBalance(ctx *routing.Context) error {
 	if err != nil {
 		return err
 	}
-	if err := responses.JsonResponse(ctx, &responses.BalanceResponse{
-		Balance: balance,
-	}); err != nil {
-		return err
-	}
-	return nil
+
+	return responses.JsonResponse(ctx, &responses.BalanceResponse{Balance: balance})
 }
 
 func getXRPBalance(address string) (string, error) {

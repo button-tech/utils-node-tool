@@ -20,12 +20,7 @@ func GetBalance(ctx *routing.Context) error {
 		return err
 	}
 
-	if err := responses.JsonResponse(ctx, &responses.BalanceResponse{
-		Balance: balance,
-	}); err != nil {
-		return err
-	}
-	return nil
+	return responses.JsonResponse(ctx, &responses.BalanceResponse{Balance: balance})
 }
 
 func getTezosBalance(address string) (string, error) {
@@ -37,7 +32,7 @@ func getTezosBalance(address string) (string, error) {
 		return "", errors.Wrap(err, "getTezosBalanceRequest")
 	}
 
-	b := make(requests.TezosBalance, 0)
+	b := make(requests.TezosBalance, 1)
 	if err := resp.ToJSON(&b); err != nil {
 		return "", errors.Wrap(err, "toJSON")
 	}

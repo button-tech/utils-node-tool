@@ -57,3 +57,8 @@ type BnBBalance struct {
 	} `json:"balances"`
 	Sequence int `json:"sequence"`
 }
+
+type CosmosBalance struct {
+	Denom  string `json:"denom"`
+	Amount string `json:"amount"`
+}
