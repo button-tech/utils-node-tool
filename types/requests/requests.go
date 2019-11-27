@@ -62,3 +62,22 @@ type CosmosBalance []struct {
 	Denom  string `json:"denom"`
 	Amount string `json:"amount"`
 }
+
+type AlgorandBalance struct {
+	Participation struct {
+		Vrfpkb64  string `json:"vrfpkb64"`
+		Partpkb64 string `json:"partpkb64"`
+		Votefst   int    `json:"votefst"`
+		Votelst   int    `json:"votelst"`
+		Votekd    int    `json:"votekd"`
+	} `json:"participation"`
+	Amount                      uint64 `json:"amount"`
+	Pendingrewards              int    `json:"pendingrewards"`
+	Address                     string `json:"address"`
+	Assets                      string `json:"assets"`
+	Round                       int    `json:"round"`
+	Thisassettotal              string `json:"thisassettotal"`
+	Amountwithoutpendingrewards int    `json:"amountwithoutpendingrewards"`
+	Rewards                     int    `json:"rewards"`
+	Status                      string `json:"status"`
+}
