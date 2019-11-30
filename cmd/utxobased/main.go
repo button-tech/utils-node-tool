@@ -33,8 +33,6 @@ func main() {
 
 	g.Get("/utxo/<address>", handlers.GetUtxo)
 
-	g.Post("/balances", handlers.GetBalances)
-
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)
 		os.Exit(1)

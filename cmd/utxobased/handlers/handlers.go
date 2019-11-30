@@ -1,11 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
 	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/nodetools"
 	b "github.com/button-tech/utils-node-tool/nodetools"
-	"github.com/button-tech/utils-node-tool/types/requests"
 	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/qiangxue/fasthttp-routing"
 	"os"
@@ -54,31 +52,6 @@ func GetUtxo(c *routing.Context) error {
 	}
 
 	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetUtxo", false)
-
-	return nil
-}
-
-func GetBalances(c *routing.Context) error {
-
-	start := time.Now()
-
-	request := new(requests.BalancesRequest)
-
-	if err := json.Unmarshal(c.PostBody(), &request); err != nil {
-		return err
-	}
-
-	response, err := b.GetUtxoBasedBalancesByList(request.Addresses)
-	if err != nil {
-		logger.HandlerError("GetBalances", err)
-		return err
-	}
-
-	if err := responses.JsonResponse(c, response); err != nil {
-		return err
-	}
-
-	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalances", false)
 
 	return nil
 }
