@@ -31,7 +31,7 @@ RUN cmake --build . --target fift
 RUN wget https://test.ton.org/ton-lite-client-test1.config.json
 
 
-COPY cmd/api/wrappers /app/wrappers
+COPY cmd/ton/wrappers /app/wrappers
 
 EXPOSE 8080
 
