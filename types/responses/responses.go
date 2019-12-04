@@ -3,6 +3,7 @@ package responses
 import (
 	"encoding/json"
 	"github.com/qiangxue/fasthttp-routing"
+	"github.com/valyala/fasthttp"
 )
 
 type UTXO struct {
@@ -51,7 +52,7 @@ func JsonResponse(ctx *routing.Context, data interface{}) error {
 	ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE, HEAD")
 	ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
 	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
-	ctx.Response.SetStatusCode(200)
+	ctx.Response.SetStatusCode(fasthttp.StatusOK)
 	if err := json.NewEncoder(ctx).Encode(data); err != nil {
 		return err
 	}
