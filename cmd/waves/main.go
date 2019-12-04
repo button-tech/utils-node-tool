@@ -4,10 +4,17 @@ import (
 	"log"
 	"os"
 
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/cmd/waves/handlers"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 )
+
+func init() {
+	if err := logger.InitLogger(os.Getenv("DSN")); err != nil {
+		log.Fatal(err)
+	}
+}
 
 func main() {
 
@@ -16,8 +23,6 @@ func main() {
 	g := r.Group("/waves")
 
 	g.Get("/balance/<address>", handlers.GetBalance)
-
-	// g.Post("/balances", handlers.GetBalances)
 
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)

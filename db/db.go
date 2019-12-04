@@ -98,26 +98,6 @@ func AddToStoppedList(currency, address string) error {
 	return nil
 }
 
-func GetAllNodes(currency string) ([]string, error) {
-	session, err := mgo.DialWithInfo(&info)
-	if err != nil {
-		return nil, err
-	}
-
-	defer session.Close()
-
-	var entry schema.EndpointsData
-
-	c := session.DB(database).C(collection)
-
-	err = c.Find(bson.M{"currency": currency}).One(&entry)
-	if err != nil {
-		return nil, err
-	}
-
-	return entry.Addresses, nil
-}
-
 func GetEntry() (*schema.EndpointsData, error) {
 	session, err := mgo.DialWithInfo(&info)
 	if err != nil {

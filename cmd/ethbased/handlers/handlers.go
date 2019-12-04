@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/nodetools"
 	b "github.com/button-tech/utils-node-tool/nodetools"
 	"github.com/button-tech/utils-node-tool/nodetools/storage"
@@ -13,14 +14,19 @@ import (
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"math"
+	"os"
+	"time"
 )
 
 func GetBalance(c *routing.Context) error {
+
+	start := time.Now()
 
 	address := c.Param("address")
 
 	balance, err := b.GetEtherBalance(address)
 	if err != nil {
+		logger.HandlerError("GetBalance", err)
 		return err
 	}
 
@@ -32,16 +38,20 @@ func GetBalance(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetBalance", false)
+
 	return nil
 }
 
 func GetTxFee(c *routing.Context) error {
 
+	start := time.Now()
+
 	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
 	gasPrice, err := ethClient.EthGasPrice()
-
 	if err != nil {
+		logger.HandlerError("GetTxFee", err)
 		return err
 	}
 
@@ -55,15 +65,20 @@ func GetTxFee(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTxFee", false)
+
 	return nil
 }
 
 func GetGasPrice(c *routing.Context) error {
 
+	start := time.Now()
+
 	ethClient := ethrpc.New(storage.EndpointForReq.Get())
 
 	gasPrice, err := ethClient.EthGasPrice()
 	if err != nil {
+		logger.HandlerError("GetGasPrice", err)
 		return err
 	}
 
@@ -75,10 +90,14 @@ func GetGasPrice(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetGasPrice", false)
+
 	return nil
 }
 
 func GetTokenBalance(c *routing.Context) error {
+
+	start := time.Now()
 
 	userAddress := c.Param("user-address")
 
@@ -86,6 +105,7 @@ func GetTokenBalance(c *routing.Context) error {
 
 	balance, err := b.GetTokenBalance(userAddress, smartContractAddress)
 	if err != nil {
+		logger.HandlerError("GetTokenBalance", err)
 		return err
 	}
 
@@ -97,10 +117,14 @@ func GetTokenBalance(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetTokenBalance", false)
+
 	return nil
 }
 
 func GetEstimateGas(c *routing.Context) error {
+
+	start := time.Now()
 
 	var data requests.EthEstimateGasRequest
 
@@ -110,6 +134,7 @@ func GetEstimateGas(c *routing.Context) error {
 
 	gasLimit, err := nodetools.GetEstimateGas(&data)
 	if err != nil {
+		logger.HandlerError("GetEstimateGas", err)
 		return err
 	}
 
@@ -121,10 +146,14 @@ func GetEstimateGas(c *routing.Context) error {
 		return err
 	}
 
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetEstimateGas", false)
+
 	return nil
 }
 
 func GetNonce(c *routing.Context) error {
+
+	start := time.Now()
 
 	userAddress := c.Param("address")
 
@@ -135,6 +164,7 @@ func GetNonce(c *routing.Context) error {
 
 	nonce, err := client.PendingNonceAt(context.Background(), common.HexToAddress(userAddress))
 	if err != nil {
+		logger.HandlerError("GetNonce", err)
 		return err
 	}
 
@@ -147,6 +177,8 @@ func GetNonce(c *routing.Context) error {
 	if err := responses.JsonResponse(c, result); err != nil {
 		return err
 	}
+
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetNonce", false)
 
 	return nil
 }

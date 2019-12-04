@@ -2,57 +2,58 @@ package storage
 
 import (
 	"errors"
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/db"
 	"github.com/button-tech/utils-node-tool/db/schema"
 	"github.com/imroc/req"
 	"github.com/onrik/ethrpc"
 	"log"
-	"math/rand"
 	"os"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 )
 
-type StoredEndpoints struct {
+type storedEndpoints struct {
 	sync.RWMutex
-	Entry schema.EndpointsData
+	entry schema.EndpointsData
 }
 
-func (s *StoredEndpoints) set(entry schema.EndpointsData) {
+func (s *storedEndpoints) set(entry schema.EndpointsData) {
 	s.Lock()
-	s.Entry = entry
+	s.entry = entry
 	s.Unlock()
 }
 
-func (s *StoredEndpoints) Get() *schema.EndpointsData {
+func (s *storedEndpoints) Get() *schema.EndpointsData {
 	s.RLock()
 	defer s.RUnlock()
-	return &s.Entry
+	return &s.entry
 }
 
-type FastestEndpoint struct {
+type fastestEndpoint struct {
 	sync.RWMutex
-	Address string
+	address string
 }
 
-func (f *FastestEndpoint) set(addr string) {
+func (f *fastestEndpoint) set(addr string) {
 	f.Lock()
-	f.Address = addr
+	f.address = addr
 	f.Unlock()
 }
 
-func (f *FastestEndpoint) Get() string {
+func (f *fastestEndpoint) Get() string {
 	f.RLock()
 	defer f.RUnlock()
-	return f.Address
+	return f.address
 }
 
-type GetFastestEndpoint func() string
+type getFastestEndpoint func() string
 
 var (
-	EndpointsFromDB StoredEndpoints
-	EndpointForReq  FastestEndpoint
+	EndpointsFromDB storedEndpoints
+	EndpointForReq  fastestEndpoint
 )
 
 func StoreEndpointsFromDB(startChan chan<- struct{}) {
@@ -72,24 +73,34 @@ func StoreEndpointsFromDB(startChan chan<- struct{}) {
 	// Send signal to start set fastest endpoint
 	startChan <- struct{}{}
 
-	log.Println("Successfully updated!")
+	logger.Info("Successfully updated!")
 
 	time.Sleep(time.Minute * 1)
 
-	log.Println("Started storing!")
+	logger.Info("Started storing!")
 
 	for {
 		log.Println("Trying to update...")
 		entry, err := db.GetEntry()
-		if err != nil || entry == nil {
-			log.Println("Something wrong with entry or db!")
+		if err != nil {
+			logger.Error("StoreEndpointsFromDB", err.Error(), logger.Params{
+				"currency": os.Getenv("BLOCKCHAIN"),
+			})
+			time.Sleep(time.Minute * 5)
+			continue
+		}
+
+		if entry == nil {
+			logger.Error("StoreEndpointsFromDB", "entry == nil", logger.Params{
+				"currency": os.Getenv("BLOCKCHAIN"),
+			})
 			time.Sleep(time.Minute * 5)
 			continue
 		}
 
 		EndpointsFromDB.set(*entry)
 
-		log.Println("Successfully updated")
+		logger.Info("Successfully updated")
 
 		time.Sleep(time.Minute * 10)
 	}
@@ -99,18 +110,18 @@ func SetFastestEndpoint(startChan chan struct{}) {
 
 	<-startChan
 
-	log.Println("Got signal from chan!")
+	logger.Info("Got signal from chan!")
 	close(startChan)
 
 	var (
-		getEndpoint GetFastestEndpoint
+		getEndpoint getFastestEndpoint
 	)
 
 	switch os.Getenv("BLOCKCHAIN") {
 	case "eth", "etc":
-		getEndpoint = GetFastestEthBasedEndpoint
+		getEndpoint = getFastestEthBasedEndpoint
 	default:
-		getEndpoint = GetFastestUtxoBasedEndpoint
+		getEndpoint = getFastestUtxoBasedEndpoint
 	}
 
 	if len(os.Getenv("ADDRESS")) == 0 {
@@ -122,22 +133,24 @@ func SetFastestEndpoint(startChan chan struct{}) {
 	for {
 		endpoint := getEndpoint()
 		if len(endpoint) == 0 {
-			log.Println("WARNING: All endpoints are not available now!")
+			logger.Error("SetFastestEndpoint", "WARNING: All endpoints are not available now!", logger.Params{
+				"currency": os.Getenv("BLOCKCHAIN"),
+			})
 			time.Sleep(time.Minute * 1)
 			continue
 		}
 
 		EndpointForReq.set(endpoint)
 
-		log.Println(EndpointForReq.Get())
+		logger.Info("Fastest endpoint now: " + EndpointForReq.Get())
 
-		log.Println(runtime.NumGoroutine())
+		logger.Info("NumGoroutine: " + strconv.Itoa(runtime.NumGoroutine()))
 
 		time.Sleep(time.Minute * 1)
 	}
 }
 
-func GetFastestUtxoBasedEndpoint() string {
+func getFastestUtxoBasedEndpoint() string {
 
 	endpoints := EndpointsFromDB.Get().Addresses
 
@@ -167,7 +180,7 @@ func GetFastestUtxoBasedEndpoint() string {
 	}
 }
 
-func GetFastestEthBasedEndpoint() string {
+func getFastestEthBasedEndpoint() string {
 
 	endpoints := EndpointsFromDB.Get().Addresses
 
@@ -192,19 +205,4 @@ func GetFastestEthBasedEndpoint() string {
 	case <-time.After(time.Second * 2):
 		return ""
 	}
-}
-
-func GetEndpoint() (string, error) {
-	endpoints := EndpointsFromDB.Get()
-	if endpoints == nil {
-		return "", errors.New("Not found")
-	}
-
-	addresses := endpoints.Addresses
-
-	rand.Seed(time.Now().UnixNano())
-
-	result := addresses[rand.Intn(len(addresses))]
-
-	return result, nil
 }

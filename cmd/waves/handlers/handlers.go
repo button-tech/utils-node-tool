@@ -1,14 +1,17 @@
 package handlers
 
 import (
-	"strconv"
-
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
+	"strconv"
+	"time"
 )
 
 func GetBalance(c *routing.Context) error {
+
+	start := time.Now()
 
 	address := c.Param("address")
 
@@ -31,6 +34,8 @@ func GetBalance(c *routing.Context) error {
 	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
+
+	logger.LogRequest(time.Since(start), "WAVES", "GetBalance", false)
 
 	return nil
 }

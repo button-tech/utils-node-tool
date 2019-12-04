@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/cmd/ethbased/handlers"
 	"github.com/button-tech/utils-node-tool/nodetools/storage"
 	"github.com/qiangxue/fasthttp-routing"
@@ -10,6 +11,9 @@ import (
 )
 
 func init() {
+	if err := logger.InitLogger(os.Getenv("DSN")); err != nil {
+		log.Fatal(err)
+	}
 	startChan := make(chan struct{})
 	go storage.StoreEndpointsFromDB(startChan)
 	go storage.SetFastestEndpoint(startChan)

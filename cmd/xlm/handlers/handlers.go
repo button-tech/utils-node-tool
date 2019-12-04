@@ -1,12 +1,16 @@
 package handlers
 
 import (
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
+	"time"
 )
 
 func GetBalance(c *routing.Context) error {
+
+	start := time.Now()
 
 	type StellarBalance struct {
 		Balances []struct {
@@ -48,6 +52,8 @@ func GetBalance(c *routing.Context) error {
 	if err := responses.JsonResponse(c, response); err != nil {
 		return err
 	}
+
+	logger.LogRequest(time.Since(start), "XLM", "GetBalance", false)
 
 	return nil
 }

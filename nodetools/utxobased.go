@@ -7,54 +7,8 @@ import (
 	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/imroc/req"
 	"golang.org/x/sync/errgroup"
-	"sync"
 	"time"
 )
-
-// Balances(by addresses list)
-type Balances struct {
-	sync.RWMutex
-	AddressesAndBalances map[string]string
-}
-
-func NewBalances() *Balances {
-	return &Balances{
-		AddressesAndBalances: make(map[string]string),
-	}
-}
-
-func (ds *Balances) SetBalances(address, balance string) {
-	ds.Lock()
-	ds.AddressesAndBalances[address] = balance
-	ds.Unlock()
-}
-
-func GetUtxoBasedBalancesByList(addresses []string) (map[string]string, error) {
-
-	result := NewBalances()
-
-	var g errgroup.Group
-
-	for _, address := range addresses {
-
-		address := address
-
-		g.Go(func() error {
-
-			balance, err := GetUtxoBasedBalance(address)
-			if err == nil {
-				result.SetBalances(address, balance)
-			}
-
-			return err
-		})
-	}
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	return result.AddressesAndBalances, nil
-}
 
 func GetUtxo(address string) ([]responses.UTXO, error) {
 
