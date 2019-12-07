@@ -1,5 +1,7 @@
 # UTILS-NODE-TOOL
 
+### Blockchain list: ETH based(ETH/ETC),UTXO based(BTC/BCH/LTC), WAVES, XLM, ZILLIQA, COSMOS, RIPPLE, TEZOS, ALGORAND, BNB, TON(testnet)
+
 ### Run in Docker container
 
 Database for blockchain nodes addresses - MongoDB 
