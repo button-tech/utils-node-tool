@@ -17,7 +17,7 @@ WORKDIR /app
 
 #install dep
 RUN apt-get -y update
-RUN apt-get -y install ccache libpthread-stubs0-dev libssl-dev zlib1g-dev cmake g++ build-essential libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libmicrohttpd-dev texlive-full gperf expect wget poppler-utils
+RUN apt-get -y install libssl-dev zlib1g-dev cmake g++ build-essential libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev libmicrohttpd-dev gperf expect wget
 
 # build ton client
 RUN git clone https://github.com/ton-blockchain/ton.git
