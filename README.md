@@ -28,3 +28,18 @@ Other
 # docker build -f Dockerfile.ton -t name_of_image .
 # docker run -p 8080:8080 -e WORKDIR=/app/ name_of_image
 ```
+
+### Docker-compose
+1. Create .env file:
+```
+HOST=...
+DB=...
+COLLECTION=...
+USER=...
+PASS=...
+```
+2. Build and run:
+```
+# docker-compose build
+# docker-compose up
+```
