@@ -1,0 +1,10 @@
+#!/usr/bin/env fift -s
+"TonUtil.fif" include
+
+$1 parse-int =: bounce
+$2 parse-int =: wallet_addr
+
+wallet_addr
+."" bounce ._ .":" x. cr
+bounce wallet_addr 2dup 7 .Addr cr
+6 .Addr
