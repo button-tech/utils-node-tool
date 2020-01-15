@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/nodetools"
@@ -10,7 +11,9 @@ import (
 	"github.com/button-tech/utils-node-tool/types/requests"
 	"github.com/button-tech/utils-node-tool/types/responses"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/onrik/ethrpc"
 	"github.com/qiangxue/fasthttp-routing"
 	"math"
@@ -179,6 +182,53 @@ func GetNonce(c *routing.Context) error {
 	}
 
 	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "GetNonce", false)
+
+	return nil
+}
+
+func SendRawTx(c *routing.Context) error {
+	start := time.Now()
+
+	var (
+		rawTx  requests.RawTransaction
+		result responses.TransactionResult
+	)
+
+	if err := json.Unmarshal(c.PostBody(), &rawTx); err != nil {
+		return err
+	}
+
+	ethClient, err := ethclient.Dial(storage.EndpointForReq.Get())
+	if err != nil {
+		logger.HandlerError("SendRawTx", err)
+		return err
+	}
+
+	rawTxBytes, err := hex.DecodeString(rawTx.Data)
+	if err != nil {
+		logger.HandlerError("SendRawTx", err)
+		return err
+	}
+
+	var tx types.Transaction
+
+	if err = rlp.DecodeBytes(rawTxBytes, &tx); err != nil {
+		logger.HandlerError("SendRawTx", err)
+		return err
+	}
+
+	if err = ethClient.SendTransaction(context.Background(), &tx); err != nil {
+		logger.HandlerError("SendRawTx", err)
+		return err
+	}
+
+	result.Hash = tx.Hash().Hex()
+
+	if err := responses.JsonResponse(c, result); err != nil {
+		return err
+	}
+
+	logger.LogRequest(time.Since(start), os.Getenv("BLOCKCHAIN"), "SendRawTx", false)
 
 	return nil
 }

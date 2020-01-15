@@ -16,9 +16,13 @@ var r *routing.Router
 func main() {
 	r = routing.New()
 
-	r.Get("/cosmos/balance/<address>", handlers.GetCosmosBalance)
 	r.Get("/waves/balance/<address>", handlers.GetWavesBalance)
+	r.Post("/waves/send", handlers.SendWavesRawTx)
+
 	r.Get("/xlm/balance/<address>", handlers.GetXlmBalance)
+	r.Post("/xlm/send", handlers.SendXlmRawTx)
+
+	r.Get("/cosmos/balance/<address>", handlers.GetCosmosBalance)
 	r.Get("/xrp/balance/<address>", handlers.GetXrpBalance)
 	r.Get("/tezos/balance/<address>", handlers.GetTezosBalance)
 	r.Get("/bnb/balance/<address>", handlers.GetBnbBalance)

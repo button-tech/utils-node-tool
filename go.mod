@@ -15,8 +15,9 @@ require (
 	github.com/onrik/ethrpc v1.0.0
 	github.com/pkg/errors v0.8.1
 	github.com/qiangxue/fasthttp-routing v0.0.0-20160225050629-6ccdc2a18d87
+	github.com/stellar/go v0.0.0-20200106181920-54d2e97fc842
 	github.com/tidwall/gjson v1.3.5 // indirect
 	github.com/valyala/fasthttp v1.6.0
-	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )

@@ -71,7 +71,6 @@ func GetUtxo(address string) ([]responses.UTXO, error) {
 	return utxoArray, nil
 }
 
-// UTXO based blockchain - BTC, LTC, BCH
 func GetUtxoBasedBalance(address string) (string, error) {
 
 	var (

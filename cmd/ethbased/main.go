@@ -37,6 +37,8 @@ func main() {
 
 	g.Post("/estimateGas", handlers.GetEstimateGas)
 
+	g.Post("/send", handlers.SendRawTx)
+
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Println(err)
 		os.Exit(1)

@@ -34,6 +34,10 @@ type EthEstimateGasRequest struct {
 	Data            string `json:"data"`
 }
 
+type RawTransaction struct {
+	Data string `json:"data"`
+}
+
 type TezosBalance []string
 
 type XRPBalance struct {

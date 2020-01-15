@@ -80,7 +80,6 @@ func GetEthBasedBlockNumber(addr string) (int64, error) {
 	return intNumber, nil
 }
 
-// ETH based
 func GetEtherBalance(address string) (string, error) {
 
 	ethClient := ethrpc.New(storage.EndpointForReq.Get())
