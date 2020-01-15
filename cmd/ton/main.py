@@ -17,6 +17,9 @@ class RunMethod(BaseModel):
 class ValidatorPubKey(BaseModel):
     value: str
 
+class Boc(BaseModel):
+    data: str
+
 app = FastAPI()
 
 app.add_middleware(
@@ -26,6 +29,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.post("/ton/send")
+async def send_boc(boc: Boc):
+    result = await create_and_send_boc(boc.data)
+    if result == "error":
+        raise HTTPException(status_code=500, detail="err")
+    return result
 
 @app.get("/seqno/{address}")
 async def get_seqno(address: str):
@@ -181,6 +191,29 @@ def parse_stdout(stdout: str, start_phrase: str, end_phrase: str="")-> str:
 
     return result
 
+async def create_and_send_boc(hexData):
+    fileName = str(uuid.uuid4().hex)
+
+    text = '''
+     B{''' + hexData + '''}
+     "''' + fileName + '''.boc"
+     tuck
+     B>file
+     ."(Saved to file " type .")" cr
+     '''
+
+    try:
+        with open(f'{fileName}.fif', "w") as f:
+            f.write(text)
+    except:
+        return "err"
+
+    os.system(f'{fift} {fileName}.fif')
+    await cli_call("sendfile " + fileName + ".boc")
+    os.remove(f'./{fileName}.boc')
+    os.remove(f'./{fileName}.fif')
+
+    return {"result": "ok"}
 
 if __name__ == "__main__":
    uvicorn.run("main:app", host="0.0.0.0", port=3000, workers=8, loop="asyncio")
