@@ -22,11 +22,11 @@ func main() {
 	r.Get("/xlm/balance/<address>", handlers.GetXlmBalance)
 	r.Post("/xlm/send", handlers.SendXlmRawTx)
 
-	r.Get("/cosmos/balance/<address>", handlers.GetCosmosBalance)
-	r.Get("/xrp/balance/<address>", handlers.GetXrpBalance)
-	r.Get("/tezos/balance/<address>", handlers.GetTezosBalance)
-	r.Get("/bnb/balance/<address>", handlers.GetBnbBalance)
-	r.Get("/algorand/balance/<address>", handlers.GetAlgorandBalance)
+	//r.Get("/cosmos/balance/<address>", handlers.GetCosmosBalance)
+	//r.Get("/xrp/balance/<address>", handlers.GetXrpBalance)
+	//r.Get("/tezos/balance/<address>", handlers.GetTezosBalance)
+	//r.Get("/bnb/balance/<address>", handlers.GetBnbBalance)
+	//r.Get("/algorand/balance/<address>", handlers.GetAlgorandBalance)
 
 	if err := fasthttp.ListenAndServe(":8080", r.HandleRequest); err != nil {
 		log.Fatal(err)
