@@ -8,29 +8,20 @@ services:
     ports:
     - 8080:80
     links:
-    - waves
-    - xlm
     - eth
     - etc
     - btc
     - ltc
     - bch
+    - chains
 
-  waves:
-    container_name: waves
+  chains:
+    container_name: chains
     build:
         context: .
         dockerfile: Dockerfile
         args:
-           - DIR=waves
-
-  xlm:
-    container_name: xlm
-    build:
-        context: .
-        dockerfile: Dockerfile
-        args:
-           - DIR=xlm
+           - DIR=chains
 
   eth:
     container_name: eth
