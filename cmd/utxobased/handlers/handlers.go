@@ -87,7 +87,7 @@ func SendRawTx(c *routing.Context) error {
 	}
 
 	r := struct {
-		Result string `json:"string"`
+		Result string `json:"result"`
 	}{}
 
 	if err = res.ToJSON(&r); err != nil {
