@@ -118,7 +118,7 @@ func SetFastestEndpoint(startChan chan struct{}) {
 	)
 
 	switch os.Getenv("BLOCKCHAIN") {
-	case "eth", "etc":
+	case "eth", "etc", "poa":
 		getEndpoint = getFastestEthBasedEndpoint
 	default:
 		getEndpoint = getFastestUtxoBasedEndpoint
