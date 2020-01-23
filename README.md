@@ -1,6 +1,6 @@
 # UTILS-NODE-TOOL
 
-### Blockchain list: ETH based(ETH/ETC),UTXO based(BTC/BCH/LTC), WAVES, STELLAR, ZILLIQA, COSMOS, RIPPLE, TEZOS, ALGORAND, BNB, TON(testnet)
+### Blockchain list: ETH based(ETH/ETC),UTXO based(BTC/BCH/LTC), WAVES, STELLAR, ZILLIQA, COSMOS, RIPPLE, TEZOS, ALGORAND, BNB, POA, TON(testnet)
 
 ### Run in Docker container
 
