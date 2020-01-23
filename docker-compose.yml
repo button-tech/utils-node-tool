@@ -40,6 +40,7 @@ services:
            - COLLECTION=${COLLECTION}
            - USER=${DB_USER}
            - PASS=${PASS}
+           - DSN=${DSN}
   etc:
     container_name: etc
     build:
@@ -56,6 +57,7 @@ services:
            - COLLECTION=${COLLECTION}
            - USER=${DB_USER}
            - PASS=${PASS}
+           - DSN=${DSN}
   
   poa:
     container_name: poa
@@ -73,6 +75,7 @@ services:
            - COLLECTION=${COLLECTION}
            - USER=${DB_USER}
            - PASS=${PASS}
+           - DSN=${DSN}
            
   btc:
     container_name: btc
@@ -90,6 +93,7 @@ services:
            - COLLECTION=${COLLECTION}
            - USER=${DB_USER}
            - PASS=${PASS}
+           - DSN=${DSN}
   ltc:
     container_name: ltc
     build:
@@ -106,6 +110,7 @@ services:
            - COLLECTION=${COLLECTION}
            - USER=${DB_USER}
            - PASS=${PASS}
+           - DSN=${DSN}
 
   bch:
     container_name: bch
@@ -123,3 +128,4 @@ services:
            - COLLECTION=${COLLECTION}
            - USER=${DB_USER}
            - PASS=${PASS}
+           - DSN=${DSN}
