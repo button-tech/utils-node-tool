@@ -10,6 +10,7 @@ services:
     links:
     - eth
     - etc
+    - poa
     - btc
     - ltc
     - bch
@@ -55,6 +56,24 @@ services:
            - COLLECTION=${COLLECTION}
            - USER=${DB_USER}
            - PASS=${PASS}
+  
+  poa:
+    container_name: poa
+    build:
+         context: .
+         dockerfile: Dockerfile
+         args:
+           - DIR=ethbased
+
+    environment:
+           - BLOCKCHAIN=etc
+           - ADDRESS=0xb46e669b64fee8093708dffc563755d6afce6463
+           - HOST=${HOST}
+           - DB=${DB}
+           - COLLECTION=${COLLECTION}
+           - USER=${DB_USER}
+           - PASS=${PASS}
+           
   btc:
     container_name: btc
     build:
