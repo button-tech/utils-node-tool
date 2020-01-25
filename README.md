@@ -12,14 +12,15 @@ Database for blockchain nodes addresses - MongoDB
 ```
 - Run examples
 
+ETH/UTXO Based:
+```
+# docker run -p 8080:8080 -e HOST=db_host -e DB=database -e USER=db_user -e PASS=db_password -e COLLECTION=db_collection -e BLOCKCHAIN=(eth/etc/poa/btc/ltc/bch) -e DSN=(sentry DSN) name_of_image
+```
+
+WAVES/XLM:
 
 ```
-# docker run -p 8080:8080 -e HOST=db_host -e DB=database -e USER=db_user -e PASS=db_password -e COLLECTION=db_collection -e MAIN_API=url_of_main_api -e BLOCKCHAIN=eth-based(eth/etc)/utxo-based(btc,ltc,bch) name_of_image
-```
-Other
-
-```
-# docker run -p 8080:8080 -e HOST=db_host -e DB=database -e USER=db_user -e PASS=db_password -e COLLECTION=db_collection name_of_image
+# docker run -p 8080:8080 name_of_image
 ```
 
 ### TON(testnet)
