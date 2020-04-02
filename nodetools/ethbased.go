@@ -35,9 +35,12 @@ func GetEstimateGas(req *requests.EthEstimateGasRequest) (uint64, error) {
 		To:   &address,
 		Data: data,
 	})
-
 	if err != nil {
 		return 0, err
+	}
+
+	if gasLimit < 38000 {
+		gasLimit = 80000
 	}
 
 	return gasLimit, nil
