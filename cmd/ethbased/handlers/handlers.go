@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/nodetools"
-	b "github.com/button-tech/utils-node-tool/nodetools"
 	"github.com/button-tech/utils-node-tool/nodetools/storage"
 	"github.com/button-tech/utils-node-tool/types/requests"
 	"github.com/button-tech/utils-node-tool/types/responses"
@@ -27,7 +26,7 @@ func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	balance, err := b.GetEtherBalance(address)
+	balance, err := nodetools.GetEtherBalance(address)
 	if err != nil {
 		logger.HandlerError("GetBalance", err)
 		return err
@@ -106,7 +105,7 @@ func GetTokenBalance(c *routing.Context) error {
 
 	smartContractAddress := c.Param("smart-contract-address")
 
-	balance, err := b.GetTokenBalance(userAddress, smartContractAddress)
+	balance, err := nodetools.GetTokenBalance(userAddress, smartContractAddress)
 	if err != nil {
 		logger.HandlerError("GetTokenBalance", err)
 		return err
@@ -137,7 +136,7 @@ func GetEstimateGas(c *routing.Context) error {
 
 	gasLimit, err := nodetools.GetEstimateGas(&data)
 	if err != nil {
-		logger.HandlerError("GetEstimateGas", err)
+		logger.Error("GetEstimateGas", err, logger.Params{"data":data})
 		return err
 	}
 

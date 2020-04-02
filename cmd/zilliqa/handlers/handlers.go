@@ -36,7 +36,14 @@ func GetBalance(c *gin.Context) {
 		return
 	}
 
-	balance := endpoint.GetBalance(decodedAddress)
+	balance, err := endpoint.GetBalance(decodedAddress)
+	if err != nil{
+		c.JSON(http.StatusInternalServerError, err)
+		logger.Error("GetBalance: provider.NewProvider", "endpoint==nil", logger.Params{
+			"api": "https://api.zilliqa.com",
+		})
+		return
+	}
 	if balance == nil {
 		c.JSON(http.StatusInternalServerError, errors.New("Problems with api.zilliqa.com"))
 		logger.Error("GetBalance: endpoint.GetBalance", "balance==nil", logger.Params{

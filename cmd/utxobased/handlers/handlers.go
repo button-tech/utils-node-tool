@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-node-tool/nodetools"
-	b "github.com/button-tech/utils-node-tool/nodetools"
 	"github.com/button-tech/utils-node-tool/nodetools/storage"
 	"github.com/button-tech/utils-node-tool/types/requests"
 	"github.com/button-tech/utils-node-tool/types/responses"
@@ -21,7 +20,7 @@ func GetBalance(c *routing.Context) error {
 
 	address := c.Param("address")
 
-	balance, err := b.GetUtxoBasedBalance(address)
+	balance, err := nodetools.GetUtxoBasedBalance(address)
 	if err != nil {
 		logger.HandlerError("GetBalance", err)
 		return err

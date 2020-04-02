@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -27,7 +26,7 @@ type result struct {
 	badEndpoints []string
 }
 
-func (s *result) addToBlockNumbers(address string, blockNumber int64) {
+func (s *result) addToBlockNumbers(blockNumber int64) {
 	s.Lock()
 	s.blockNumbers = append(s.blockNumbers, blockNumber)
 	s.Unlock()
@@ -67,7 +66,6 @@ func syncCheck(currency string, addresses []string) error {
 	default:
 		// Check only eth based endpoints
 		return nil
-		//getBlockNumber = shared.GetUtxoBasedBlockNumber
 	}
 
 	var (
@@ -83,7 +81,7 @@ func syncCheck(currency string, addresses []string) error {
 				return nil
 			}
 
-			result.addToBlockNumbers(addr, blockNumber)
+			result.addToBlockNumbers(blockNumber)
 			result.addToNodesInfo(addr, blockNumber)
 
 			return nil
@@ -146,7 +144,8 @@ func main() {
 		entries, err := db.GetAll()
 		if err != nil {
 			log.Println(err)
-			os.Exit(1)
+			time.Sleep(time.Minute * 1)
+			continue
 		}
 
 		var g errgroup.Group
@@ -160,7 +159,6 @@ func main() {
 		}
 		if err := g.Wait(); err != nil {
 			log.Println(err)
-			os.Exit(1)
 		}
 
 		time.Sleep(time.Minute * 10)
@@ -169,7 +167,7 @@ func main() {
 }
 
 func max(array []int64) int64 {
-	var max int64 = array[0]
+	var max = array[0]
 	for _, value := range array {
 		if max < value {
 			max = value
