@@ -136,7 +136,7 @@ func SetFastestEndpoint(startChan chan struct{}) {
 			logger.Error("SetFastestEndpoint", "WARNING: All endpoints are not available now!", logger.Params{
 				"currency": os.Getenv("BLOCKCHAIN"),
 			})
-			time.Sleep(time.Minute * 1)
+			time.Sleep(time.Second * 10)
 			continue
 		}
 
@@ -146,7 +146,7 @@ func SetFastestEndpoint(startChan chan struct{}) {
 
 		logger.Info("NumGoroutine: " + strconv.Itoa(runtime.NumGoroutine()))
 
-		time.Sleep(time.Minute * 1)
+		time.Sleep(time.Second * 10)
 	}
 }
 
@@ -175,7 +175,7 @@ func getFastestUtxoBasedEndpoint() string {
 	select {
 	case result := <-fastestEndpoint:
 		return result
-	case <-time.After(time.Second * 2):
+	case <-time.After(time.Second * 5):
 		return ""
 	}
 }
@@ -202,7 +202,7 @@ func getFastestEthBasedEndpoint() string {
 	select {
 	case result := <-fastestEndpoint:
 		return result
-	case <-time.After(time.Second * 2):
+	case <-time.After(time.Second * 5):
 		return ""
 	}
 }
