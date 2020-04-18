@@ -56,7 +56,7 @@ func syncCheck(currency string, addresses []string) error {
 
 	var (
 		getBlockNumber  reqBlockNumber
-		blockDifference int64 = 10
+		blockDifference int64 = 20
 		result          result
 	)
 
@@ -161,7 +161,7 @@ func main() {
 			log.Println(err)
 		}
 
-		time.Sleep(time.Minute * 10)
+		time.Sleep(time.Minute * 60)
 	}
 
 }
